@@ -259,7 +259,7 @@
   <div class="wrap">
     <div class="eyebrow">Laporan Internal &middot; Analisis Komposisi Biaya</div>
     <h1 class="title">Non Allowable Cost — UID Jawa Tengah</h1>
-    <div class="subtitle">Analisis komposisi dan distribusi biaya Non Allowable Cost (NAC) berdasarkan jenis biaya (Kategori A &amp; B) dan sebaran realisasi pada 14 unit pelaksana &mdash; UID beserta 13 Unit Pelayanan/Up2D di wilayah Jawa Tengah.</div>
+    <div class="subtitle">Analisis komposisi dan distribusi biaya Non Allowable Cost (NAC) berdasarkan jenis biaya (Kategori A &amp; B) dan sebaran realisasi pada 14 unit &mdash; UID beserta 13 Unit Pelayanan/UP2D di wilayah Jawa Tengah.</div>
     <div class="hero-meta">
       <div class="hm">
         <div class="hm-label">Total NAC</div>
@@ -349,7 +349,7 @@
 
   <section>
     <div class="section-head">
-      <h2>Insight &amp; Analisa</h2>
+      <h2>Insight &amp; Analisis</h2>
       <div class="section-note">Temuan utama dari data komposisi NAC</div>
     </div>
     <div class="insight-grid">
@@ -358,12 +358,12 @@
         <div class="insight-text">Beban Pajak Penghasilan Pasal 21 Pegawai adalah pos tunggal terbesar: <b>Rp117,36 Miliar</b>, setara <b>69,1%</b> dari total NAC perusahaan dan <b>75,7%</b> dari Kategori A. Struktur biaya NAC nyaris seluruhnya digerakkan oleh satu akun ini &mdash; setiap perubahan kebijakan atau volume PPh 21 akan berdampak langsung dan proporsional besar terhadap total NAC.</div>
       </div>
       <div class="insight-card warn">
-        <div class="insight-label">Konsentrasi Geografis pada UID</div>
-        <div class="insight-text">Unit UID (kantor induk) menyumbang <b>Rp67,79 Miliar (39,9%)</b> dari total NAC &mdash; hampir <b>5,7 kali lipat</b> unit dengan realisasi terbesar kedua, TGL (Rp11,79 Miliar). Sebanyak 13 unit pelayanan lainnya rata-rata hanya menyumbang sekitar Rp7,85 Miliar, menunjukkan beban NAC sangat terpusat di level UID.</div>
+        <div class="insight-label">Penyumbang Terbesar Terkonsentrasi pada UID</div>
+        <div class="insight-text">Unit UID (Kantor induk) menyumbang <b>Rp67,79 Miliar (39,9%)</b> dari total NAC &mdash; hampir <b>5,7 kali lipat</b> unit dengan realisasi terbesar kedua, TGL (Rp11,79 Miliar). Sebanyak 13 unit pelayanan lainnya rata-rata hanya menyumbang sekitar Rp7,85 Miliar, menunjukkan beban NAC sangat terpusat di level UID.</div>
       </div>
       <div class="insight-card">
         <div class="insight-label">Pola Kontra pada Penyisihan Piutang Ragu-ragu</div>
-        <div class="insight-text">Pos Beban Penyisihan Piutang Ragu-ragu bernilai net <b>Rp7,94 Miliar</b>, namun komposisinya kontras: UID mencatat <b>+Rp31,86 Miliar</b> (pembentukan penyisihan), sementara <b>12 dari 13 unit pelayanan mencatat nilai negatif</b> (koreksi/pembalikan), terbesar di SMG (-Rp4,51 Miliar) dan KDS (-Rp3,17 Miliar). Pos ini perlu dibaca sebagai akun kontra, bukan beban operasional biasa.</div>
+        <div class="insight-text">Pos Beban Penyisihan Piutang Ragu-ragu bernilai net <b>Rp7,94 Miliar</b>, namun komposisinya kontras: UID mencatat <b>+Rp31,86 Miliar</b> (pembentukan penyisihan), sementara <b>12 dari 13 unit pelayanan mencatat nilai negatif</b> (koreksi/pembalikan), terbesar di SMG (-Rp4,51 Miliar) dan KDS (-Rp3,17 Miliar).</div>
       </div>
       <div class="insight-card">
         <div class="insight-label">Struktur Kategori A vs Kategori B</div>
@@ -555,7 +555,7 @@
   var gauges = [
     {label:"PPH 21 PASAL 21 PEGAWAI", value: pph21.total/grand*100, color:"#B24A2E", caption:"dari total realisasi NAC", tag:"gap-risk", tagText:"Konsentrasi sangat tinggi pada satu pos", realVal:pph21.total, refVal:grand, refLabel:"Total NAC"},
     {label:"UNIT UID (KANTOR INDUK)", value: unitTotals.UID/grand*100, color:"#B2790E", caption:"dari total realisasi NAC", tag:"gap-over", tagText:"5,7x lipat unit terbesar kedua (TGL)", realVal:unitTotals.UID, refVal:grand, refLabel:"Total NAC"},
-    {label:"TOP-3 JENIS BIAYA (PARETO)", value: top3sum/grand*100, color:"#B24A2E", caption:"dari total realisasi NAC", tag:"gap-risk", tagText:"Hampir 4/5 total berasal dari 3 pos", realVal:top3sum, refVal:grand, refLabel:"Total NAC"}
+    {label:"TOP-3 JENIS BIAYA (PARETO)", value: top3sum/grand*100, color:"#B24A2E", caption:"dari total realisasi NAC", tag:"gap-risk", tagText:"Hampir 4/5 total berasal dari 3 pos (Beban PPh 21 Pegawai, Beban Tunjangan Cuti Tahunan, Beban Penyisihan Piutang", realVal:top3sum, refVal:grand, refLabel:"Total NAC"}
   ];
 
   var gaugeGrid = document.getElementById('gaugeGrid');
