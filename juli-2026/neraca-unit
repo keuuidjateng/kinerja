@@ -733,7 +733,7 @@ tr.highlight td{
     </h1>
 
     <p class="sub">
-      Dashboard interaktif untuk menganalisis struktur aset, aset lancar,
+      Dashboard untuk menganalisis struktur aset, aset lancar,
       aset tetap, ekuitas, akun antar satuan administrasi serta liabilitas
       pada UID dan Unit Pelaksana.
     </p>
@@ -809,7 +809,7 @@ tr.highlight td{
 
     <div class="intro">
       Gunakan filter unit di bawah untuk melihat perubahan struktur
-      posisi keuangan secara interaktif. Secara default dashboard
+      posisi keuangan per unit. Secara default dashboard
       menampilkan angka <b>GABUNGAN</b>.
     </div>
 
@@ -1654,7 +1654,7 @@ tr.highlight td{
   <div class="wrap">
 
     <div>
-      Sumber: Data Excel Posisi Keuangan yang diberikan pengguna ·
+      Sumber: Data Posisi Keuangan/ Neraca Keuangan Per Unit ·
       UID Jawa Tengah
     </div>
 
