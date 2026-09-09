@@ -78,14 +78,13 @@
             padding: 0 1.5rem;
         }
 
-        /* Area Judul (Page Header) - Lebar & Tinggi Mengikuti Rasio Gambar Background (1280x153) */
+        /* Area Judul (Page Header) - Tinggi Cair (Fluid) agar Teks Selalu Tampil Optimal */
         .page-header {
             width: 100%;
-            aspect-ratio: 1280 / 153;
-            min-height: 60px;
+            min-height: clamp(100px, 20vw, 150px)
             text-align: left;
             margin-bottom: 1rem;
-            padding: 0.5rem 1.5rem;
+            padding: clamp(0.6rem, 1.8vw, 1.2rem) clamp(1rem, 3vw, 1.75rem);
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.08);
             position: relative;
@@ -105,7 +104,7 @@
             width: 100%;
             height: 100%;
             background-image: url('Gedung PLN Jatingaleh 8.png');
-            background-size: contain;
+            background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             opacity: 0.2; 
@@ -118,27 +117,28 @@
         }
 
         .page-header h2 {
-            font-size: clamp(1rem, 1.6vw, 2rem);
+            font-size: clamp(0.95rem, 3.2vw, 1.8rem);
             color: var(--secondary-blue);
-            margin-bottom: 0.4rem;
+            margin-bottom: 0.3rem;
             font-weight: 700;
-            line-height: 1.3;
+            line-height: 1.25;
         }
 
         .page-header p {
             color: #008080;
-            font-size: clamp(0.95rem, 1vw, 1.25rem);
+            font-size: clamp(0.75rem, 2.1vw, 1.15rem);
             font-weight: 600;
+            line-height: 1.3;
         }
 
         .badge-periode {
             display: inline-block;
-            font-size: clamp(0.9rem, 1.2vw, 0.95rem);
+            font-size: clamp(0.65rem, 1.6vw, 0.9rem);
             color: #FFFFFF;
             background-color: #399D9E;
-            padding: 0.2rem 0.8rem;
+            padding: 0.2rem 0.7rem;
             border-radius: 4px;
-            margin-top: 0.5rem;
+            margin-top: 0.4rem;
         }
 
         /* Sektor Filter Periode */
@@ -271,13 +271,13 @@
             transform: translateY(-8px);
             box-shadow: 0 12px 24px rgba(0, 128, 128, 0.3);
             background-color: var(--hover-teal);
-            border-top-color: #EAFAFA;
+            border-top-color: #CAF3F2;
         }
 
         .card:hover h3, 
         .card:hover p,
         .card:hover h3 i {
-            color: #EAFAFA;
+            color: #CAF3F2;
         }
 
         /* Footer Statis */
@@ -313,7 +313,7 @@
                 padding: 1rem;
             }
             .page-header {
-                padding: 1rem;
+                padding: 0.75rem 1rem;
             }
             .card-grid {
                 grid-template-columns: 1fr;
