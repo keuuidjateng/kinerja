@@ -549,23 +549,5 @@
         &copy; 2026. Bidang Keuangan PLN UID Jawa Tengah.
     </footer>
 
-    <!-- Script Interaksi Pop Up -->
-    <script>
-        const popupOverlay = document.getElementById('popupOverlay');
-        const btnAccept = document.getElementById('btnAccept');
-        const btnExit = document.getElementById('btnExit');
-
-        // Jika tombol "Saya Setuju & Lanjutkan" diklik
-        btnAccept.addEventListener('click', function() {
-            popupOverlay.classList.add('hidden');
-        });
-
-        // Jika tombol "Keluar" diklik
-        btnExit.addEventListener('click', function() {
-            // Langsung menutup jendela atau tab browser tanpa redirect ke halaman notifikasi
-            window.close();
-        });
-    </script>
-
 </body>
 </html>
