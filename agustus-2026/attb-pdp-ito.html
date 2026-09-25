@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Monitoring ATTB, PDP, ITO &amp; Slow Moving Material - UID Jawa Tengah</title>
+<style>
+  :root{
+    --navy:#0c2d48;
+    --blue:#145da0;
+    --blue-mid:#2e8bc0;
+    --blue-light:#b1d4e0;
+    --bg:#f4f7fa;
+    --card:#ffffff;
+    --ink:#1c2b36;
+    --ink-soft:#5b6b76;
+    --green:#0f7a4a;
+    --green-bg:#e3f5ea;
+    --amber:#b9740e;
+    --amber-bg:#fdf1de;
+    --red:#a72b2b;
+    --red-bg:#fbe7e7;
+    --border:#e1e7ec;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    font-family:'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    color:var(--ink);
+  }
+  .page{
+    max-width:1200px;
+    margin:0 auto;
+    padding:32px 24px 64px;
+  }
+  header{
+    background:linear-gradient(135deg, var(--navy), var(--blue));
+    color:#fff;
+    border-radius:16px;
+    padding:32px 36px;
+    margin-bottom:22px;
+    position:relative;
+    overflow:hidden;
+  }
+  header::after{
+    content:"";
+    position:absolute;
+    right:-60px; top:-60px;
+    width:220px; height:220px;
+    background:rgba(255,255,255,0.08);
+    border-radius:50%;
+  }
+  header .eyebrow{
+    font-size:13px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color:var(--blue-light);
+    margin:0 0 8px;
+    font-weight:600;
+  }
+  header h1{
+    font-size:26px;
+    margin:0 0 6px;
+    font-weight:700;
+  }
+  header p.sub{
+    margin:0;
+    font-size:14px;
+    color:#dbe9f4;
+  }
+
+  /* ===== TABS ===== */
+  .tabs{
+    display:flex;
+    gap:10px;
+    margin-bottom:28px;
+    flex-wrap:wrap;
+  }
+  .tab-btn{
+    background:var(--card);
+    border:1px solid var(--border);
+    color:var(--navy);
+    font-weight:700;
+    font-size:13.5px;
+    padding:11px 20px;
+    border-radius:10px;
+    cursor:pointer;
+    box-shadow:0 1px 3px rgba(12,45,72,0.05);
+    transition:all .15s;
+    font-family:inherit;
+  }
+  .tab-btn:hover{ border-color:var(--blue-mid); color:var(--blue); }
+  .tab-btn.active{
+    background:linear-gradient(135deg, var(--navy), var(--blue));
+    color:#fff;
+    border-color:transparent;
+  }
+  .tab-panel[hidden]{ display:none; }
+
+  section{margin-bottom:32px;}
+  h2.section-title{
+    font-size:16px;
+    color:var(--navy);
+    margin:0 0 16px;
+    padding-left:12px;
+    border-left:4px solid var(--blue-mid);
+    font-weight:700;
+  }
+  .section-caption{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin:-10px 0 16px 16px;
+  }
+
+  .kpi-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+    gap:14px;
+  }
+  .kpi-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:18px 20px;
+    box-shadow:0 1px 3px rgba(12,45,72,0.05);
+  }
+  .kpi-card .label{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin:0 0 6px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:0.4px;
+  }
+  .kpi-card .value{
+    font-size:24px;
+    font-weight:700;
+    color:var(--navy);
+    margin:0;
+  }
+  .kpi-card .value.good{color:var(--green);}
+  .kpi-card .value.warn{color:var(--red);}
+  .kpi-card .note{font-size:11.5px;color:var(--ink-soft);margin:4px 0 0;}
+
+  .chart-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:24px;
+    box-shadow:0 1px 3px rgba(12,45,72,0.05);
+  }
+  .legend{
+    display:flex; flex-wrap:wrap; gap:18px;
+    font-size:12.5px; color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+  .legend span{display:flex; align-items:center; gap:6px;}
+  .dot{width:10px;height:10px;border-radius:2px;display:inline-block;}
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    background:var(--card);
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 1px 3px rgba(12,45,72,0.05);
+    font-size:13px;
+  }
+  thead th{
+    background:var(--navy);
+    color:#fff;
+    text-align:right;
+    padding:10px 12px;
+    font-weight:600;
+    font-size:12px;
+    cursor:pointer;
+    user-select:none;
+    transition:background .15s;
+  }
+  thead th:hover{background:#145da0;}
+  thead th:first-child{text-align:left;}
+  thead th .sort-icon{font-size:10px; margin-left:4px; opacity:0.7;}
+  
+  tbody td{
+    padding:9px 12px;
+    text-align:right;
+    border-bottom:1px solid var(--border);
+    color:var(--ink);
+  }
+  tbody td:first-child{text-align:left; font-weight:600;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr.total{background:#eef4fa; font-weight:700;}
+  .table-scroll{ overflow-x:auto; border-radius:12px; }
+  .table-scroll table{ box-shadow:none; white-space:nowrap; }
+  .badge{
+    display:inline-block;
+    padding:2px 8px;
+    border-radius:20px;
+    font-size:11.5px;
+    font-weight:700;
+  }
+  .badge.good{background:var(--green-bg); color:var(--green);}
+  .badge.mid{background:var(--amber-bg); color:var(--amber);}
+  .badge.low{background:var(--red-bg); color:var(--red);}
+
+  .insight-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
+    gap:16px;
+  }
+  .insight-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-left:4px solid var(--blue-mid);
+    border-radius:10px;
+    padding:16px 18px;
+    box-shadow:0 1px 3px rgba(12,45,72,0.05);
+  }
+  .insight-card h3{
+    margin:0 0 6px;
+    font-size:14.5px;
+    color:var(--navy);
+  }
+  .insight-card p{
+    margin:0;
+    font-size:13px;
+    color:var(--ink-soft);
+    line-height:1.6;
+  }
+  .insight-card.warn{border-left-color:var(--red);}
+  .insight-card.warn h3{color:var(--red);}
+  .insight-card.good{border-left-color:var(--green);}
+  .insight-card.good h3{color:var(--green);}
+
+  .detail-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(280px,1fr));
+    gap:16px;
+    margin-top:16px;
+  }
+  .detail-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:16px 18px;
+    box-shadow:0 1px 3px rgba(12,45,72,0.05);
+  }
+  .detail-card .dc-head{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:10px;
+  }
+  .detail-card h3{ margin:0; font-size:14px; color:var(--navy); }
+  .detail-card dl{ margin:0; font-size:12.5px; color:var(--ink-soft); line-height:1.6; }
+  .detail-card dt{ font-weight:700; color:var(--ink); margin-top:8px; }
+  .detail-card dt:first-child{ margin-top:0; }
+  .detail-card dd{ margin:0; }
+
+  footer{
+    text-align:center;
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-top:32px;
+  }
+
+  @media (max-width:600px){
+    header{padding:24px 20px;}
+    header h1{font-size:21px;}
+    .tab-btn{ flex:1 1 auto; text-align:center; padding:10px 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <p class="eyebrow">UID Jawa Tengah</p>
+    <h1>Monitoring ATTB, PDP, ITO &amp; Slow Moving Material</h1>
+    <p class="sub">Analisis Data Komprehensif &middot; Periode Pelaporan s.d. Agustus 2026</p>
+  </header>
+
+  <div class="tabs" id="tabNav">
+    <button class="tab-btn active" data-tab="attb">Penghapusan ATTB</button>
+    <button class="tab-btn" data-tab="pdp">PDP</button>
+    <button class="tab-btn" data-tab="ito">ITO &amp; DOI</button>
+    <button class="tab-btn" data-tab="slow">Slow Moving Material</button>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- TAB 1 — PENGHAPUSAN ATTB                                              -->
+  <!-- ===================================================================== -->
+  <div class="tab-panel" id="tab-attb">
+    <section>
+      <h2 class="section-title">Ringkasan Penghapusan ATTB</h2>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <p class="label">Total Saldo ATTB Hapus</p>
+          <p class="value">Rp100,07 M</p>
+        </div>
+        <div class="kpi-card">
+          <p class="label">Saldo Write Off Persetujuan Thn 0</p>
+          <p class="value">Rp81,37 M</p>
+        </div>
+        <div class="kpi-card">
+          <p class="label">Saldo Mutasi</p>
+          <p class="value warn">Rp55,01 M</p>
+        </div>
+        <div class="kpi-card">
+          <p class="label">Belum Diusulkan</p>
+          <p class="value">Rp47,85 M</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Tahapan Proses Usulan Penghapusan ATTB</h2>
+      <div class="chart-card">
+        <div style="position:relative;width:100%;height:320px;">
+          <canvas id="chartAttbTahapan"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Rincian Tahapan Proses Usulan</h2>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>No</th>
+              <th style="text-align:left;">Tahapan Proses Usulan</th>
+              <th>Nilai Perolehan (Rp)</th>
+              <th>Persentase</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyAttbTahapan"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Analisis Isu &amp; Mitigasi Utama</h2>
+      <div class="detail-grid">
+        <div class="detail-card">
+          <div class="dc-head"><h3>01 &middot; Belum Diusulkan</h3><span class="badge low">Rp47,85 M</span></div>
+          <dl>
+            <dt>Isu / Kendala</dt>
+            <dd>ATTB Tahun Lama dan usulan yang perlu diidentifikasi kembali karena ditolak SPI. Rp 27,15 M sudah pemeriksaan SPI dan proses penerbitan AE.4.</dd>
+            <dt>Mitigasi</dt>
+            <dd>Berkoordinasi dengan UP3 untuk proses identifikasi; Mengusulkan ulang ATTB yang ditolak SPI.</dd>
+            <dt>Rencana Tindak Lanjut</dt>
+            <dd>Sebagian saldo hasil akan diteliti dan diusulkan kembali.</dd>
+          </dl>
+        </div>
+        <div class="detail-card">
+          <div class="dc-head"><h3>02 &middot; Telah terbit AE.4 &amp; GRC</h3><span class="badge mid">Rp365,76 Jt</span></div>
+          <dl>
+            <dt>Isu / Kendala</dt>
+            <dd>Koordinasi dengan Divisi Terkait untuk proses GRC Unit.</dd>
+            <dt>Mitigasi &amp; Tindak Lanjut</dt>
+            <dd>Percepatan kelengkapan dokumen pendukung GRC.</dd>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Insight &amp; Analisis Data ATTB</h2>
+      <div class="insight-grid">
+        <div class="insight-card warn">
+          <h3>Konsentrasi pada Usulan Belum Diusulkan</h3>
+          <p>Sebesar Rp47,85 Miliar berada pada status Belum Diusulkan, yang sebagian besar terkendala penolakan SPI dan memerlukan re-identifikasi mendalam oleh UP3.</p>
+        </div>
+        <div class="insight-card good">
+          <h3>Proses Persetujuan DEKOM Signifikan</h3>
+          <p>Terdapat Rp51,85 Miliar yang sedang dalam proses persetujuan DEKOM, menunjukkan pipeline usulan yang aktif berjalan di tingkat korporat.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- TAB 2 — PDP                                                           -->
+  <!-- ===================================================================== -->
+  <div class="tab-panel" id="tab-pdp" hidden>
+    <section>
+      <h2 class="section-title">Ringkasan Saldo PDP</h2>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <p class="label">Total Saldo PDP</p>
+          <p class="value">Rp625,42 M</p>
+        </div>
+        <div class="kpi-card">
+          <p class="label">Unit Saldo Terbesar</p>
+          <p class="value">UP3 Semarang</p>
+          <p class="note">Rp154,27 M (24,67%)</p>
+        </div>
+        <div class="kpi-card">
+          <p class="label">Kategori Aging</p>
+          <p class="value good">AR01 (Lancar)</p>
+          <p class="note">100% terekam dalam kategori AR01</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Distribusi Saldo PDP per Unit</h2>
+      <div class="chart-card">
+        <div style="position:relative;width:100%;height:440px;">
+          <canvas id="chartPdpUnit"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Rincian Saldo PDP per Unit</h2>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align:left;">Unit Pelaksana</th>
+              <th>Sum of Saldo PDP (Rp)</th>
+              <th>AR01 (Rp)</th>
+              <th>Kontribusi (%)</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyPdp"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Insight Utama PDP</h2>
+      <div class="insight-grid">
+        <div class="insight-card warn">
+          <h3>Konsentrasi Konstruksi di UP3 Utama</h3>
+          <p>UP3 Semarang (Rp154,27 M) dan UP3 Kudus (Rp112,63 M) mendominasi hampir 42,7% dari total saldo PDP UID Jateng, mencerminkan volume proyek infrastruktur kelistrikan yang masif.</p>
+        </div>
+        <div class="insight-card good">
+          <h3>Kualitas Saldo Terjaga</h3>
+          <p>Seluruh saldo tercatat pada kategori AR01, menunjukkan tertib administrasi tanpa adanya eskalasi penuaan piutang konstruksi yang bermasalah.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- TAB 3 — ITO & DOI                                                     -->
+  <!-- ===================================================================== -->
+  <div class="tab-panel" id="tab-ito" hidden>
+    <section>
+      <h2 class="section-title">Ringkasan Persediaan Material &amp; BBM (s.d. Agustus 2026)</h2>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <p class="label">Total Saldo Awal (01 Jan)</p>
+          <p class="value">Rp109,90 M</p>
+        </div>
+        <div class="kpi-card">
+          <p class="label">Total Saldo Akhir (31 Agu)</p>
+          <p class="value warn">Rp701,83 M</p>
+        </div>
+        <div class="kpi-card">
+          <p class="label">ITO Gabungan</p>
+          <p class="value good">16,03 kali</p>
+        </div>
+        <div class="kpi-card">
+          <p class="label">Umur Persediaan Gabungan</p>
+          <p class="value">29,59 Hari</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Komposisi Saldo Akhir Persediaan Utama (Terbesar ke Terkecil)</h2>
+      <div class="chart-card">
+        <div style="position:relative;width:100%;height:380px;">
+          <canvas id="chartItoBar"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Rincian ITO &amp; Mutasi Persediaan Material</h2>
+      <p class="section-caption">Klik pada judul kolom tabel di bawah untuk mengurutkan data (ascending / descending).</p>
+      <div class="table-scroll">
+        <table id="tableIto">
+          <thead>
+            <tr>
+              <th style="text-align:left;">Uraian</th>
+              <th>Saldo 01 Jan 2026</th>
+              <th>Pembelian</th>
+              <th>Pengurangan / Pemakaian</th>
+              <th>Saldo 31 Agu 2026 (SAP)</th>
+              <th>ITO (kali)</th>
+              <th>Umur (Hari)</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyIto"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Insight Utama ITO &amp; DOI</h2>
+      <div class="insight-grid">
+        <div class="insight-card warn">
+          <h3>Switchgear &amp; Transformator Mendominasi Nilai</h3>
+          <p>Switchgear dan Jaringan (Rp175,23 M) serta Transformator (Rp205,01 M) menyumbang porsi terbesar dari total persediaan, didorong aktivitas pengadaan proyek yang tinggi.</p>
+        </div>
+        <div class="insight-card good">
+          <h3>Perputaran BBM Sangat Cepat</h3>
+          <p>Minyak Biosolar mencatatkan ITO 27,21 kali dengan umur persediaan hanya 8,93 hari, menunjukkan efisiensi tinggi pada bahan bakar pembangkit/operasional.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- TAB 4 — SLOW MOVING MATERIAL                                          -->
+  <!-- ===================================================================== -->
+  <div class="tab-panel" id="tab-slow" hidden>
+    <section>
+      <h2 class="section-title">Ringkasan Slow Moving Material (MC.9)</h2>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <p class="label">Kelompok I (&lt; 1 Tahun)</p>
+          <p class="value">Rp176,58 M</p>
+        </div>
+        <div class="kpi-card">
+          <p class="label">Kelompok II (1 - 3 Tahun)</p>
+          <p class="value warn">Rp2,61 M</p>
+        </div>
+        <div class="kpi-card">
+          <p class="label">Kelompok III (3 - 5 Tahun)</p>
+          <p class="value">Rp32,40 Jt</p>
+        </div>
+        <div class="kpi-card">
+          <p class="label">Kelompok IV (&gt; 5 Tahun)</p>
+          <p class="value warn">Rp33,14 Jt</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Distribusi Kelompok Umur Persediaan (Dikelompokkan per Usia &amp; Urut Terbesar ke Terkecil)</h2>
+      <div class="chart-card">
+        <div style="position:relative;width:100%;height:420px;">
+          <canvas id="chartSlowBar"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Rincian Slow Moving Material per Kategori</h2>
+      <p class="section-caption">Klik pada judul kolom tabel di bawah untuk mengurutkan data (ascending / descending).</p>
+      <div class="table-scroll">
+        <table id="tableSlow">
+          <thead>
+            <tr>
+              <th style="text-align:left;">Uraian</th>
+              <th>Kel. I (&lt; 1 Thn)</th>
+              <th>Kel. II (1-3 Thn)</th>
+              <th>Kel. III (3-5 Thn)</th>
+              <th>Kel. IV (&gt; 5 Thn)</th>
+            </tr>
+          </thead>
+          <tbody id="tbodySlow"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Insight Analisis Slow Moving</h2>
+      <div class="insight-grid">
+        <div class="insight-card good">
+          <h3>Mayoritas Persediaan Sehat (&lt; 1 Tahun)</h3>
+          <p>Sebagian besar besar nilai material berada pada Kelompok I (di bawah 1 tahun), menandakan rotasi inventori yang responsif terhadap kebutuhan operasional berjalan.</p>
+        </div>
+        <div class="insight-card warn">
+          <h3>Perlu Perhatian Material &gt; 5 Tahun</h3>
+          <p>Terdapat material pada Kelompok IV (di atas 5 tahun) terutama pada Alat Ukur (Rp7,67 Jt) dan Switchgear (Rp25,48 Jt) yang perlu segera direlokasi atau diusulkan ke material hapus.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer>Sumber Data: Laporan Monitoring UID Jawa Tengah &ndash; Periode Agustus 2026</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+/* ===================== FORMATTERS ===================== */
+function fmtRp(n){
+  if(isNaN(n) || n === 0) return 'Rp0';
+  if(Math.abs(n) >= 1e9) return 'Rp' + (n/1e9).toLocaleString('id-ID', {maximumFractionDigits:2}) + ' M';
+  return 'Rp' + (n/1e6).toLocaleString('id-ID', {maximumFractionDigits:2}) + ' jt';
+}
+function fmtRps(n){
+  return 'Rp' + Number(n).toLocaleString('id-ID');
+}
+
+var charts = {};
+var chartsDone = {};
+
+/* ===================== TAB SWITCHING ===================== */
+var tabInit = { attb: initAttbTab, pdp: initPdpTab, ito: initItoTab, slow: initSlowTab };
+function showTab(name){
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.hidden = (p.id !== 'tab-'+name); });
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.tab===name); });
+  if(!chartsDone[name]){ tabInit[name](); chartsDone[name] = true; }
+  setTimeout(function(){
+    Object.keys(charts).forEach(function(k){ if(charts[k]) charts[k].resize(); });
+  }, 60);
+}
+document.querySelectorAll('.tab-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){ showTab(btn.dataset.tab); });
+});
+
+/* ===================== TAB 1: ATTB ===================== */
+const attbTahapanData = [
+  {no:1, label:'Belum Diusulkan', nilai:47849669536},
+  {no:2, label:'Telah terbit AE.4 dan Ulasan GRC', nilai:365755236},
+  {no:3, label:'Verifikasi Divisi Pembina', nilai:0},
+  {no:4, label:'Verifikasi Divisi Akuntansi', nilai:0},
+  {no:5, label:'Proses Persetujuan (DEKOM)', nilai:51852504565},
+  {no:6, label:'Proses Persetujuan (RUPS)', nilai:0},
+  {no:7, label:'Terbit Persetujuan (Belum Writeoff) DEKOM', nilai:0},
+  {no:8, label:'Terbit Persetujuan (Belum Writeoff) RUPS', nilai:0},
+  {no:9, label:'Saldo Koreksi', nilai:0}
+];
+const totalAttbNilai = 100067929337;
+
+function initAttbTab(){
+  const tbody = document.getElementById('tbodyAttbTahapan');
+  attbTahapanData.forEach(d => {
+    let pct = totalAttbNilai > 0 ? (d.nilai / totalAttbNilai * 100) : 0;
+    tbody.innerHTML += `<tr>
+      <td>${d.no}</td>
+      <td style="text-align:left;">${d.label}</td>
+      <td>${fmtRps(d.nilai)}</td>
+      <td><span class="badge ${pct>30?'good':(pct>0?'mid':'low')}">${pct.toFixed(2).replace('.',',')}%</span></td>
+    </tr>`;
+  });
+
+  const activeTahapan = attbTahapanData.filter(d => d.nilai > 0);
+  charts.attb = new Chart(document.getElementById('chartAttbTahapan'), {
+    type: 'bar',
+    data: {
+      labels: activeTahapan.map(d => d.label),
+      datasets: [{
+        data: activeTahapan.map(d => d.nilai),
+        backgroundColor: '#145da0',
+        borderRadius: 4,
+        barThickness: 26
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => fmtRps(ctx.parsed.x) } }
+      },
+      scales: {
+        x: { title: { display: true, text: 'Nilai Perolehan (Rp)' }, ticks: { callback: v => fmtRp(v) }, grid: { color: '#e1e7ec' } },
+        y: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+/* ===================== TAB 2: PDP ===================== */
+const pdpData = [
+  {unit:'UP3 SEMARANG', saldo:154269594411},
+  {unit:'UP3 KUDUS', saldo:112634489071},
+  {unit:'UP3 TEGAL', saldo:73515897607},
+  {unit:'UP3 SURAKARTA', saldo:51861305993},
+  {unit:'UP2D', saldo:51071784967},
+  {unit:'UP3 PEKALONGAN', saldo:39081851870},
+  {unit:'UP3 SUKOHARJO', saldo:35426987185},
+  {unit:'UP3 GROBOGAN', saldo:30297258055},
+  {unit:'UP3 MAGELANG', saldo:19706113637},
+  {unit:'UP3 SALATIGA', saldo:19019640498},
+  {unit:'UP3 CILACAP', saldo:16944133838},
+  {unit:'UP3 KLATEN', saldo:14287735222},
+  {unit:'UP3 PURWOKERTO', saldo:7298827439}
+];
+const pdpTotal = 625415619793;
+
+function initPdpTab(){
+  const tbody = document.getElementById('tbodyPdp');
+  pdpData.forEach(d => {
+    let pct = (d.saldo / pdpTotal * 100);
+    tbody.innerHTML += `<tr>
+      <td style="text-align:left;">${d.unit}</td>
+      <td>${fmtRps(d.saldo)}</td>
+      <td>${fmtRps(d.saldo)}</td>
+      <td><span class="badge ${pct>=15?'good':(pct>=5?'mid':'low')}">${pct.toFixed(2).replace('.',',')}%</span></td>
+    </tr>`;
+  });
+  tbody.innerHTML += `<tr class="total">
+    <td style="text-align:left;">TOTAL</td>
+    <td>${fmtRps(pdpTotal)}</td>
+    <td>${fmtRps(pdpTotal)}</td>
+    <td>100,00%</td>
+  </tr>`;
+
+  charts.pdp = new Chart(document.getElementById('chartPdpUnit'), {
+    type: 'bar',
+    data: {
+      labels: pdpData.map(d => d.unit),
+      datasets: [{
+        data: pdpData.map(d => d.saldo),
+        backgroundColor: '#2e8bc0',
+        borderRadius: 4,
+        barThickness: 20
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => fmtRps(ctx.parsed.x) } }
+      },
+      scales: {
+        x: { title: { display: true, text: 'Saldo PDP (Rp)' }, ticks: { callback: v => fmtRp(v) }, grid: { color: '#e1e7ec' } },
+        y: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+/* ===================== TAB 3: ITO & DOI ===================== */
+const itoData = [
+  {uraian:'Minyak Biosolar', awal:234414976, beli:1938511429, kurangi:3291050832, akhir:7444008, ito:27.21, umur:8.93},
+  {uraian:'Transformator', awal:3022200299, beli:226967039094, kurangi:187363563940, akhir:17711406762, ito:19.78, umur:12.29},
+  {uraian:'Switchgear dan Jaringan', awal:52631650123, beli:191713701271, kurangi:159294721656, akhir:62637106797, ito:3.04, umur:79.92},
+  {uraian:'Kabel', awal:4784711313, beli:74609198451, kurangi:55947376155, akhir:17833151204, ito:5.29, umur:45.93},
+  {uraian:'Alat ukur pembatas & kontrol', awal:30364402655, beli:209117128081, kurangi:161226273570, akhir:51573531350, ito:4.42, umur:54.94},
+  {uraian:'Menara dan tiang', awal:5774021583, beli:26111434952, kurangi:23441988027, akhir:6270880443, ito:4.17, umur:58.27},
+  {uraian:'Persediaan umum', awal:11895209394, beli:63549814986, kurangi:48990468411, akhir:21602418177, ito:3.01, umur:80.84},
+  {uraian:'Material Scada', awal:1188398447, beli:2176821000, kurangi:1664488421, akhir:1620034026, ito:1.28, umur:189.56}
+];
+
+function initItoTab(){
+  const tbody = document.getElementById('tbodyIto');
+  tbody.innerHTML = '';
+  itoData.forEach(d => {
+    tbody.innerHTML += `<tr>
+      <td style="text-align:left;">${d.uraian}</td>
+      <td>${fmtRps(d.awal)}</td>
+      <td>${fmtRps(d.beli)}</td>
+      <td>${fmtRps(d.kurangi)}</td>
+      <td>${fmtRps(d.akhir)}</td>
+      <td><span class="badge ${d.ito>=5?'good':(d.ito>=1?'mid':'low')}">${d.ito.toFixed(2).replace('.',',')}x</span></td>
+      <td><span class="badge ${d.umur<=30?'good':(d.umur<=90?'mid':'low')}">${d.umur.toFixed(2).replace('.',',')}</span></td>
+    </tr>`;
+  });
+  tbody.innerHTML += `<tr class="total">
+    <td style="text-align:left;">JUMLAH PERSEDIAAN MATERIAL</td>
+    <td>${fmtRps(109660593814)}</td>
+    <td>${fmtRps(794245137835)}</td>
+    <td>${fmtRps(637928880180)}</td>
+    <td>${fmtRps(179248528759)}</td>
+    <td>4,84x</td>
+    <td>50,25</td>
+  </tr>
+  <tr class="total">
+    <td style="text-align:left;">JUMLAH BBM &amp; PERSEDIAAN MATERIAL</td>
+    <td>${fmtRps(109895008790)}</td>
+    <td>${fmtRps(796183649264)}</td>
+    <td>${fmtRps(637928880180)}</td>
+    <td>${fmtRps(179255972767)}</td>
+    <td>16,03x</td>
+    <td>29,59</td>
+  </tr>`;
+
+  // Sort itoData descending for the chart as requested
+  const sortedItoForChart = [...itoData].sort((a, b) => b.akhir - a.akhir);
+
+  charts.ito = new Chart(document.getElementById('chartItoBar'), {
+    type: 'bar',
+    data: {
+      labels: sortedItoForChart.map(d => d.uraian),
+      datasets: [{
+        data: sortedItoForChart.map(d => d.akhir),
+        backgroundColor: '#145da0',
+        borderRadius: 4,
+        barThickness: 20
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => fmtRps(ctx.parsed.x) } }
+      },
+      scales: {
+        x: { title: { display: true, text: 'Saldo Akhir (Rp)' }, ticks: { callback: v => fmtRp(v) }, grid: { color: '#e1e7ec' } },
+        y: { grid: { display: false } }
+      }
+    }
+  });
+
+  makeTableSortable('tableIto');
+}
+
+/* ===================== TAB 4: SLOW MOVING MATERIAL ===================== */
+const slowData = [
+  {uraian:'Minyak Biosolar', k1:7444008, k2:0, k3:0, k4:0},
+  {uraian:'Transformator', k1:17668377500, k2:43029264, k3:0, k4:0},
+  {uraian:'Switchgear dan Jaringan', k1:61267490817, k2:1344139991, k3:0, k4:25476000},
+  {uraian:'Kabel', k1:17792488411, k2:40662795, k3:0, k4:0},
+  {uraian:'Alat ukur pembatas & kontrol', k1:51174116556, k2:359350667, k3:32396630, k4:7667495},
+  {uraian:'Menara dan tiang', k1:6067799314, k2:203081128, k3:0, k4:0},
+  {uraian:'Persediaan umum', k1:20980089972, k2:622328205, k3:0, k4:0},
+  {uraian:'Material Scada', k1:1620034026, k2:0, k3:0, k4:0}
+];
+
+const materialColorMap = {
+  'Minyak Biosolar': '#145da0',
+  'Transformator': '#2e8bc0',
+  'Switchgear dan Jaringan': '#0c2d48',
+  'Kabel': '#0f7a4a',
+  'Alat ukur pembatas & kontrol': '#b9740e',
+  'Menara dan tiang': '#5b6b76',
+  'Persediaan umum': '#38a3a5',
+  'Material Scada': '#a72b2b'
+};
+
+function initSlowTab(){
+  const tbody = document.getElementById('tbodySlow');
+  tbody.innerHTML = '';
+  slowData.forEach(d => {
+    tbody.innerHTML += `<tr>
+      <td style="text-align:left;">${d.uraian}</td>
+      <td>${fmtRps(d.k1)}</td>
+      <td>${fmtRps(d.k2)}</td>
+      <td>${fmtRps(d.k3)}</td>
+      <td>${fmtRps(d.k4)}</td>
+    </tr>`;
+  });
+  tbody.innerHTML += `<tr class="total">
+    <td style="text-align:left;">JUMLAH PERSEDIAAN MATERIAL</td>
+    <td>${fmtRps(176570000000)}</td>
+    <td>${fmtRps(2612592050)}</td>
+    <td>${fmtRps(32396630)}</td>
+    <td>${fmtRps(33143495)}</td>
+  </tr>`;
+
+  // Prepare grouped & sorted datasets per age group for Chart.js
+  const ageLabels = ['Kel. I (< 1 Thn)', 'Kel. II (1-3 Thn)', 'Kel. III (3-5 Thn)', 'Kel. IV (> 5 Thn)'];
+  
+  // For each age group (0 to 3), sort materials descending
+  const sortedPerAge = [];
+  for (let j = 0; j < 4; j++) {
+    let key = ['k1', 'k2', 'k3', 'k4'][j];
+    let items = slowData.map(d => ({ uraian: d.uraian, val: d[key] })).filter(x => x.val > 0);
+    items.sort((a, b) => b.val - a.val);
+    sortedPerAge.push(items);
+  }
+
+  // Max items across any age group is 8 (Kel I has 8 items)
+  const maxItems = 8;
+  const datasets = [];
+  const rankMaterialNames = []; // store names for tooltip lookup
+
+  for (let rank = 0; rank < maxItems; rank++) {
+    let dataArr = [];
+    let colorArr = [];
+    let nameArr = [];
+    for (let j = 0; j < 4; j++) {
+      if (sortedPerAge[j].length > rank) {
+        let item = sortedPerAge[j][rank];
+        dataArr.push(item.val);
+        colorArr.push(materialColorMap[item.uraian] || '#145da0');
+        nameArr.push(item.uraian);
+      } else {
+        dataArr.push(0);
+        colorArr.push('transparent');
+        nameArr.push('');
+      }
+    }
+    rankMaterialNames.push(nameArr);
+    datasets.push({
+      data: dataArr,
+      backgroundColor: colorArr,
+      borderRadius: 4,
+      barThickness: 16
+    });
+  }
+
+  charts.slow = new Chart(document.getElementById('chartSlowBar'), {
+    type: 'bar',
+    data: {
+      labels: ageLabels,
+      datasets: datasets
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: ctx => 'Kelompok Usia: ' + ctx[0].label,
+            label: function(ctx) {
+              let rank = ctx.datasetIndex;
+              let ageGroup = ctx.dataIndex;
+              let val = ctx.parsed.y;
+              if (val === 0) return null;
+              let matName = rankMaterialNames[rank][ageGroup];
+              return `${matName}: ${fmtRps(val)}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: { grid: { display: false } },
+        y: { title: { display: true, text: 'Nilai (Rp)' }, ticks: { callback: v => fmtRp(v) }, grid: { color: '#e1e7ec' } }
+      }
+    }
+  });
+
+  makeTableSortable('tableSlow');
+}
+
+/* ===================== TABLE SORTING HELPER ===================== */
+function makeTableSortable(tableId){
+  const table = document.getElementById(tableId);
+  if(!table) return;
+  const headers = table.querySelectorAll('thead th');
+  headers.forEach((th, colIndex) => {
+    if(!th.querySelector('.sort-icon')){
+      th.innerHTML += ' <span class="sort-icon">⇕</span>';
+    }
+    th.addEventListener('click', () => {
+      const tbody = table.querySelector('tbody');
+      const rows = Array.from(tbody.querySelectorAll('tr:not(.total)'));
+      const totals = Array.from(tbody.querySelectorAll('tr.total'));
+      
+      const currentDir = th.dataset.sortDir === 'asc' ? 'desc' : 'asc';
+      headers.forEach(h => {
+        h.dataset.sortDir = '';
+        const icon = h.querySelector('.sort-icon');
+        if(icon) icon.textContent = '⇕';
+      });
+      th.dataset.sortDir = currentDir;
+      th.querySelector('.sort-icon').textContent = currentDir === 'asc' ? '▲' : '▼';
+
+      rows.sort((a, b) => {
+        let valA = a.cells[colIndex].textContent.trim();
+        let valB = b.cells[colIndex].textContent.trim();
+        let numA = parseValueForSort(valA);
+        let numB = parseValueForSort(valB);
+
+        if(numA !== null && numB !== null){
+          return currentDir === 'asc' ? numA - numB : numB - numA;
+        } else {
+          return currentDir === 'asc' ? valA.localeCompare(valB, 'id') : valB.localeCompare(valA, 'id');
+        }
+      });
+
+      tbody.innerHTML = '';
+      rows.forEach(r => tbody.appendChild(r));
+      totals.forEach(r => tbody.appendChild(r));
+    });
+  });
+}
+
+function parseValueForSort(str){
+  let clean = str.replace(/Rp/g, '').replace(/x/g, '').replace(/\./g, '').replace(/,/g, '.').trim();
+  let num = Number(clean);
+  if(!isNaN(num) && clean !== '') return num;
+  return null;
+}
+
+/* ===================== INIT DEFAULT TAB ===================== */
+showTab('attb');
+</script>
+</body>
+</html>
