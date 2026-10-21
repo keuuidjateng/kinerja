@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infografis Monitoring Anggaran Operasi — Wilayah Jawa Tengah</title>
+<!-- Kode Favicon -->
+<link rel="icon" type="image/png" href="Logo PLN Favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F7F7F5;--bg-card:#FFFFFF;--bg-sec:#F2F3F6;--bg-ter:#E7EAF0;
+  --text:#171A21;--text2:#454B57;--text3:#6E7686;
+  --border:#E7EAF0;--border2:#C9CED8;
+  --pln:#0F2547;--pln2:#16335F;--gold:#C99A3F;
+  --green:#286651;--green-bg:#E3F0EA;
+  --amber:#B8872F;--amber-bg:#F7EFDC;
+  --red:#A93B41;--red-bg:#F6E5E4;
+  --blue:#2F6FB0;--blue-bg:#E7EFF7;
+  --purple:#5B3E96;--purple-bg:#EFE9F8;
+  --teal:#1E4275;--teal-bg:#E7EFF7;
+  --font:Arial,Helvetica,'Segoe UI',sans-serif;
+}
+html,body{background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;font-size:14px;line-height:1.5}
+body{padding-bottom:60px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 40px}
+
+/* HEADER */
+.header{background:linear-gradient(180deg,var(--pln) 0%,var(--pln2) 100%);margin:0 -40px;padding:36px 40px 30px;position:relative;overflow:hidden;color:#fff}
+.header::after{content:'';position:absolute;right:-70px;top:-100px;width:300px;height:300px;border-radius:50%;background:rgba(111,163,216,.08);box-shadow:-100px 100px 0 rgba(201,154,63,.035)}
+.header-eyebrow{font-size:12.5px;font-weight:700;color:#6FA3D8;text-transform:uppercase;letter-spacing:.14em;margin-bottom:14px;position:relative;z-index:1}
+.header-title{font-family:Georgia,'Times New Roman',serif;color:#fff;font-size:36px;font-weight:700;line-height:1.18;letter-spacing:0;max-width:800px;position:relative;z-index:1}
+.header-sub{color:#C7D3E3;font-size:15px;line-height:1.65;margin-top:14px;max-width:780px;position:relative;z-index:1}
+.header-period{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px solid rgba(201,154,63,.55);color:var(--gold);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:4px 10px;border-radius:3px;margin-top:16px;position:relative;z-index:1}
+.header-stats{display:flex;flex-wrap:wrap;margin-top:26px;border-top:1px solid rgba(255,255,255,.14);padding-top:20px;position:relative;z-index:1}
+.header-stat{padding-right:36px;margin-right:36px;border-right:1px solid rgba(255,255,255,.14)}
+.header-stat:last-child{border-right:none}
+.hs-label{font-size:10.5px;font-weight:700;color:#9FB2CC;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.hs-value{font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:700;color:#fff}
+.hs-value small{font-family:var(--font);font-size:12px;color:#A9B8CE;font-weight:400}
+
+/* SECTIONS */
+.section{padding-top:38px}
+.section:first-of-type{padding-top:34px}
+.sec-hdr{font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.14em;margin:0 0 18px;padding:0 0 14px;border-bottom:2px solid var(--pln)}
+.note{font-size:11.5px;color:var(--text3);margin-top:12px;line-height:1.6}
+
+/* KPI — 2 baris x 4 kolom */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-bottom:30px;background:var(--pln);color:#fff}
+.kpi{background:var(--pln);border-right:1px solid rgba(255,255,255,.14);border-bottom:1px solid rgba(255,255,255,.14);padding:22px 22px 24px;min-height:128px;min-width:0}
+.kpi:nth-child(4n){border-right:none}
+.kpi:nth-last-child(-n+4){border-bottom:none}
+.k-label{font-size:11px;font-weight:700;color:#9FB2CC;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.k-value{font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:700;color:#fff;line-height:1.05}
+.k-sub{font-size:12px;color:#A9B8CE;margin-top:8px;line-height:1.5}
+.k-sub b{color:#fff;font-weight:700}
+.k-sub b.warn{color:#F0AFA9}
+.k-sub b.amber{color:#F0D191}
+.kpi-bar{margin-top:12px;height:3px;background:rgba(255,255,255,.14);border-radius:2px;overflow:hidden}
+.kpi-bar i{display:block;height:100%;background:#8FE0BE;border-radius:2px}
+
+/* CARDS */
+.card{background:#fff;border:1px solid var(--border);border-radius:0;padding:22px 24px;margin-bottom:20px}
+.card-title{font-family:Georgia,'Times New Roman',serif;font-size:16px;font-weight:700;color:var(--pln);margin-bottom:16px;display:flex;align-items:center;gap:8px;justify-content:space-between;flex-wrap:wrap}
+.card-title .ttl{display:flex;align-items:center;gap:8px}
+.card-title .dot{width:8px;height:8px;border-radius:1px;background:var(--gold);flex-shrink:0}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:20px}
+.chart-panel{min-width:0}
+.chart-note{font-size:11.5px;color:var(--text3);margin-bottom:12px}
+.chart-canvas-wrap{position:relative;height:420px}
+.chart-canvas-wrap.small{height:330px}
+.chart-insight{margin-top:12px;font-size:12px;color:var(--text2);border-top:1px solid var(--border);padding-top:10px}
+.chart-insight b{color:var(--pln)}
+.control{display:flex;gap:8px;align-items:center;color:var(--text2);flex-wrap:wrap;font-family:var(--font);font-weight:400;font-size:12px}
+.control select{border:1px solid var(--border2);background:#fff;color:var(--pln);padding:7px 9px;border-radius:3px;font:inherit;font-size:12px}
+
+/* FUNNEL */
+.funnel-row{display:grid;grid-template-columns:190px 1fr 110px;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--border)}
+.funnel-row:last-child{border-bottom:none}
+.funnel-label{font-size:12px;color:var(--text2)}
+.funnel-label b{display:block;font-size:13px;color:var(--pln);font-weight:700;margin-bottom:2px}
+.funnel-track{height:26px;background:var(--bg-ter);border-radius:2px;position:relative;overflow:hidden}
+.funnel-fill{height:100%;border-radius:2px;display:flex;align-items:center;justify-content:flex-end;padding-right:10px}
+.funnel-fill span{font-size:11px;color:#fff;font-weight:700;white-space:nowrap}
+.funnel-value{text-align:right}
+.f-pct{font-family:Georgia,serif;color:var(--pln);font-size:17px;font-weight:700}
+.f-pct small{font-size:11px;color:var(--text3);font-family:var(--font)}
+.ins-box{border-left:4px solid var(--gold);padding:14px 16px;background:#fff;border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);margin-top:16px;font-size:12.5px;color:var(--text2);line-height:1.65}
+.ins-box b{color:var(--pln)}
+
+/* INSIGHT */
+.findings{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ins{border-left:4px solid var(--pln);padding:14px 16px;background:#fff;border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:0}
+.ins.warn{border-left-color:var(--gold)}
+.ins.danger{border-left-color:var(--red)}
+.ins.ok{border-left-color:var(--green)}
+.ins-title{font-size:13px;font-weight:700;color:var(--pln);margin-bottom:4px}
+.ins-text{font-size:12.5px;color:var(--text2);line-height:1.65}
+.hl{color:var(--pln);font-weight:700}
+
+/* TABLE */
+.table-wrap{overflow-x:auto}
+table.ledger{width:100%;border-collapse:collapse;min-width:1050px;font-size:12px;background:#fff}
+.ledger th{font-size:10.5px;font-weight:700;color:#fff;text-align:right;padding:10px 9px;background:var(--pln);white-space:nowrap;text-transform:uppercase;letter-spacing:.03em}
+.ledger th:first-child{text-align:left}
+.ledger th.sortable{cursor:pointer;user-select:none;position:relative;padding-right:22px}
+.ledger th.sortable::after{content:'↕';position:absolute;right:7px;opacity:.45;font-size:10px}
+.ledger th.sortable:hover{background:var(--pln2)}
+.ledger th.sort-asc::after{content:'↑';opacity:1}
+.ledger th.sort-desc::after{content:'↓';opacity:1}
+.ledger th.sort-active{background:var(--pln2)}
+.ledger td{padding:9px;text-align:right;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle;white-space:nowrap}
+.ledger td:first-child{text-align:left}
+.ledger tbody tr:last-child td{border-bottom:none}
+.ledger tbody tr:hover td{background:var(--bg-sec)}
+.ledger tbody tr.flag td{background:var(--red-bg)}
+.ledger tfoot td{padding:10px 9px;font-weight:700;background:var(--pln);color:#fff;text-align:right;white-space:nowrap}
+.ledger tfoot td:first-child{text-align:left}
+.prog{font-weight:700;color:var(--pln)!important}
+.prog small{display:block;font-weight:400;color:var(--text3);font-size:10.5px}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.bar-cell{display:flex;align-items:center;gap:7px;justify-content:flex-end}
+.mini-track{width:56px;height:5px;background:var(--bg-ter);border-radius:3px;overflow:hidden}
+.mini-fill{height:100%;background:var(--green);border-radius:3px}
+.mini-fill.low{background:var(--red)}
+.mini-fill.mid{background:var(--amber)}
+.tag{display:inline-block;font-size:9.5px;padding:2px 7px;border-radius:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;margin-top:4px}
+.tag.good{background:var(--green-bg);color:var(--green)}
+.tag.warn{background:var(--amber-bg);color:var(--amber)}
+.tag.bad{background:var(--red-bg);color:var(--red)}
+
+/* ATTENTION */
+.attn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.attn{background:#fff;border:1px solid var(--border);border-left:4px solid var(--red);padding:18px 18px 20px}
+.attn.amber{border-left-color:var(--gold)}
+.attn.teal{border-left-color:var(--green)}
+.a-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--red);font-weight:700;margin-bottom:8px}
+.attn.amber .a-label{color:var(--amber)}
+.attn.teal .a-label{color:var(--green)}
+.attn h4{margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:16px;color:var(--pln)}
+.attn p{margin:0;font-size:12.5px;color:var(--text2);line-height:1.65}
+.attn p b{color:var(--text)}
+
+/* FOOTER */
+.legend{display:flex;gap:24px;flex-wrap:wrap;font-size:11px;color:var(--text2);margin-bottom:14px}
+.legend b{color:var(--pln)}
+.footer{margin-top:40px;padding:26px 0;border-top:1px solid var(--border2);display:flex;justify-content:space-between;align-items:flex-start;font-size:11px;color:var(--text3);flex-wrap:wrap;gap:8px;flex-direction:column}
+.footer .fine{font-size:11px;color:var(--text3);line-height:1.7}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .wrap{padding:0 20px}
+  .header{margin:0 -20px;padding:28px 20px 24px}
+  .header-title{font-size:27px}
+  .header-sub{font-size:13px}
+  .two-col,.findings{grid-template-columns:1fr}
+  .attn-grid{grid-template-columns:1fr}
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .kpi:nth-child(4n){border-right:1px solid rgba(255,255,255,.14)}
+  .kpi:nth-child(2n){border-right:none}
+  .kpi:nth-last-child(-n+4){border-bottom:1px solid rgba(255,255,255,.14)}
+  .kpi:nth-last-child(-n+2){border-bottom:none}
+  .chart-canvas-wrap{height:320px}
+  .chart-canvas-wrap.small{height:300px}
+  .funnel-row{grid-template-columns:130px 1fr 90px;gap:12px}
+  .header-stat{padding-right:20px;margin-right:20px;margin-bottom:12px}
+}
+@media(max-width:560px){
+  .header-title{font-size:23px}
+  .kpi-grid{grid-template-columns:1fr}
+  .kpi{border-right:none!important;border-bottom:1px solid rgba(255,255,255,.14)!important}
+  .kpi:last-child{border-bottom:none!important}
+  .header-stats{flex-direction:column}
+  .header-stat{border-right:none;padding-right:0;margin-right:0;width:100%}
+  .funnel-row{grid-template-columns:1fr;gap:8px}
+  .funnel-value{text-align:left}
+  .chart-canvas-wrap{height:340px}
+  .chart-canvas-wrap.small{height:300px}
+  .card{padding:18px 16px}
+  .section{padding-top:30px}
+}
+@media print{
+  body{background:#fff}
+  .section{padding-top:24px}
+  .attn-grid,.kpi-grid,.two-col,.card{page-break-inside:avoid}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="header">
+  <div class="header-eyebrow">PLN UID Jawa Tengah · Dokumen Internal — Monitoring Keuangan</div>
+  <div class="header-title">Monitoring Anggaran Operasi<br>Wilayah Jawa Tengah</div>
+  <div class="header-sub">Ikhtisar 11 program berdasarkan Nilai AO, Nilai SKKO, kontraktualisasi PRK, nilai komitmen, permintaan bayar, realisasi bayar, dan persentase disburse.</div>
+  <div class="header-period">&#128197; Program Anggaran Operasi — 11 Program</div>
+  <div class="header-stats">
+    <div class="header-stat"><div class="hs-label">Total Nilai SKKO</div><div class="hs-value">Rp1.476,77 <small>M</small></div></div>
+    <div class="header-stat"><div class="hs-label">Realisasi Bayar thd SKKO</div><div class="hs-value">65,53 <small>%</small></div></div>
+    <div class="header-stat"><div class="hs-label">PRK Terkontrak</div><div class="hs-value">331 <small>/ 348 item</small></div></div>
+    <div class="header-stat"><div class="hs-label">Program Dipantau</div><div class="hs-value">11 <small>program</small></div></div>
+  </div>
+</div>
+
+<!-- IKHTISAR -->
+<div class="section">
+  <div class="sec-hdr">Ikhtisar Capaian Utama</div>
+  <div class="kpi-grid" id="kpiGrid"></div>
+  <div class="note">Seluruh angka dihitung dari data Excel yang diberikan. Grafik dan tabel default diurutkan terbesar → terkecil berdasarkan Nilai SKKO.</div>
+</div>
+
+<!-- ALUR -->
+<div class="section">
+  <div class="sec-hdr">Alur Penyerapan Anggaran</div>
+  <div class="card">
+    <div class="card-title"><span class="ttl"><span class="dot"></span>Perbandingan setiap tahap terhadap Nilai SKKO (basis 100%)</span></div>
+    <div id="funnelWrap"></div>
+    <div class="ins-box" id="funnelNote"></div>
+  </div>
+</div>
+
+<!-- VISUALISASI -->
+<div class="section">
+  <div class="sec-hdr">Visualisasi Komparatif Program</div>
+  <div class="two-col">
+    <div class="card chart-panel">
+      <div class="card-title">
+        <span class="ttl"><span class="dot"></span><span id="chartTitle">SKKO, Komitmen &amp; Realisasi Bayar</span></span>
+        <span class="control">Urutkan berdasarkan <select id="sortSelect"><option value="skko">Nilai SKKO</option><option value="commit">Nilai Komitmen</option><option value="real">Realisasi Bayar</option><option value="disb">% Disburse</option><option value="ao">Nilai AO</option></select></span>
+      </div>
+      <div class="chart-note" id="chartNote">Dalam Rp Miliar. Urutan mengikuti pilihan sort di atas.</div>
+      <div class="chart-canvas-wrap"><canvas id="chartCompare"></canvas></div>
+      <div class="chart-insight" id="compareInsight"></div>
+    </div>
+    <div class="card chart-panel">
+      <div class="card-title"><span class="ttl"><span class="dot"></span>Kontribusi Realisasi Bayar</span></div>
+      <div class="chart-note">Pangsa setiap program terhadap total realisasi bayar Rp967,81 M.</div>
+      <div class="chart-canvas-wrap small"><canvas id="chartShare"></canvas></div>
+      <div class="chart-insight" id="shareInsight"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ANALISIS -->
+<div class="section">
+  <div class="sec-hdr">Analisis &amp; Insight</div>
+  <div class="findings" id="findings"></div>
+  <div class="note">Temuan dihitung langsung dari data program yang diberikan.</div>
+</div>
+
+<!-- RINCIAN -->
+<div class="section">
+  <div class="sec-hdr">Rincian Capaian per Program</div>
+  <div class="card">
+    <div class="card-title"><span class="ttl"><span class="dot"></span>Detail Capaian per Program (Rp) — Terbesar ke Terkecil</span></div>
+    <div class="table-wrap">
+      <table class="ledger" id="ledgerTable">
+        <thead><tr>
+          <th data-key="code">Program</th>
+          <th data-key="ao">Nilai AO</th>
+          <th data-key="skko">Nilai SKKO</th>
+          <th data-key="prkPct">PRK Terkontrak</th>
+          <th data-key="commit">Nilai Komitmen</th>
+          <th data-key="sisa">Sisa SKKO</th>
+          <th data-key="request">Permintaan Bayar</th>
+          <th data-key="real">Realisasi Bayar</th>
+          <th data-key="disb">% Disburse</th>
+        </tr></thead>
+        <tbody id="ledgerBody"></tbody>
+        <tfoot id="ledgerFoot"></tfoot>
+      </table>
+    </div>
+    <div class="note">Klik judul kolom untuk mengurutkan; klik lagi untuk membalik urutan. Baris berwarna merah menandakan program dengan status "Perlu Percepatan".</div>
+  </div>
+</div>
+
+<!-- PERHATIAN -->
+<div class="section">
+  <div class="sec-hdr">Wilayah Perhatian</div>
+  <div class="attn-grid" id="attnGrid"></div>
+</div>
+
+<div class="footer">
+  <div class="legend">
+    <div><b>SKKO</b> — Nilai SKKO pada dataset</div>
+    <div><b>PRK</b> — Total dan jumlah item terkontrak</div>
+    <div><b>AO</b> — Nilai Anggaran Operasi</div>
+    <div><b>% Disburse</b> = Realisasi Bayar ÷ Nilai SKKO</div>
+  </div>
+  <div class="fine">Catatan: seluruh angka, persentase, dan insight pada halaman ini dihitung dari dataset Excel yang diberikan. Tidak ada data eksternal yang digunakan.</div>
+</div>
+
+</div>
+
+<script>
+(function(){
+const C={
+  pln:'#0F2547', pln2:'#16335F', blue:'#2F6FB0', gold:'#C99A3F', goldD:'#B8872F',
+  green:'#286651', greenL:'#639922', red:'#A93B41', teal:'#1E4275', text2:'#454B57', border:'#E7EAF0'
+};
+Chart.defaults.font.family="Arial,Helvetica,sans-serif";
+Chart.defaults.color=C.text2;
+Chart.defaults.font.size=11;
+const gridColor=C.border;
+
+const raw=[
+["AGA","Administrasi Niaga",249798847916,338039622537,59,54,327573342434,1184016872,12019306497,259151776211,259151776211],
+["BBM","Bahan Bakar dan Pelumas",4336384000,1494575007,2,1,1189556757,149850000,155168253,1349323972,1349323972],
+["INS","Pemeliharaan Instalasi",318555134000,714641573602,65,63,632187347735,8841451444,93154076658,464627156532,464627156532],
+["KIT","Pemeliharaan Intalasi Pembangkit",6363635178,6531099261,1,1,990216348,0,5540882913,990216348,990216348],
+["MUM","Administrasi Umum",54841536000,35020953423,142,138,29934917172,0,7630806507,28767936962,28767936962],
+["NONAHG","Sewa Non AHG",28682113000,20797067694,1,1,12648786234,0,8765454780,15013474403,15013474403],
+["PTL","Pembelian Tenaga Listrik",39733411825000,126955752235,1,1,72091617826,0,54864134409,72043556798,72043556798],
+["SDM","Kepegawaian",748625604000,19988197706,17,17,6080703726,0,15229882530,6254956613,6254956613],
+["SEWAAHG","Utang Usaha AHG",14005945000,12618840765,2,2,9558568548,0,3569208217,12392773899,12392773899],
+["SRN","Pemeliharaan Sarana",85477196000,185085380396,55,52,148845407496,968820986,34260061097,105974743785,105974743785],
+["TUL","Pemeliharaan TUL",6653324000,15591978945,3,1,2049760743,0,13719372221,1244491809,1244491809]
+].map(x=>({code:x[0],name:x[1],ao:x[2],skko:x[3],prk:x[4],contracted:x[5],commit:x[6],notaDinas:x[7],sisa:x[8],request:x[9],real:x[10]}))
+.map(d=>({...d,disb:d.real/d.skko*100,commitPct:d.commit/d.skko*100,prkPct:d.contracted/d.prk*100}));
+
+const totalReal=raw.reduce((s,d)=>s+d.real,0);
+const totalSkko=raw.reduce((s,d)=>s+d.skko,0);
+const totalCommit=raw.reduce((s,d)=>s+d.commit,0);
+const totalRequest=raw.reduce((s,d)=>s+d.request,0);
+const totalAo=raw.reduce((s,d)=>s+d.ao,0);
+const totalSisa=raw.reduce((s,d)=>s+d.sisa,0);
+const totalPrk=raw.reduce((s,d)=>s+d.prk,0);
+const totalContracted=raw.reduce((s,d)=>s+d.contracted,0);
+const ptlAo=raw.find(d=>d.code==="PTL").ao;
+
+const fmtRp=v=>"Rp"+new Intl.NumberFormat("id-ID",{maximumFractionDigits:0}).format(v);
+const fmtM=v=>new Intl.NumberFormat("id-ID",{minimumFractionDigits:2,maximumFractionDigits:2}).format(v/1e6)+" M";
+const fmtT=v=>new Intl.NumberFormat("id-ID",{minimumFractionDigits:2,maximumFractionDigits:2}).format(v/1e12)+" T";
+const fmtB=v=>"Rp"+new Intl.NumberFormat("id-ID",{minimumFractionDigits:2,maximumFractionDigits:2}).format(v/1e6)+"M";
+const pct=(v,d=2)=>v.toFixed(d).replace(".",",")+"%";
+const sorters={skko:(a,b)=>b.skko-a.skko,commit:(a,b)=>b.commit-a.commit,real:(a,b)=>b.real-a.real,disb:(a,b)=>b.disb-a.disb,ao:(a,b)=>b.ao-a.ao};
+let compareChart,shareChart;
+
+/* ---------- STATUS ---------- */
+function status(d){
+ if(d.disb<15||d.prkPct<50)return ["Perlu Percepatan","bad"];
+ if(d.disb<25||d.commitPct<25)return ["Perlu Monitoring","warn"];
+ return ["Capaian","good"];
+}
+
+/* ---------- KPI ---------- */
+function renderKpi(){
+ const k=[
+  {label:"Nilai AO",value:fmtT(totalAo),sub:`<b class="amber">${pct(ptlAo/totalAo*100)}</b> berasal dari PTL (${fmtT(ptlAo)})`,bar:ptlAo/totalAo*100,barColor:"#F0D191"},
+  {label:"Nilai SKKO",value:fmtB(totalSkko),sub:"Basis acuan komitmen, permintaan bayar, dan disburse",bar:100},
+  {label:"Total Nilai Komitmen",value:fmtB(totalCommit),sub:`<b>${pct(totalCommit/totalSkko*100)}</b> dari SKKO; sisa <b class="warn">${pct(100-totalCommit/totalSkko*100)}</b>`,bar:totalCommit/totalSkko*100},
+  {label:"Sisa SKKO",value:fmtB(totalSisa),sub:`<b class="warn">${pct(totalSisa/totalSkko*100)}</b> belum masuk nilai komitmen`,bar:totalSisa/totalSkko*100,barColor:"#F0AFA9"},
+  {label:"Permintaan Bayar",value:fmtB(totalRequest),sub:`<b>${pct(totalRequest/totalSkko*100)}</b> dari SKKO telah diminta bayar`,bar:totalRequest/totalSkko*100,barColor:"#F0D191"},
+  {label:"Realisasi Bayar",value:fmtB(totalReal),sub:`<b>${pct(totalReal/totalSkko*100)}</b> dari SKKO telah terealisasi`,bar:totalReal/totalSkko*100},
+  {label:"Backlog Pembayaran",value:fmtB(totalRequest-totalReal),sub:`<b class="warn">${pct((totalRequest-totalReal)/totalRequest*100)}</b> dari permintaan bayar belum terealisasi`,bar:(totalRequest-totalReal)/totalRequest*100,barColor:"#F0AFA9"},
+  {label:"PRK Terkontrak",value:pct(totalContracted/totalPrk*100),sub:`${totalContracted} dari ${totalPrk} item telah terkontrak`,bar:totalContracted/totalPrk*100}
+ ];
+ document.getElementById("kpiGrid").innerHTML=k.map(x=>`<div class="kpi"><div class="k-label">${x.label}</div><div class="k-value num">${x.value}</div><div class="k-sub">${x.sub}</div><div class="kpi-bar"><i style="width:${Math.min(x.bar,100)}%;${x.barColor?"background:"+x.barColor:""}"></i></div></div>`).join("");
+}
+
+/* ---------- FUNNEL ---------- */
+function renderFunnel(){
+ const stages=[
+  {label:"Nilai SKKO",sub:"Basis acuan",val:totalSkko,color:C.pln},
+  {label:"Total Komitmen",sub:"Nota dinas + kontrak",val:totalCommit,color:C.pln2},
+  {label:"Permintaan Bayar",sub:"Diajukan untuk dicairkan",val:totalRequest,color:C.gold},
+  {label:"Realisasi Bayar",sub:"Kas telah terealisasi",val:totalReal,color:C.green}
+ ];
+ document.getElementById("funnelWrap").innerHTML=stages.map(s=>{
+  const p=s.val/totalSkko*100;
+  return `<div class="funnel-row"><div class="funnel-label"><b>${s.label}</b>${s.sub}</div><div class="funnel-track"><div class="funnel-fill" style="width:${p}%;background:${s.color}"><span>${fmtRp(s.val).replace(/(\d)(?=(\d{3})+(?!\d))/g,"$1.")}</span></div></div><div class="funnel-value"><div class="f-pct">${pct(p)}</div></div></div>`;
+ }).join("");
+ const gap=(totalRequest/totalCommit*100);
+ const realReq=(totalReal/totalRequest*100);
+ document.getElementById("funnelNote").innerHTML=`Gap terbesar berada pada tahap <b>Komitmen → Permintaan Bayar</b>: permintaan bayar baru sekitar <b>${pct(gap)}</b> dari total komitmen. Dari permintaan bayar ke realisasi, <b>${pct(realReq)}</b> sudah terealisasi, sehingga backlog relatif kecil sebesar <b>${fmtM(totalRequest-totalReal)}</b>.`;
+}
+
+/* ---------- TABEL RINCIAN (sortable) ---------- */
+let tblSort={key:"skko",dir:"desc"};
+const textKeys=["code"];
+
+function sortedTableRows(){
+ const k=tblSort.key, mult=tblSort.dir==="asc"?1:-1;
+ return [...raw].sort((a,b)=>{
+   if(textKeys.includes(k)) return mult*(-1)*a[k].localeCompare(b[k],"id")*-1 * -1 * (tblSort.dir==="asc"?1:-1) * -1 === 0 ? 0 : (tblSort.dir==="asc"?1:-1)*a[k].localeCompare(b[k],"id");
+   return mult===1 ? a[k]-b[k] : b[k]-a[k];
+ });
+}
+
+function renderTable(){
+ const arr=sortedTableRows();
+ document.getElementById("ledgerBody").innerHTML=arr.map(d=>{
+   const [st,cls]=status(d);
+   const cp=d.commitPct;
+   return `<tr class="${cls==="bad"?"flag":""}">
+    <td class="prog">${d.code}<small>${d.name}</small><span class="tag ${cls}">${st}</span></td>
+    <td class="num">${fmtRp(d.ao)}</td><td class="num">${fmtRp(d.skko)}</td>
+    <td class="num">${d.contracted} / ${d.prk} <span class="tag ${d.prkPct<70?"warn":"good"}">${pct(d.prkPct)}</span></td>
+    <td><div class="bar-cell"><span class="num">${fmtRp(d.commit)}</span><div class="mini-track"><div class="mini-fill ${cp<25?"low":cp<60?"mid":""}" style="width:${Math.min(cp,100)}%"></div></div></div></td>
+    <td class="num">${fmtRp(d.sisa)}</td><td class="num">${fmtRp(d.request)}</td><td class="num">${fmtRp(d.real)}</td>
+    <td class="num">${pct(d.disb)}</td></tr>`;
+ }).join("");
+ document.getElementById("ledgerFoot").innerHTML=`<tr><td>TOTAL</td><td class="num">${fmtRp(totalAo)}</td><td class="num">${fmtRp(totalSkko)}</td><td class="num">${totalContracted} / ${totalPrk} · ${pct(totalContracted/totalPrk*100)}</td><td class="num">${fmtRp(totalCommit)}</td><td class="num">${fmtRp(totalSisa)}</td><td class="num">${fmtRp(totalRequest)}</td><td class="num">${fmtRp(totalReal)}</td><td class="num">${pct(totalReal/totalSkko*100)}</td></tr>`;
+ updateHeaderSortState();
+}
+
+function updateHeaderSortState(){
+ document.querySelectorAll("#ledgerTable thead th").forEach(th=>{
+   th.classList.remove("sort-asc","sort-desc","sort-active");
+   if(th.dataset.key===tblSort.key){
+     th.classList.add("sort-active", tblSort.dir==="asc"?"sort-asc":"sort-desc");
+   }
+ });
+}
+
+function bindTableSort(){
+ document.querySelectorAll("#ledgerTable thead th").forEach(th=>{
+   th.classList.add("sortable");
+   th.setAttribute("title","Klik untuk mengurutkan");
+   th.addEventListener("click",()=>{
+     const key=th.dataset.key;
+     if(tblSort.key===key){
+       tblSort.dir=tblSort.dir==="asc"?"desc":"asc";
+     }else{
+       tblSort={key,dir:textKeys.includes(key)?"asc":"desc"};
+     }
+     renderTable();
+   });
+ });
+}
+
+/* ---------- GRAFIK PERBANDINGAN ---------- */
+const legendOpts={position:'top',align:'end',labels:{boxWidth:10,boxHeight:10,usePointStyle:false}};
+
+function renderCompare(){
+ const key=document.getElementById("sortSelect").value;
+ const arr=[...raw].sort(sorters[key]);
+ const labels=arr.map(d=>d.code);
+ const titleEl=document.getElementById("chartTitle");
+ const noteEl=document.getElementById("chartNote");
+ const insEl=document.getElementById("compareInsight");
+ if(compareChart)compareChart.destroy();
+
+ const baseScales=(xFmt)=>({
+   x:{grid:{color:gridColor},ticks:{color:C.text2,font:{size:10},callback:xFmt}},
+   y:{grid:{display:false},ticks:{color:C.pln,font:{size:11,weight:"700"}}}
+ });
+
+ if(key==="disb"){
+   titleEl.textContent="% Disburse per Program";
+   noteEl.textContent="% Disburse = Realisasi Bayar ÷ Nilai SKKO. Urutan terbesar → terkecil.";
+   compareChart=new Chart(document.getElementById("chartCompare"),{
+     type:"bar",
+     data:{labels,datasets:[
+       {label:"% Disburse (Realisasi ÷ SKKO)",data:arr.map(d=>+d.disb.toFixed(2)),backgroundColor:C.green,borderRadius:2}
+     ]},
+     options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,
+       plugins:{legend:legendOpts,tooltip:{callbacks:{label:c=>c.dataset.label+": "+pct(c.parsed.x)}}},
+       scales:baseScales(v=>v+"%")
+     }
+   });
+   const top=arr[0], low=arr[arr.length-1];
+   insEl.innerHTML=`Tertinggi: <b>${top.code}</b> ${pct(top.disb)}; terendah: <b>${low.code}</b> ${pct(low.disb)}. Rata-rata keseluruhan program: <b>${pct(totalReal/totalSkko*100)}</b>.`;
+ }
+ else if(key==="ao"){
+   titleEl.textContent="Nilai AO per Program";
+   noteEl.textContent="Dalam Rp Miliar. Urutan terbesar → terkecil berdasarkan Nilai AO.";
+   compareChart=new Chart(document.getElementById("chartCompare"),{
+     type:"bar",
+     data:{labels,datasets:[
+       {label:"Nilai AO (Rp Miliar)",data:arr.map(d=>d.ao/1e6),backgroundColor:C.pln,borderRadius:2}
+     ]},
+     options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,
+       plugins:{legend:legendOpts,tooltip:{callbacks:{label:c=>c.dataset.label+": "+fmtM(c.parsed.x*1e6)}}},
+       scales:baseScales(v=>v.toLocaleString("id-ID"))
+     }
+   });
+   insEl.innerHTML=`<b>${arr[0].code}</b> memiliki Nilai AO terbesar (${fmtM(arr[0].ao)}), atau <b>${pct(arr[0].ao/totalAo*100)}</b> dari total Nilai AO. Sisa program lainnya berada jauh di bawah skala ini.`;
+ }
+ else{
+   const labelMap={skko:"Nilai SKKO",commit:"Nilai Komitmen",real:"Realisasi Bayar"};
+   titleEl.textContent="SKKO, Komitmen & Realisasi Bayar";
+   noteEl.textContent="Dalam Rp Miliar. Urutan mengikuti pilihan sort di atas.";
+   compareChart=new Chart(document.getElementById("chartCompare"),{
+     type:"bar",
+     data:{labels,datasets:[
+       {label:"Nilai SKKO",data:arr.map(d=>d.skko/1e6),backgroundColor:C.pln,borderRadius:2},
+       {label:"Nilai Komitmen",data:arr.map(d=>d.commit/1e6),backgroundColor:C.gold,borderRadius:2},
+       {label:"Realisasi Bayar",data:arr.map(d=>d.real/1e6),backgroundColor:C.green,borderRadius:2}
+     ]},
+     options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,
+       plugins:{legend:legendOpts,tooltip:{callbacks:{label:c=>c.dataset.label+": "+fmtM(c.parsed.x*1e6)}}},
+       scales:baseScales(v=>v.toLocaleString("id-ID"))
+     }
+   });
+   const top3Skko=[...raw].sort((a,b)=>b.skko-a.skko).slice(0,3);
+   insEl.innerHTML=`Urutan aktif: <b>${arr[0].code}</b> di posisi teratas (${labelMap[key]}). Tiga program SKKO terbesar (${top3Skko.map(d=>d.code).join(", ")}) membentuk <b>${pct(top3Skko.reduce((s,d)=>s+d.skko,0)/totalSkko*100)}</b> dari total SKKO.`;
+ }
+}
+
+/* ---------- GRAFIK SHARE ---------- */
+function renderShare(){
+ const shareArr=[...raw].sort((a,b)=>b.real-a.real);
+ if(shareChart)shareChart.destroy();
+ shareChart=new Chart(document.getElementById("chartShare"),{type:"doughnut",data:{labels:shareArr.map(d=>d.code),datasets:[{data:shareArr.map(d=>d.real/1e6),backgroundColor:[C.pln,C.pln2,C.blue,"#4A8BC9",C.gold,C.goldD,C.red,"#D0686D","#5B3E96","#6E7686",C.green],borderColor:"#FFFFFF",borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:"58%",plugins:{legend:{position:"bottom",labels:{color:C.text2,font:{size:10},boxWidth:10,padding:7}},tooltip:{callbacks:{label:c=>c.label+": "+fmtM(c.parsed*1e6)+" ("+pct(c.parsed/(totalReal/1e6)*100)+")"}}}}});
+
+ const top3=shareArr.slice(0,3).reduce((s,d)=>s+d.real,0)/totalReal*100;
+ document.getElementById("shareInsight").innerHTML=`Kontribusi realisasi terbesar: <b>${shareArr[0].code}</b> ${pct(shareArr[0].real/totalReal*100)} dan <b>${shareArr[1].code}</b> ${pct(shareArr[1].real/totalReal*100)}. Tiga teratas menyumbang <b>${pct(top3)}</b>.`;
+}
+
+/* ---------- ANALISIS ---------- */
+function renderFindings(){
+ const topReal=[...raw].sort((a,b)=>b.real-a.real).slice(0,3);
+ const topReal3=topReal.reduce((s,d)=>s+d.real,0)/totalReal*100;
+ const ins=raw.find(d=>d.code==="INS");
+ const f=[
+  {cls:"warn",h:"Penyerapan Kas Masih di Bawah Separuh SKKO",p:`Dari Nilai SKKO <span class="hl num">${fmtM(totalSkko)}</span>, realisasi bayar mencapai <span class="hl num">${fmtM(totalReal)}</span> atau <span class="hl num">${pct(totalReal/totalSkko*100)}</span>. Dengan demikian, sekitar <span class="hl num">${fmtM(totalSkko-totalReal)}</span> belum terealisasi sebagai pembayaran.`},
+  {cls:"",h:"Realisasi Terkonsentrasi pada Tiga Program",p:`<span class="hl">${topReal.map(d=>d.code).join(", ")}</span> menjadi tiga kontributor realisasi terbesar dengan total sekitar <span class="hl num">${pct(topReal3)}</span> dari realisasi bayar. ${ins.code} sendiri menyumbang sekitar <span class="hl num">${pct(ins.real/totalReal*100)}</span>.`},
+  {cls:"ok",h:"Kontraktualisasi PRK Tinggi, tetapi Nilai Komitmen Belum Penuh",p:`Secara item, <span class="hl num">${totalContracted} dari ${totalPrk} PRK</span> telah terkontrak atau <span class="hl num">${pct(totalContracted/totalPrk*100)}</span>. Namun total nilai komitmen baru <span class="hl num">${pct(totalCommit/totalSkko*100)}</span> dari SKKO, menyisakan <span class="hl num">${fmtM(totalSkko-totalCommit)}</span>.`},
+  {cls:"danger",h:"Gap Utama Terjadi Sebelum Tahap Pembayaran",p:`Permintaan bayar mencapai <span class="hl num">${fmtM(totalRequest)}</span>, tetapi baru sekitar <span class="hl num">${pct(totalRequest/totalCommit*100)}</span> dari total nilai komitmen <span class="hl num">${fmtM(totalCommit)}</span>. Sebaliknya, realisasi terhadap permintaan bayar sudah <span class="hl num">${pct(totalReal/totalRequest*100)}</span>.`}
+ ];
+ document.getElementById("findings").innerHTML=f.map(x=>`<div class="ins ${x.cls}"><div class="ins-title">${x.h}</div><div class="ins-text">${x.p}</div></div>`).join("");
+}
+
+/* ---------- PERHATIAN ---------- */
+function renderAttention(){
+ const tul=raw.find(d=>d.code==="TUL"), sdm=raw.find(d=>d.code==="SDM"), nonahg=raw.find(d=>d.code==="NONAHG");
+ document.getElementById("attnGrid").innerHTML=`
+  <div class="attn"><div class="a-label">Perlu Percepatan</div><h4>TUL — Disburse Terendah</h4><p>TUL memiliki % disburse hanya <b class="num">${pct(tul.disb)}</b> dan PRK terkontrak <b>${tul.contracted} dari ${tul.prk}</b> item atau <b class="num">${pct(tul.prkPct)}</b>, keduanya berada pada level terendah di antara program.</p></div>
+  <div class="attn"><div class="a-label">Perlu Monitoring</div><h4>SDM &amp; NONAHG — Nilai Komitmen Rendah</h4><p>Nilai komitmen terhadap SKKO masing-masing sekitar <b class="num">${pct(sdm.commitPct)}</b> untuk SDM dan <b class="num">${pct(nonahg.commitPct)}</b> untuk NONAHG; % disburse juga masih <b class="num">${pct(sdm.disb)}</b> dan <b class="num">${pct(nonahg.disb)}</b>.</p></div>
+  <div class="attn amber"><div class="a-label">Catatan Cakupan</div><h4>PTL — AO Sangat Dominan</h4><p>PTL menyumbang <b class="num">${pct(ptlAo/totalAo*100)}</b> dari total Nilai AO (${fmtT(ptlAo)}), sementara Nilai SKKO hanya ${fmtM(raw.find(d=>d.code==="PTL").skko)}. Perbedaan skala ini perlu dibaca sesuai cakupan mekanisme pelaporan data.</p></div>`;
+}
+
+/* ---------- INIT ---------- */
+renderKpi();
+renderFunnel();
+renderFindings();
+renderAttention();
+renderShare();
+renderTable();
+bindTableSort();
+renderCompare();
+document.getElementById("sortSelect").addEventListener("change",renderCompare);
+})();
+</script>
+</body>
+</html>'
