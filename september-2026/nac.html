@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Non Allowable Cost — UID Jawa Tengah | September 2026</title>
-      <!-- Kode Favicon -->
-    <link rel="icon" type="image/png" href="Logo PLN Favicon.png">
 <style>
   :root {
     --ink: #0E2A3F;
@@ -472,6 +470,34 @@
   }
   .sort-bar select:focus-visible { outline:2px solid var(--green); outline-offset:2px; }
 
+  .acct-note {
+    margin-top: 20px;
+    background: var(--paper-card);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--ink);
+    border-radius: 4px;
+    padding: 18px 22px;
+    margin-bottom: 22px;
+    padding-bottom: 10px;
+  }
+  .acct-head {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .acct-list {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 13.5px;
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  .acct-list li { margin-bottom: 6px; }
+  .acct-list b { color: var(--ink); }
+
   @media (max-width: 860px) {
     .kpi-grid { grid-template-columns:repeat(2,1fr); }
     .gauge-grid { grid-template-columns:1fr; }
@@ -560,6 +586,19 @@
         <h2>Ringkasan Kinerja</h2>
         <div class="section-note">Posisi s.d. September 2026 &middot; seluruh nominal dalam Rupiah</div>
       </div>
+
+      <div class="acct-note">
+        <div class="acct-head">Catatan Akuntansi</div>
+        <ol class="acct-list">
+          <li>Per Agustus 2026 terdapat revisi target NAC tahun 2026 dari <b>Rp378,108 Miliar</b> menjadi <b>Rp292,394 Miliar</b>, turun <b>22,67%</b>.</li>
+          <li>Realisasi NAC s.d. September 2026 tercapai <b>103,45%</b>, yaitu sebesar <b>Rp238,328 Miliar</b> dari target NAC revisi s.d. September 2026.</li>
+          <li>Realisasi NAC yang masuk dalam <i>uncontrollable unit</i> adalah atas Beban Kepegawaian, yaitu <b>83,53%</b> atau sebesar <b>Rp199 Miliar</b> dari total realisasi NAC s.d. September 2026.</li>
+          <li>Realisasi NAC s.d. September 2026 yang masuk dalam <i>controllable unit</i> sebesar <b>Rp39,241 Miliar</b>.</li>
+          <li>Realisasi NAC terbesar yang masuk dalam <i>controllable unit</i> adalah Penyisihan Piutang sebesar <b>Rp15,882 Miliar</b> (<b>40,47%</b> dari realisasi <i>controllable unit</i> atau <b>6,66%</b> dari total realisasi NAC s.d. September 2026).</li>
+          <li>UP3 Semarang merupakan unit dengan realisasi Penyisihan Piutang terbesar, yaitu <b>53%</b> dari total realisasi Penyisihan Piutang (<b>Rp8,473 Miliar</b>).</li>
+        </ol>
+      </div>
+
       <div class="kpi-grid">
         <div class="kpi-card">
           <div class="kpi-label">Total Realisasi NAC</div>
@@ -567,7 +606,7 @@
           <div class="kpi-sub">Rp 238.328.557.418</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label">Pencapaian thd Target s/d Sept</div>
+          <div class="kpi-label">Realisasi thd Target s/d Sept</div>
           <div class="kpi-val">103,45%</div>
           <div class="kpi-sub">target Rp 230,38 M</div>
         </div>
@@ -586,7 +625,7 @@
 
     <section>
       <div class="section-head">
-        <h2>Realisasi terhadap Target (Polarisasi Negatif)</h2>
+        <h2>Realisasi (Polarisasi Negatif)</h2>
         <div class="section-note">Realisasi s.d. September terhadap target s.d. September</div>
       </div>
       <div class="gauge-grid" id="gaugeGrid"></div>
@@ -784,7 +823,7 @@
         <div class="kpi-card">
           <div class="kpi-label">Realisasi s/d September</div>
           <div class="kpi-val">Rp 238,33 M</div>
-          <div class="kpi-sub">238.328,56 juta &middot; pencapaian 96,67%</div>
+          <div class="kpi-sub">238.328,56 juta &middot; pencapaian (polarisasi negatif) 96,67%</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-label">Unit Mencapai Target</div>
@@ -895,7 +934,7 @@
     <section>
       <div class="section-head">
         <h2>Tabel KPI per Unit</h2>
-        <div class="section-note">Diurutkan dari realisasi terbesar &middot; satuan Rp juta &middot; pencapaian = target &divide; realisasi</div>
+        <div class="section-note">Diurutkan dari realisasi terbesar &middot; satuan Rp juta &middot; pencapaian (polarisasi negatif) = target &divide; realisasi</div>
       </div>
       <div class="unit-table-wrap">
         <table class="unit-table">
@@ -922,20 +961,8 @@
       dengan posisi realisasi s.d. September 2026, target SMT II, revisi target 2026, dan realisasi Tahun 2025.
     </div>
     <div class="fnote">
-      <b>Catatan periode:</b> Judul kolom pada sumber menyebut "sd Agustus 2026", namun nilai realisasi
-      pada kolom "Total Realisasi sd September 2026" dan tab KPI menggunakan posisi s.d. September 2026. Dashboard ini memakai posisi September.
-    </div>
-    <div class="fnote">
-      <b>Catatan metodologi (KPI):</b> Pencapaian KPI memakai polarisasi negatif, yaitu target s/d September
-      dibagi realisasi s/d September. Nilai &ge; 100% berarti realisasi tidak melampaui target.
-    </div>
-    <div class="fnote">
-      <b>Catatan metodologi (Rincian):</b> Pencapaian kategori dan total dihitung terhadap target s/d September
-      (realisasi &divide; target). Pencapaian per jenis biaya dihitung terhadap Target SMT II karena target s/d September
-      per jenis biaya tidak tersedia pada sumber. Akun kontra dan nilai negatif ditandai tersendiri.
-    </div>
-    <div class="fnote">
-      <b>Catatan:</b> Pos Pembelian Tenaga Listrik, Sewa, dan Beban Pinjaman bernilai nol pada seluruh kolom sehingga tidak ditampilkan.
+      <b>Catatan metodologi:</b> Pencapaian KPI memakai polarisasi negatif, yaitu target s/d September
+      dibagi realisasi s/d September. Nilai &ge; 100% berarti baik atau realisasi masih di bawah batas maksimal target.
     </div>
     <div class="legend">
       <span><i style="background:var(--green)"></i> Kontributor dominan / tercapai</span>
@@ -1064,6 +1091,13 @@
   }
   function pctHex(p){
     return p >= 100 ? '#1F5C4E' : (p >= 90 ? '#B2790E' : '#B24A2E');
+  }
+  // Rincian Kategori: semakin kecil porsi realisasi (mendekati 0%) semakin hijau,
+  // semakin besar (mendekati 100%) semakin merah
+  function shareColor(share){
+    if (share <= 10) return {fill:'status-fill-high', tag:'tag-high'};   // hijau
+    if (share <= 30) return {fill:'status-fill-mid',  tag:'tag-mid'};    // kuning
+    return {fill:'status-fill-risk', tag:'tag-risk'};                    // merah
   }
 
   var charts = {};
@@ -1273,9 +1307,14 @@
       if (it.contra)            info = {tag:'Akun Kontra',        cls:'tag-contra', fill:'status-fill-contra'};
       else if (it.real < 0)     info = {tag:'Koreksi Negatif',    cls:'tag-risk',   fill:'status-fill-risk'};
       else if (it.real === 0)   info = {tag:'Belum Terealisasi',  cls:'tag-minor',  fill:'status-fill-minor'};
-      else if (share >= 10)     info = {tag:'Dominan',            cls:'tag-high',   fill:'status-fill-high'};
-      else if (share >= 3)      info = {tag:'Signifikan',         cls:'tag-mid',    fill:'status-fill-mid'};
-      else                      info = {tag:'Minor',              cls:'tag-minor',  fill:'status-fill-minor'};
+      else {
+        var sc = shareColor(Math.max(0, share));
+        info = {
+          tag:  share >= 10 ? 'Dominan' : (share >= 3 ? 'Signifikan' : 'Minor'),
+          cls:  sc.tag,
+          fill: sc.fill
+        };
+      }
 
       var p = ratio(it.real, it.tgt);
       var row = document.createElement('div');
@@ -1289,7 +1328,7 @@
         '<div class="item-figures">' +
           '<div class="fig"><span class="fig-label">Realisasi s/d Sept</span><span class="fig-val">' + fmtRp(it.real) + '</span></div>' +
           '<div class="fig"><span class="fig-label">Target SMT II</span><span class="fig-val">' + (it.tgt === null ? '—' : fmtRp(it.tgt)) + '</span></div>' +
-          '<div class="fig"><span class="fig-label">Pencapaian thd SMT II</span><span class="fig-val">' + (p === null ? '—' : fmtPct(p)) + '</span></div>' +
+          '<div class="fig"><span class="fig-label">Realisasi thd SMT II</span><span class="fig-val">' + (p === null ? '—' : fmtPct(p)) + '</span></div>' +
           '<div class="fig"><span class="fig-label">Realisasi 2025</span><span class="fig-val">' + fmtRp(it.y25) + '</span></div>' +
         '</div>' +
         '<div class="item-bar-wrap">' +
