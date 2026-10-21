@@ -45,9 +45,10 @@ body{padding-bottom:60px}
 .section{padding-top:38px}
 .section:first-of-type{padding-top:34px}
 .sec-hdr{font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.14em;margin:0 0 18px;padding:0 0 14px;border-bottom:2px solid var(--pln)}
+.sec-hdr-row{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
 .note{font-size:11.5px;color:var(--text3);margin-top:12px;line-height:1.6}
 
-/* KPI — 2 baris x 4 kolom */
+/* KPI */
 .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-bottom:30px;background:var(--pln);color:#fff}
 .kpi{background:var(--pln);border-right:1px solid rgba(255,255,255,.14);border-bottom:1px solid rgba(255,255,255,.14);padding:22px 22px 24px;min-height:128px;min-width:0}
 .kpi:nth-child(4n){border-right:none}
@@ -73,8 +74,16 @@ body{padding-bottom:60px}
 .chart-canvas-wrap.small{height:330px}
 .chart-insight{margin-top:12px;font-size:12px;color:var(--text2);border-top:1px solid var(--border);padding-top:10px}
 .chart-insight b{color:var(--pln)}
-.control{display:flex;gap:8px;align-items:center;color:var(--text2);flex-wrap:wrap;font-family:var(--font);font-weight:400;font-size:12px}
+
+/* CONTROL (drop menu di header bagian) */
+.control{display:flex;gap:8px;align-items:center;color:var(--text2);flex-wrap:wrap;font-family:var(--font);font-weight:400;font-size:12px;text-transform:none;letter-spacing:0}
 .control select{border:1px solid var(--border2);background:#fff;color:var(--pln);padding:7px 9px;border-radius:3px;font:inherit;font-size:12px}
+
+/* METRIC CHECKLIST */
+.metric-checks{display:flex;flex-wrap:wrap;gap:8px 18px;margin:0 0 14px;padding:10px 12px;background:var(--bg-sec);border:1px solid var(--border);font-size:12px;color:var(--text2)}
+.metric-checks label{display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none}
+.metric-checks input{accent-color:var(--pln);cursor:pointer}
+.metric-checks label.all{font-weight:700;color:var(--pln)}
 
 /* FUNNEL */
 .funnel-row{display:grid;grid-template-columns:190px 1fr 110px;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--border)}
@@ -224,20 +233,21 @@ table.ledger{width:100%;border-collapse:collapse;min-width:1050px;font-size:12px
 
 <!-- VISUALISASI -->
 <div class="section">
-  <div class="sec-hdr">Visualisasi Komparatif Program</div>
+  <div class="sec-hdr sec-hdr-row">
+    <span>Visualisasi Komparatif Program</span>
+    <span class="control">Urutkan berdasarkan <select id="sortSelect"><option value="skko">Nilai SKKO</option><option value="commit">Nilai Komitmen</option><option value="real">Realisasi Bayar</option><option value="disb">% Disburse</option><option value="ao">Nilai AO</option></select></span>
+  </div>
   <div class="two-col">
     <div class="card chart-panel">
-      <div class="card-title">
-        <span class="ttl"><span class="dot"></span><span id="chartTitle">SKKO, Komitmen &amp; Realisasi Bayar</span></span>
-        <span class="control">Urutkan berdasarkan <select id="sortSelect"><option value="skko">Nilai SKKO</option><option value="commit">Nilai Komitmen</option><option value="real">Realisasi Bayar</option><option value="disb">% Disburse</option><option value="ao">Nilai AO</option></select></span>
-      </div>
-      <div class="chart-note" id="chartNote">Dalam Rp Miliar. Urutan mengikuti pilihan sort di atas.</div>
+      <div class="card-title"><span class="ttl"><span class="dot"></span><span id="chartTitle">Nilai SKKO per Program</span></span></div>
+      <div class="metric-checks" id="metricChecks"></div>
+      <div class="chart-note" id="chartNote"></div>
       <div class="chart-canvas-wrap"><canvas id="chartCompare"></canvas></div>
       <div class="chart-insight" id="compareInsight"></div>
     </div>
     <div class="card chart-panel">
-      <div class="card-title"><span class="ttl"><span class="dot"></span>Kontribusi Realisasi Bayar</span></div>
-      <div class="chart-note">Pangsa setiap program terhadap total realisasi bayar Rp967,81 M.</div>
+      <div class="card-title"><span class="ttl"><span class="dot"></span><span id="donutTitle">Komposisi Nilai SKKO per Program</span></span></div>
+      <div class="chart-note" id="donutNote"></div>
       <div class="chart-canvas-wrap small"><canvas id="chartShare"></canvas></div>
       <div class="chart-insight" id="shareInsight"></div>
     </div>
@@ -336,8 +346,21 @@ const fmtM=v=>new Intl.NumberFormat("id-ID",{minimumFractionDigits:2,maximumFrac
 const fmtT=v=>new Intl.NumberFormat("id-ID",{minimumFractionDigits:2,maximumFractionDigits:2}).format(v/1e12)+" T";
 const fmtB=v=>"Rp"+new Intl.NumberFormat("id-ID",{minimumFractionDigits:2,maximumFractionDigits:2}).format(v/1e6)+"M";
 const pct=(v,d=2)=>v.toFixed(d).replace(".",",")+"%";
+
+/* ---------- METRIK ---------- */
+const METRICS={
+  ao:  {name:"Nilai AO",       label:"Nilai AO (Rp Miliar)",            color:C.blue, field:"ao",     unit:"money"},
+  skko:{name:"Nilai SKKO",     label:"Nilai SKKO (Rp Miliar)",          color:C.pln,  field:"skko",   unit:"money"},
+  commit:{name:"Nilai Komitmen",label:"Nilai Komitmen (Rp Miliar)",     color:C.gold, field:"commit", unit:"money"},
+  real:{name:"Realisasi Bayar",label:"Realisasi Bayar (Rp Miliar)",     color:C.green,field:"real",   unit:"money"},
+  disb:{name:"% Disburse",     label:"% Disburse (Realisasi ÷ SKKO)",   color:C.red,  field:"disb",   unit:"pct"}
+};
+const ORDER=["ao","skko","commit","real","disb"];
+const metricVal=(key,d)=>{
+  const m=METRICS[key];
+  return m.unit==="pct" ? +d.disb.toFixed(2) : d[m.field]/1e6;
+};
 const sorters={skko:(a,b)=>b.skko-a.skko,commit:(a,b)=>b.commit-a.commit,real:(a,b)=>b.real-a.real,disb:(a,b)=>b.disb-a.disb,ao:(a,b)=>b.ao-a.ao};
-let compareChart,shareChart;
 
 /* ---------- STATUS ---------- */
 function status(d){
@@ -383,11 +406,11 @@ let tblSort={key:"skko",dir:"desc"};
 const textKeys=["code"];
 
 function sortedTableRows(){
- const k=tblSort.key, mult=tblSort.dir==="asc"?1:-1;
- return [...raw].sort((a,b)=>{
-   if(textKeys.includes(k)) return mult*(-1)*a[k].localeCompare(b[k],"id")*-1 * -1 * (tblSort.dir==="asc"?1:-1) * -1 === 0 ? 0 : (tblSort.dir==="asc"?1:-1)*a[k].localeCompare(b[k],"id");
-   return mult===1 ? a[k]-b[k] : b[k]-a[k];
- });
+ const k=tblSort.key;
+ const m=tblSort.dir==="asc"?1:-1;
+ return [...raw].sort((a,b)=> textKeys.includes(k)
+   ? m*a[k].localeCompare(b[k],"id")
+   : m*(a[k]-b[k]));
 }
 
 function renderTable(){
@@ -432,83 +455,131 @@ function bindTableSort(){
  });
 }
 
-/* ---------- GRAFIK PERBANDINGAN ---------- */
+/* ---------- CHECKLIST METRIK ---------- */
+const checks=Object.fromEntries(ORDER.map(m=>[m,m==="skko"]));
+const checksWrap=document.getElementById("metricChecks");
+
+function buildChecks(){
+ checksWrap.innerHTML=ORDER.map(m=>`<label><input type="checkbox" data-m="${m}"> ${METRICS[m].name}</label>`).join("")
+   + `<label class="all"><input type="checkbox" id="chkAll"> Tampilkan Semua</label>`;
+}
+function syncChecks(){
+ checksWrap.querySelectorAll('input[data-m]').forEach(i=>{i.checked=!!checks[i.dataset.m];});
+ document.getElementById("chkAll").checked=ORDER.every(m=>checks[m]);
+}
+checksWrap.addEventListener("change",e=>{
+ if(e.target.id==="chkAll"){
+   ORDER.forEach(m=>checks[m]=e.target.checked);
+ }else if(e.target.dataset.m){
+   checks[e.target.dataset.m]=e.target.checked;
+ }
+ syncChecks();
+ renderCompare();
+});
+
+/* ---------- GRAFIK PARETO (perbandingan) ---------- */
+let compareChart,shareChart;
 const legendOpts={position:'top',align:'end',labels:{boxWidth:10,boxHeight:10,usePointStyle:false}};
 
 function renderCompare(){
- const key=document.getElementById("sortSelect").value;
- const arr=[...raw].sort(sorters[key]);
- const labels=arr.map(d=>d.code);
- const titleEl=document.getElementById("chartTitle");
+ const sel=document.getElementById("sortSelect").value;
+ const arr=[...raw].sort(sorters[sel]);
+ const active=ORDER.filter(m=>checks[m]);
+ const selM=METRICS[sel];
+
+ document.getElementById("chartTitle").textContent=`${selM.name} per Program`;
  const noteEl=document.getElementById("chartNote");
  const insEl=document.getElementById("compareInsight");
- if(compareChart)compareChart.destroy();
 
- const baseScales=(xFmt)=>({
-   x:{grid:{color:gridColor},ticks:{color:C.text2,font:{size:10},callback:xFmt}},
+ if(compareChart){compareChart.destroy();compareChart=null;}
+
+ if(!active.length){
+   noteEl.textContent="Pilih minimal satu metrik untuk ditampilkan.";
+   insEl.innerHTML="";
+   return;
+ }
+
+ const hasMoney=active.some(m=>METRICS[m].unit==="money");
+ const hasPct=active.includes("disb");
+ const noteParts=[];
+ if(hasMoney) noteParts.push("nilai dalam Rp Miliar (sumbu bawah)");
+ if(hasPct) noteParts.push(hasMoney?"% Disburse pada sumbu atas":"% Disburse = Realisasi Bayar ÷ Nilai SKKO");
+ noteParts.push("urutan mengikuti pilihan sort");
+ noteEl.textContent=noteParts.join("; ").replace(/^./,c=>c.toUpperCase())+".";
+
+ const datasets=active.map(m=>({
+   label:METRICS[m].label,
+   data:arr.map(d=>metricVal(m,d)),
+   backgroundColor:METRICS[m].color,
+   borderRadius:2,
+   xAxisID:(METRICS[m].unit==="pct"&&hasMoney)?"x2":"x"
+ }));
+
+ const scales={
+   x:{grid:{color:gridColor},min:0,ticks:{color:C.text2,font:{size:10},callback:v=>hasMoney?v.toLocaleString("id-ID"):v+"%"}},
    y:{grid:{display:false},ticks:{color:C.pln,font:{size:11,weight:"700"}}}
+ };
+ if(hasMoney&&hasPct){
+   scales.x2={position:"top",min:0,max:100,grid:{display:false},ticks:{color:C.text2,font:{size:10},callback:v=>v+"%"}};
+ }
+
+ compareChart=new Chart(document.getElementById("chartCompare"),{
+   type:"bar",
+   data:{labels:arr.map(d=>d.code),datasets},
+   options:{
+     indexAxis:"y",responsive:true,maintainAspectRatio:false,
+     plugins:{
+       legend:legendOpts,
+       tooltip:{callbacks:{label:c=>{
+         const m=METRICS[active[c.datasetIndex]];
+         return m.name+": "+(m.unit==="pct"?pct(c.parsed.x):fmtM(c.parsed.x*1e6));
+       }}}
+     },
+     scales
+   }
  });
 
- if(key==="disb"){
-   titleEl.textContent="% Disburse per Program";
-   noteEl.textContent="% Disburse = Realisasi Bayar ÷ Nilai SKKO. Urutan terbesar → terkecil.";
-   compareChart=new Chart(document.getElementById("chartCompare"),{
-     type:"bar",
-     data:{labels,datasets:[
-       {label:"% Disburse (Realisasi ÷ SKKO)",data:arr.map(d=>+d.disb.toFixed(2)),backgroundColor:C.green,borderRadius:2}
-     ]},
-     options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,
-       plugins:{legend:legendOpts,tooltip:{callbacks:{label:c=>c.dataset.label+": "+pct(c.parsed.x)}}},
-       scales:baseScales(v=>v+"%")
-     }
-   });
-   const top=arr[0], low=arr[arr.length-1];
-   insEl.innerHTML=`Tertinggi: <b>${top.code}</b> ${pct(top.disb)}; terendah: <b>${low.code}</b> ${pct(low.disb)}. Rata-rata keseluruhan program: <b>${pct(totalReal/totalSkko*100)}</b>.`;
- }
- else if(key==="ao"){
-   titleEl.textContent="Nilai AO per Program";
-   noteEl.textContent="Dalam Rp Miliar. Urutan terbesar → terkecil berdasarkan Nilai AO.";
-   compareChart=new Chart(document.getElementById("chartCompare"),{
-     type:"bar",
-     data:{labels,datasets:[
-       {label:"Nilai AO (Rp Miliar)",data:arr.map(d=>d.ao/1e6),backgroundColor:C.pln,borderRadius:2}
-     ]},
-     options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,
-       plugins:{legend:legendOpts,tooltip:{callbacks:{label:c=>c.dataset.label+": "+fmtM(c.parsed.x*1e6)}}},
-       scales:baseScales(v=>v.toLocaleString("id-ID"))
-     }
-   });
-   insEl.innerHTML=`<b>${arr[0].code}</b> memiliki Nilai AO terbesar (${fmtM(arr[0].ao)}), atau <b>${pct(arr[0].ao/totalAo*100)}</b> dari total Nilai AO. Sisa program lainnya berada jauh di bawah skala ini.`;
- }
- else{
-   const labelMap={skko:"Nilai SKKO",commit:"Nilai Komitmen",real:"Realisasi Bayar"};
-   titleEl.textContent="SKKO, Komitmen & Realisasi Bayar";
-   noteEl.textContent="Dalam Rp Miliar. Urutan mengikuti pilihan sort di atas.";
-   compareChart=new Chart(document.getElementById("chartCompare"),{
-     type:"bar",
-     data:{labels,datasets:[
-       {label:"Nilai SKKO",data:arr.map(d=>d.skko/1e6),backgroundColor:C.pln,borderRadius:2},
-       {label:"Nilai Komitmen",data:arr.map(d=>d.commit/1e6),backgroundColor:C.gold,borderRadius:2},
-       {label:"Realisasi Bayar",data:arr.map(d=>d.real/1e6),backgroundColor:C.green,borderRadius:2}
-     ]},
-     options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,
-       plugins:{legend:legendOpts,tooltip:{callbacks:{label:c=>c.dataset.label+": "+fmtM(c.parsed.x*1e6)}}},
-       scales:baseScales(v=>v.toLocaleString("id-ID"))
-     }
-   });
-   const top3Skko=[...raw].sort((a,b)=>b.skko-a.skko).slice(0,3);
-   insEl.innerHTML=`Urutan aktif: <b>${arr[0].code}</b> di posisi teratas (${labelMap[key]}). Tiga program SKKO terbesar (${top3Skko.map(d=>d.code).join(", ")}) membentuk <b>${pct(top3Skko.reduce((s,d)=>s+d.skko,0)/totalSkko*100)}</b> dari total SKKO.`;
- }
+ const top=arr[0];
+ const topVal=selM.unit==="pct"?pct(top.disb):fmtM(top[selM.field]);
+ insEl.innerHTML=`Urutan mengikuti <b>${selM.name}</b>: <b>${top.code}</b> di posisi teratas (${topVal}). Tiga teratas: ${arr.slice(0,3).map(d=>d.code).join(", ")}.`;
 }
 
-/* ---------- GRAFIK SHARE ---------- */
-function renderShare(){
- const shareArr=[...raw].sort((a,b)=>b.real-a.real);
- if(shareChart)shareChart.destroy();
- shareChart=new Chart(document.getElementById("chartShare"),{type:"doughnut",data:{labels:shareArr.map(d=>d.code),datasets:[{data:shareArr.map(d=>d.real/1e6),backgroundColor:[C.pln,C.pln2,C.blue,"#4A8BC9",C.gold,C.goldD,C.red,"#D0686D","#5B3E96","#6E7686",C.green],borderColor:"#FFFFFF",borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:"58%",plugins:{legend:{position:"bottom",labels:{color:C.text2,font:{size:10},boxWidth:10,padding:7}},tooltip:{callbacks:{label:c=>c.label+": "+fmtM(c.parsed*1e6)+" ("+pct(c.parsed/(totalReal/1e6)*100)+")"}}}}});
+/* ---------- GRAFIK DONAT (komposisi) ---------- */
+const donutColors=[C.pln,C.pln2,C.blue,"#4A8BC9",C.gold,C.goldD,C.red,"#D0686D","#5B3E96","#6E7686",C.green];
 
- const top3=shareArr.slice(0,3).reduce((s,d)=>s+d.real,0)/totalReal*100;
- document.getElementById("shareInsight").innerHTML=`Kontribusi realisasi terbesar: <b>${shareArr[0].code}</b> ${pct(shareArr[0].real/totalReal*100)} dan <b>${shareArr[1].code}</b> ${pct(shareArr[1].real/totalReal*100)}. Tiga teratas menyumbang <b>${pct(top3)}</b>.`;
+function renderDonut(){
+ const sel=document.getElementById("sortSelect").value;
+ const isDisb=sel==="disb";
+ const mKey=isDisb?"real":sel;
+ const M=METRICS[mKey];
+ const arr=[...raw].sort((a,b)=>b[M.field]-a[M.field]);
+ const total=raw.reduce((s,d)=>s+d[M.field],0);
+
+ document.getElementById("donutTitle").textContent=isDisb
+   ? "Komposisi Realisasi Bayar per Program"
+   : `Komposisi ${M.name} per Program`;
+ document.getElementById("donutNote").textContent=isDisb
+   ? "% Disburse tidak dapat dijumlahkan, sehingga donat menampilkan pangsa Realisasi Bayar."
+   : `Pangsa setiap program terhadap total ${M.name} ${fmtM(total)}.`;
+
+ if(shareChart){shareChart.destroy();shareChart=null;}
+ shareChart=new Chart(document.getElementById("chartShare"),{
+   type:"doughnut",
+   data:{
+     labels:arr.map(d=>d.code),
+     datasets:[{data:arr.map(d=>d[M.field]/1e6),backgroundColor:donutColors,borderColor:"#FFFFFF",borderWidth:2}]
+   },
+   options:{
+     responsive:true,maintainAspectRatio:false,cutout:"58%",
+     plugins:{
+       legend:{position:"bottom",labels:{color:C.text2,font:{size:10},boxWidth:10,padding:7}},
+       tooltip:{callbacks:{label:c=>c.label+": "+fmtM(c.parsed*1e6)+" ("+pct(c.parsed/(total/1e6)*100)+")"}}
+     }
+   }
+ });
+
+ const sh=arr.map(d=>d[M.field]/total*100);
+ document.getElementById("shareInsight").innerHTML=`Kontribusi terbesar: <b>${arr[0].code}</b> ${pct(sh[0])} dan <b>${arr[1].code}</b> ${pct(sh[1])}. Dua teratas menyumbang <b>${pct(sh[0]+sh[1])}</b>.`;
 }
 
 /* ---------- ANALISIS ---------- */
@@ -539,12 +610,21 @@ renderKpi();
 renderFunnel();
 renderFindings();
 renderAttention();
-renderShare();
 renderTable();
 bindTableSort();
+buildChecks();
+syncChecks();
 renderCompare();
-document.getElementById("sortSelect").addEventListener("change",renderCompare);
+renderDonut();
+
+document.getElementById("sortSelect").addEventListener("change",()=>{
+ const sel=document.getElementById("sortSelect").value;
+ ORDER.forEach(m=>checks[m]=(m===sel));
+ syncChecks();
+ renderCompare();
+ renderDonut();
+});
 })();
 </script>
 </body>
-</html>'
+</html>
