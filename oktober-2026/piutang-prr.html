@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Piutang & Piutang Ragu-Ragu — UID Jawa Tengah</title>
+<!-- Kode Favicon -->
+<link rel="icon" type="image/png" href="../gambar/Logo PLN Favicon.png">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+<style>
+:root{
+  --navy:#0B2E4F;--navy-d:#081E36;--navy-soft:#12406B;
+  --gold:#C9A227;--teal:#0E7C7B;--teal2:#159A98;
+  --grey:#6B7280;--lgrey:#E7E9EC;--bg:#FBFBFA;--card:#FFF;
+  --red:#B23A2E;--green:#1E7A4C;--line:#D7DBE1;--blue:#2877A8;--purple:#7656A6;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;color:#20304A;background:var(--bg);line-height:1.5;font-size:14px}
+button,select,input{font-family:inherit}
+.wrap{max-width:1380px;margin:auto;padding:0 28px 70px}
+
+/* HEADER */
+.hero{background:radial-gradient(circle at 80% 20%,rgba(21,154,152,.18),transparent 32%),linear-gradient(135deg,var(--navy-d),var(--navy) 60%,var(--navy-soft));color:#fff;padding:40px 0 34px}
+.hero-inner{max-width:1380px;margin:auto;padding:0 28px}
+.eyebrow{text-transform:uppercase;letter-spacing:3px;font-size:11px;color:var(--gold);font-weight:700;margin-bottom:13px}
+.hero h1{font-family:Arial,serif;font-size:36px;margin:0 0 10px;line-height:1.2;max-width:920px}
+.sub{font-size:14px;color:#CBD6E4;max-width:1000px;margin:0 0 20px}
+.metabar{display:flex;gap:30px;flex-wrap:wrap;border-top:1px solid #ffffff2e;padding-top:14px}
+.metabar div{font-size:11.5px;color:#B9C6D6}
+.metabar strong{display:block;color:#fff;font-family:Arial,serif;font-size:22px;font-weight:700;margin-top:2px}
+
+/* TABS */
+.tabs{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 2px 8px #0000000b}
+.tabbar{max-width:1380px;margin:auto;padding:0 28px;display:flex;gap:3px;overflow-x:auto}
+.tab{border:0;background:transparent;padding:15px 18px;font-weight:700;color:#607086;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:7px}
+.tab svg{width:15px;height:15px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tab:hover{color:var(--navy-d);background:#D9E9F7}
+.tab.active{background:var(--navy);color:#fff;border-bottom-color:var(--gold)}
+
+/* PANELS & SECTIONS */
+.panel{display:none}
+.panel.active{display:block}
+.section{padding:34px 0 5px}
+.section-title{font-family:Arial,serif;font-size:23px;color:var(--navy-d);margin:0 0 5px;display:flex;align-items:baseline;gap:11px}
+.num{color:var(--gold);font-size:14px}
+.rule{height:3px;width:55px;background:var(--gold);margin:12px 0 20px}
+.intro{color:#41526B;margin-bottom:20px;max-width:1100px}
+.sub-title{font-family:Arial,serif;font-size:17px;color:var(--navy-d);margin:0 0 14px}
+
+/* KPI */
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0}
+.cards.cards-2{grid-template-columns:repeat(2,1fr)}
+.card{background:#E8EEF5;border:1px solid var(--line);border-top:3px solid var(--navy);border-radius:4px;padding:16px;min-height:132px;box-shadow:0 1px 4px rgba(11,46,79,.03)}
+.card.teal{background:#E3F1F0;border-top-color:var(--teal)}
+.card.gold{background:#F8F1DC;border-top-color:var(--gold)}
+.card.green{background:#E4F1EA;border-top-color:var(--green)}
+.card.red{background:#F9E9E7;border-top-color:var(--red)}
+.label{text-transform:uppercase;letter-spacing:.8px;font-size:10.5px;color:var(--grey);font-weight:700}
+.value{font-family:Arial,serif;font-size:22px;font-weight:700;color:var(--navy-d);margin:7px 0}
+.delta{font-size:12px;font-weight:700}
+.pos{color:var(--green)}
+.neg{color:var(--red)}
+.neutral{color:var(--grey)}
+.small{font-size:11px;color:var(--grey)}
+.badge{display:inline-block;font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:11px;margin-top:8px;background:rgba(201,162,39,.2);color:#8A6A12}
+
+/* GRID / BOX */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-wide{display:grid;grid-template-columns:1.35fr .65fr;gap:16px}
+.box{background:#fff;border:1px solid var(--line);border-radius:4px;padding:17px;margin:16px 0;box-shadow:0 1px 4px rgba(11,46,79,.025);min-width:0}
+.box h3{margin:0 0 12px;font-family:Arial,serif;color:var(--navy-d);font-size:17px}
+.box-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.box-head h3{margin:0}
+.chart{height:360px;position:relative}
+.chart.small-chart{height:320px}
+.chart.donut{height:220px}
+.chart.tall{height:460px}
+.chart-caption{font-size:11.5px;color:var(--grey);margin:-6px 0 10px}
+
+/* LEGEND */
+.legend-row{font-size:11.5px;color:var(--grey);margin-top:10px}
+.dn-legend{width:100%;margin-top:6px}
+.dn-row{display:grid;grid-template-columns:12px 1fr auto;gap:9px;align-items:center;padding:7px 0;border-bottom:1px solid var(--lgrey);font-size:12px}
+.dn-row:last-child{border-bottom:0}
+.dn-dot{width:10px;height:10px;border-radius:2px}
+.dn-name{font-weight:700;color:var(--navy-d)}
+.dn-val{font-weight:700;color:var(--navy)}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:4px}
+table{width:100%;border-collapse:collapse;font-size:12px;margin:0;min-width:700px}
+th{background:var(--navy-d);color:#fff;text-align:right;padding:10px;white-space:nowrap;cursor:pointer;position:sticky;top:0;z-index:2}
+th:first-child,td:first-child{text-align:left}
+th:nth-child(2){text-align:left}
+th:hover{background:var(--navy-soft)}
+th .sort-ic{display:inline-block;margin-left:6px;opacity:.5;font-size:10px}
+th.sort-asc .sort-ic,th.sort-desc .sort-ic{opacity:1;color:var(--gold)}
+td{padding:8px 9px;border-bottom:1px solid var(--lgrey);text-align:right;white-space:nowrap}
+td:nth-child(2){text-align:left}
+tbody tr:nth-child(even){background:#F6F8FA}
+tbody tr:hover{background:#EEF6F6}
+tbody tr.highlight td{background:#F7EFDC}
+tbody tr.alert td{background:#F6E5E4}
+tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy)}
+.unit-name{font-weight:700;color:var(--navy-d)}
+.val-diff{color:var(--red);font-weight:700}
+.val-ok{color:var(--green);font-weight:700}
+
+/* INSIGHTS */
+.insight-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:20px}
+.ins{background:#fff;border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:2px;padding:18px 20px}
+.ins.ok{border-left-color:var(--green)}
+.ins.warn{border-left-color:var(--gold)}
+.ins.danger{border-left-color:var(--red)}
+.ins-title{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;color:var(--navy);margin-bottom:8px}
+.ins.ok .ins-title{color:var(--green)}
+.ins.warn .ins-title{color:#A87F12}
+.ins.danger .ins-title{color:var(--red)}
+.ins-text{font-size:14px;color:var(--navy-d);line-height:1.55}
+
+/* CALLOUT */
+.callout{padding:15px 18px;background:#F4F0DF;border-left:4px solid var(--gold);border-radius:2px;margin:18px 0;color:#4A3E14}
+.callout.blue{background:#EAF1F8;border-left-color:var(--navy);color:#1E3350}
+.callout.teal{background:#E8F5F4;border-left-color:var(--teal);color:#164B4A}
+.callout.red{background:#FBEEEC;border-left-color:var(--red);color:#5C2119}
+.reco{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0}
+.reco-card{background:var(--navy-d);color:#fff;border-radius:4px;padding:18px}
+.reco-card .k{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--gold);font-weight:700}
+.reco-card p{font-size:12.5px;color:#DCE4EE;margin:8px 0 0}
+
+/* FOOTER */
+.footer{background:var(--navy-d);color:#B9C6D6;padding:25px 0;font-size:11px}
+.footer .wrap{padding-bottom:0;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+
+/* RESPONSIVE */
+@media(max-width:1050px){
+  .cards{grid-template-columns:repeat(2,1fr)}
+  .grid-wide{grid-template-columns:1fr}
+}
+@media(max-width:850px){
+  .grid,.reco,.insight-grid{grid-template-columns:1fr}
+  .hero h1{font-size:28px}
+  .chart{height:300px}
+  .chart.tall{height:380px}
+}
+@media(max-width:600px){
+  .wrap,.hero-inner,.tabbar{padding-left:15px;padding-right:15px}
+  .cards{grid-template-columns:1fr}
+  .cards.cards-2{grid-template-columns:1fr}
+  .hero{padding-top:32px}
+  .hero h1{font-size:25px}
+  .section{padding-top:26px}
+  .metabar{gap:18px}
+  .metabar strong{font-size:18px}
+}
+@media print{
+  .tabs,.chart-toolbar{display:none}
+  .panel{display:block!important}
+  .hero{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">Dashboard Analisis Piutang — UID Jawa Tengah</div>
+    <h1 id="heroTitle">Piutang Tercatat Rp 2.704,35 Miliar — Konsentrasi Terbesar Berada pada 5 UP3</h1>
+    <p class="sub">Dashboard interaktif untuk melihat sebaran Piutang, Piutang Ragu-Ragu, konsentrasi per UP3, serta perbedaan pencatatan SAP dan AP2T.</p>
+    <div class="metabar">
+      <div>Total Piutang SAP<strong>Rp 2.704,35 M</strong></div>
+      <div>Total Piutang AP2T<strong>Rp 2.704,35 M</strong></div>
+      <div>PRR SAP<strong>Rp 21,87 M</strong></div>
+      <div>Selisih PRR SAP–AP2T<strong>Rp 2,30 M</strong></div>
+      <div>Jumlah UP3<strong>12</strong></div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="tabbar">
+    <button class="tab active" data-tab="piutang"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Piutang</button>
+    <button class="tab" data-tab="ragu"><svg viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Piutang Ragu-Ragu</button>
+    <button class="tab" data-tab="analisis"><svg viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg>Analisis &amp; Rekomendasi</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ===================== PIUTANG ===================== -->
+<section id="piutang" class="panel active">
+  <div class="section">
+    <h2 class="section-title"><span class="num">01</span>Ringkasan Piutang</h2>
+    <div class="rule"></div>
+
+    <div class="cards">
+      <div class="card"><div class="label">Total Piutang SAP</div><div class="value">Rp 2.704,35 Miliar</div><div class="small">Total saldo piutang seluruh 12 UP3.</div></div>
+      <div class="card teal"><div class="label">Total Piutang AP2T</div><div class="value">Rp 2.704,35 Miliar</div><div class="small">Nilai identik dengan total pencatatan SAP.</div></div>
+      <div class="card gold"><div class="label">Konsentrasi Top 5</div><div class="value">60,55%</div><span class="badge">Rp 1.637,51 M</span></div>
+      <div class="card green"><div class="label">UP3 Tertinggi</div><div class="value">Semarang</div><div class="small">Rp 547,23 M atau 20,24% dari total.</div></div>
+    </div>
+
+    <div class="grid-wide">
+      <div class="box">
+        <div class="box-head"><h3>Sebaran Piutang — 12 UP3</h3></div>
+        <div class="chart-caption">Nilai dalam Miliar Rupiah, diurutkan dari nominal terbesar ke terkecil.</div>
+        <div class="chart"><canvas id="piutangBarChart"></canvas></div>
+      </div>
+
+      <div>
+        <div class="callout">
+          <b>Konsentrasi Top 5: 60,55%.</b> Lima UP3 terbesar memiliki total piutang sebesar Rp 1.637,51 Miliar dari total Rp 2.704,35 Miliar.
+        </div>
+        <div class="box">
+          <h3>Komposisi Top 5 vs Lainnya</h3>
+          <div class="chart donut"><canvas id="piutangDonut"></canvas></div>
+          <div id="piutangLegend" class="dn-legend"></div>
+        </div>
+        <div class="cards cards-2" style="margin:16px 0 0">
+          <div class="card"><div class="label">Top 1 — Semarang</div><div class="value">Rp 547,23 M</div><div class="small">20,24% dari total piutang.</div></div>
+          <div class="card"><div class="label">Top 2 — Kudus</div><div class="value">Rp 349,01 M</div><div class="small">12,90% dari total piutang.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title"><span class="num">02</span>Rincian Piutang per UP3</h2>
+    <div class="rule"></div>
+    <p class="intro">SAP dan AP2T memiliki total pencatatan yang sama. Baris emas = Top 5. Klik header kolom untuk mengurutkan.</p>
+    <div class="table-wrap">
+      <table id="piutangTable">
+        <thead><tr><th>Rank</th><th>UP3</th><th>SAP</th><th>AP2T</th><th>Selisih</th><th>Kontribusi</th></tr></thead>
+        <tbody></tbody>
+        <tfoot></tfoot>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PIUTANG RAGU-RAGU ===================== -->
+<section id="ragu" class="panel">
+  <div class="section">
+    <h2 class="section-title"><span class="num">01</span>Ringkasan Piutang Ragu-Ragu</h2>
+    <div class="rule"></div>
+
+    <div class="cards">
+      <div class="card"><div class="label">PRR SAP</div><div class="value">Rp 21,87 Miliar</div><div class="small">Total Piutang Ragu-Ragu berdasarkan SAP.</div></div>
+      <div class="card teal"><div class="label">PRR AP2T</div><div class="value">Rp 19,58 Miliar</div><div class="small">Total Piutang Ragu-Ragu berdasarkan AP2T.</div></div>
+      <div class="card red"><div class="label">Selisih SAP – AP2T</div><div class="value">Rp 2,30 Miliar</div><span class="badge">10,50% dari PRR SAP</span></div>
+      <div class="card gold"><div class="label">Sumber Selisih</div><div class="value">Tegal</div><div class="small">Seluruh selisih Rp 2,30 M berasal dari UP3 Tegal.</div></div>
+    </div>
+
+    <div class="grid-wide">
+      <div class="box">
+        <div class="box-head"><h3>Sebaran PRR SAP — 12 UP3</h3></div>
+        <div class="chart-caption">Nilai dalam Miliar Rupiah. Bagian merah pada bar menunjukkan selisih SAP–AP2T.</div>
+        <div class="chart"><canvas id="prrBarChart"></canvas></div>
+      </div>
+
+      <div>
+        <div class="callout">
+          <b>Konsentrasi Top 5: 79,65%.</b> Lima UP3 terbesar memiliki PRR SAP sebesar Rp 17,42 Miliar dari total Rp 21,87 Miliar.
+        </div>
+        <div class="box">
+          <h3>Komposisi Top 5 vs Lainnya</h3>
+          <div class="chart donut"><canvas id="prrDonut"></canvas></div>
+          <div id="prrLegend" class="dn-legend"></div>
+        </div>
+        <div class="cards cards-2" style="margin:16px 0 0">
+          <div class="card"><div class="label">Top 1 — Semarang</div><div class="value">Rp 6,15 M</div><div class="small">28,10% dari total PRR SAP.</div></div>
+          <div class="card gold"><div class="label">Top 2 — Tegal</div><div class="value">Rp 3,55 M</div><div class="small">16,22% dari total PRR SAP, dengan selisih Rp 2,30 M.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title"><span class="num">02</span>Rincian Piutang Ragu-Ragu per UP3</h2>
+    <div class="rule"></div>
+    <p class="intro">Nilai dalam Miliar Rupiah. Baris merah menunjukkan selisih SAP–AP2T. Baris emas = Top 5. Klik header kolom untuk mengurutkan.</p>
+    <div class="table-wrap">
+      <table id="prrTable">
+        <thead><tr><th>Rank</th><th>UP3</th><th>SAP</th><th>AP2T</th><th>Selisih</th><th>Kontribusi</th></tr></thead>
+        <tbody></tbody>
+        <tfoot></tfoot>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ANALISIS & REKOMENDASI ===================== -->
+<section id="analisis" class="panel">
+  <div class="section">
+    <h2 class="section-title"><span class="num">01</span>Temuan Utama</h2>
+    <div class="rule"></div>
+
+    <div class="grid">
+      <div class="box">
+        <div class="box-head"><h3>Rasio PRR SAP terhadap Piutang per UP3 (%)</h3></div>
+        <div class="chart-caption">Garis putus-putus = rata-rata seluruh UP3. Bar merah = di atas rata-rata.</div>
+        <div class="chart small-chart"><canvas id="ratioChart"></canvas></div>
+      </div>
+      <div class="box">
+        <div class="box-head"><h3>Kontribusi Piutang vs Kontribusi PRR per UP3 (%)</h3></div>
+        <div class="chart-caption">Diurutkan dari kontribusi piutang terbesar. Selisih kedua bar menunjukkan konsentrasi risiko.</div>
+        <div class="chart small-chart"><canvas id="shareChart"></canvas></div>
+      </div>
+    </div>
+
+    <h3 class="sub-title">Temuan</h3>
+    <div class="insight-grid">
+      <div class="ins ok">
+        <div class="ins-title">01 — Pencatatan Piutang Konsisten, Namun Perlu Verifikasi Sumber</div>
+        <div class="ins-text">Total piutang Rp 2.704,35 M tercatat identik pada SAP dan AP2T di seluruh 12 UP3. Kesamaan ini baik, tetapi juga berarti AP2T belum tentu menjadi pembanding yang independen. Sumber data AP2T perlu dipastikan.</div>
+      </div>
+      <div class="ins warn">
+        <div class="ins-title">02 — Konsentrasi Top 5 Piutang Tinggi</div>
+        <div class="ins-text">Semarang, Kudus, Surakarta, Tegal, dan Pekalongan menguasai 60,55% piutang (Rp 1.637,51 M). Risiko penagihan terpusat pada lima unit ini.</div>
+      </div>
+      <div class="ins warn">
+        <div class="ins-title">03 — Semarang Dominan</div>
+        <div class="ins-text">Piutang Semarang Rp 547,23 M (20,24%) atau sekitar 1,57 kali Kudus, UP3 terbesar kedua. Satu UP3 ini setara lebih dari seperlima total piutang.</div>
+      </div>
+      <div class="ins">
+        <div class="ins-title">04 — Sebaran Tujuh UP3 Lainnya</div>
+        <div class="ins-text">Tujuh UP3 lainnya menyumbang 39,45% piutang, dengan kisaran Rp 119,63 M (Magelang) hingga Rp 174,57 M (Grobogan). Tidak ada satu pun yang mendominasi, sehingga akumulasinya perlu dipantau bersama.</div>
+      </div>
+      <div class="ins">
+        <div class="ins-title">05 — PRR Kecil Terhadap Piutang</div>
+        <div class="ins-text">PRR SAP Rp 21,87 M setara 0,81% dari total piutang. Nilainya relatif kecil, tetapi rasio ini menjadi pembanding wajar antar UP3 dan indikator kualitas penagihan.</div>
+      </div>
+      <div class="ins danger">
+        <div class="ins-title">06 — Selisih PRR Hanya di Tegal</div>
+        <div class="ins-text">Selisih SAP–AP2T Rp 2,30 M (10,50% dari PRR SAP) seluruhnya berasal dari Tegal. AP2T mencatat 35,27% dari nilai SAP Tegal, atau selisih 64,73% dari PRR SAP Tegal.</div>
+      </div>
+      <div class="ins warn">
+        <div class="ins-title">07 — PRR Lebih Terkonsentrasi daripada Piutang</div>
+        <div class="ins-text">Lima UP3 terbesar menguasai 79,65% PRR, lebih tinggi dibanding 60,55% piutang. Tujuh UP3 lainnya hanya 20,35% PRR, padahal memegang 39,45% piutang. Risiko ragu-ragu terkonsentrasi pada lebih sedikit unit.</div>
+      </div>
+      <div class="ins danger">
+        <div class="ins-title">08 — Rasio PRR per UP3 Bervariasi</div>
+        <div class="ins-text">Rasio tertinggi di Pekalongan (1,55%), Tegal (1,50%), Semarang (1,12%), dan Kudus (1,00%), di atas rata-rata 0,81%. Rasio terendah di Klaten (0,19%), Cilacap (0,29%), dan Purwokerto (0,34%). Surakarta, piutang terbesar ketiga, hanya 0,45%.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title"><span class="num">02</span>Rekomendasi</h2>
+    <div class="rule"></div>
+
+    <div class="reco">
+      <div class="reco-card"><div class="k">Rekomendasi 1 · Rekonsiliasi Tegal</div><p>Telusuri selisih Rp 2,30 M per pelanggan dan per dokumen. Periksa cut-off dan pemetaan akun AP2T, lalu tetapkan batas waktu penyelesaian sebelum penutupan periode.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 2 · Validasi Sumber AP2T</div><p>Pastikan AP2T merupakan sub-ledger independen dan bukan salinan SAP. Lakukan sampling per UP3 untuk membuktikan kesesuaian nilai secara transaksi.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 3 · Uji Kecukupan PRR</div><p>Bandingkan PRR dengan umur piutang di Pekalongan, Tegal, dan Semarang. Pastikan cadangan ragu-ragu sudah mencerminkan risiko, mengingat rasio mereka di atas rata-rata.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 4 · Kaji Rasio PRR Rendah</div><p>Tinjau Surakarta (piutang Rp 326,68 M, PRR Rp 1,48 M) serta Klaten, Cilacap, dan Purwokerto. Pastikan tidak terjadi under-provision pada unit dengan piutang besar.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 5 · Fokus Penagihan Top 5</div><p>Prioritaskan monitoring aging, status penagihan, dan komitmen pembayaran pada lima UP3 yang menguasai 60,55% piutang, dimulai dari Semarang.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 6 · Pantau Tujuh UP3 Lainnya</div><p>Tujuh UP3 menyumbang 39,45% piutang. Lakukan review berkala agar akumulasi saldo di kelompok ini tidak membesar tanpa terdeteksi.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 7 · Tambah Dimensi Aging</div><p>Dataset belum memuat umur piutang dan tren periodik. Tambahkan aging bucket dan tren bulanan agar analisis PRR berbasis kualitas, bukan hanya nominal.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 8 · Ambang Batas (Threshold)</div><p>Tetapkan aturan alert: selisih SAP–AP2T harus nol, dan rasio PRR yang menyimpang jauh dari rata-rata (misalnya di atas 1,0%) memicu review wajib.</p></div>
+    </div>
+
+    <div class="callout blue"><b>Catatan Metodologi:</b> Rasio PRR dihitung terhadap saldo piutang SAP per UP3. Persentase kontribusi dihitung terhadap total masing-masing dataset. Analisis ini bersifat deskriptif dan belum menguji umur maupun kualitas piutang, karena data aging tidak tersedia pada input.</div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div><b>Sumber data:</b> Data Piutang dan Piutang Ragu-Ragu yang diberikan pada input dashboard. Dashboard ini merupakan alat analisis internal dan tidak menggantikan laporan keuangan resmi/audited.</div>
+    <div>UID Jawa Tengah<br>Seluruh angka disajikan dalam Rupiah/Miliar sesuai label masing-masing.</div>
+  </div>
+</footer>
+
+<script>
+/* =========================================================
+   DATA (nilai dalam Rupiah penuh)
+========================================================= */
+const PIUTANG = [
+  { up3:"KUDUS",      sap:349009785036, ap2t:349009785036 },
+  { up3:"SURAKARTA",  sap:326675598220, ap2t:326675598220 },
+  { up3:"MAGELANG",   sap:119629585130, ap2t:119629585130 },
+  { up3:"PURWOKERTO", sap:149090172083, ap2t:149090172083 },
+  { up3:"TEGAL",      sap:236462476921, ap2t:236462476921 },
+  { up3:"SEMARANG",   sap:547232090015, ap2t:547232090015 },
+  { up3:"SALATIGA",   sap:136227433146, ap2t:136227433146 },
+  { up3:"KLATEN",     sap:169788969667, ap2t:169788969667 },
+  { up3:"PEKALONGAN", sap:178128356195, ap2t:178128356195 },
+  { up3:"CILACAP",    sap:150358664735, ap2t:150358664735 },
+  { up3:"GROBOGAN",   sap:174571513090, ap2t:174571513090 },
+  { up3:"SUKOHARJO",  sap:167177148739, ap2t:167177148739 }
+];
+
+const PRR = [
+  { up3:"KUDUS",      sap:3483783180, ap2t:3483783180 },
+  { up3:"SURAKARTA",  sap:1478118859, ap2t:1478118859 },
+  { up3:"MAGELANG",   sap:560467287,  ap2t:560467287  },
+  { up3:"PURWOKERTO", sap:507274610,  ap2t:507274610  },
+  { up3:"TEGAL",      sap:3548981501, ap2t:1251651611 },
+  { up3:"SEMARANG",   sap:6145987867, ap2t:6145987867 },
+  { up3:"SALATIGA",   sap:1123762301, ap2t:1123762301 },
+  { up3:"KLATEN",     sap:327381483,  ap2t:327381483  },
+  { up3:"PEKALONGAN", sap:2766591639, ap2t:2766591639 },
+  { up3:"CILACAP",    sap:440308317,  ap2t:440308317  },
+  { up3:"GROBOGAN",   sap:867891512,  ap2t:867891512  },
+  { up3:"SUKOHARJO",  sap:624078822,  ap2t:624078822  }
+];
+
+/* =========================================================
+   HELPERS & GLOBAL CHART DEFAULTS
+========================================================= */
+const C = {
+  navy:'#0B2E4F', navyD:'#081E36', blue:'#2877A8', light:'#9FB8D4',
+  teal:'#0E7C7B', gold:'#C9A227', green:'#1E7A4C', greenL:'#159A98',
+  red:'#B23A2E', purple:'#7656A6', grid:'#E7E9EC', text2:'#41526B', grey:'#6B7280'
+};
+const PALETTE = ['#0B2E4F','#2877A8','#6FA3D8','#C9A227','#7656A6'];
+const OTHER_COLOR = '#E7E9EC';
+
+Chart.defaults.font.family = "Arial, Helvetica, sans-serif";
+Chart.defaults.color = C.text2;
+Chart.defaults.font.size = 11;
+
+const M = v => v/1e9;
+const pct = (a,b) => b>0 ? (a/b*100) : 0;
+const sum = (arr,f) => arr.reduce((s,x)=>s+f(x),0);
+const fmtID = (n,d=0) => Number(n).toLocaleString('id-ID',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fmtMiliar = v => 'Rp ' + fmtID(M(v),2) + ' M';
+const fmtPct = (v,d=2) => fmtID(v,d) + '%';
+const nameCase = s => s.charAt(0) + s.slice(1).toLowerCase();
+const legendOpts = {position:'top',align:'end',labels:{boxWidth:10,boxHeight:10,font:{size:11}}};
+const gridX = {grid:{color:C.grid},ticks:{callback:v=>v.toLocaleString('id-ID')}};
+
+const charts = {};
+
+/* ---------- DATA TURUNAN (diurutkan terbesar ke terkecil) ---------- */
+const piSorted = PIUTANG.map(x=>({...x, name:nameCase(x.up3)})).sort((a,b)=>b.sap-a.sap);
+const prrSorted = PRR.map(x=>({...x, name:nameCase(x.up3)})).sort((a,b)=>b.sap-a.sap);
+const piTotal = sum(piSorted,x=>x.sap);
+const piTotalAP2T = sum(piSorted,x=>x.ap2t);
+const prrTotal = sum(prrSorted,x=>x.sap);
+const prrTotalAP2T = sum(prrSorted,x=>x.ap2t);
+
+/* ---------- TAB SWITCHING ---------- */
+const HERO_TITLES = {
+  piutang: 'Piutang Tercatat Rp 2.704,35 Miliar — Konsentrasi Terbesar Berada pada 5 UP3',
+  ragu: 'Piutang Ragu-Ragu Rp 21,87 Miliar — Selisih Rp 2,30 Miliar Seluruhnya di UP3 Tegal',
+  analisis: 'Analisis & Rekomendasi Piutang dan Piutang Ragu-Ragu'
+};
+const TAB_KEY = 'piutangPRR.activeTab';
+
+function activateTab(name){
+  const btn = document.querySelector('.tab[data-tab="'+name+'"]');
+  const panel = document.getElementById(name);
+  if(!btn || !panel) return false;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  btn.classList.add('active');
+  panel.classList.add('active');
+  document.getElementById('heroTitle').textContent = HERO_TITLES[name];
+  setTimeout(()=>Object.values(charts).forEach(c=>c && c.resize()),100);
+  return true;
+}
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    activateTab(this.dataset.tab);
+    try{ localStorage.setItem(TAB_KEY, this.dataset.tab); }catch(e){}
+  });
+});
+(function restoreTab(){
+  let isReload = false;
+  try{
+    const nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+    if(nav) isReload = nav.type === 'reload';
+    else if(performance.navigation) isReload = performance.navigation.type === 1;
+  }catch(e){}
+  if(!isReload) return;
+  let saved = null;
+  try{ saved = localStorage.getItem(TAB_KEY); }catch(e){}
+  if(saved) activateTab(saved);
+})();
+
+/* ---------- SORTABLE TABLES ---------- */
+const parseCell = t => {
+  const s = t.trim();
+  if(s==='—' || s==='-' || s==='') return 0;
+  const n = parseFloat(s.replace(/Rp|M|%/g,'').replace(/\s/g,'').replace(/\./g,'').replace(/,/g,'.'));
+  return Number.isNaN(n) ? s.toLowerCase() : n;
+};
+function makeTableSortable(table){
+  const headers = table.querySelectorAll('thead th');
+  headers.forEach((th,col)=>{
+    th.title = 'Klik untuk mengurutkan';
+    const ic = document.createElement('span');
+    ic.className = 'sort-ic';
+    ic.textContent = '↕';
+    th.appendChild(ic);
+    th.addEventListener('click',()=>{
+      const tbody = table.tBodies[0];
+      const rows = Array.from(tbody.rows);
+      const dir = th.dataset.sortDir==='asc' ? 'desc' : 'asc';
+      headers.forEach(h=>{
+        delete h.dataset.sortDir;
+        h.classList.remove('sort-asc','sort-desc');
+        const s = h.querySelector('.sort-ic'); if(s) s.textContent='↕';
+      });
+      th.dataset.sortDir = dir;
+      th.classList.add(dir==='asc'?'sort-asc':'sort-desc');
+      th.querySelector('.sort-ic').textContent = dir==='asc'?'↑':'↓';
+      rows.sort((a,b)=>{
+        const av=parseCell(a.cells[col].textContent), bv=parseCell(b.cells[col].textContent);
+        if(typeof av==='number' && typeof bv==='number') return dir==='asc'?av-bv:bv-av;
+        return dir==='asc'?String(av).localeCompare(String(bv),'id'):String(bv).localeCompare(String(av),'id');
+      });
+      rows.forEach(r=>tbody.appendChild(r));
+    });
+  });
+}
+
+/* ---------- DONUT LEGEND HELPER ---------- */
+function buildDonutData(sorted, key){
+  const total = sum(sorted,x=>x[key]);
+  const top5 = sorted.slice(0,5);
+  const top5Pct = sum(top5,x=>pct(x[key],total));
+  return {
+    labels:[...top5.map(x=>x.name), '7 UP3 lainnya'],
+    values:[...top5.map(x=>+pct(x[key],total).toFixed(2)), +(100-top5Pct).toFixed(2)],
+    top5Pct
+  };
+}
+function renderDonutLegend(legendId, d){
+  const el = document.getElementById(legendId);
+  el.innerHTML = d.labels.map((l,i)=>`
+    <div class="dn-row">
+      <span class="dn-dot" style="background:${PALETTE[i]}"></span>
+      <span class="dn-name">${l}</span>
+      <span class="dn-val">${fmtPct(d.values[i])}</span>
+    </div>`).join('');
+}
+function buildDonut(canvasId, legendId, sorted, key){
+  const d = buildDonutData(sorted,key);
+  charts[canvasId] = new Chart(document.getElementById(canvasId), {
+    type:'doughnut',
+    data:{
+      labels:d.labels,
+      datasets:[{data:d.values, backgroundColor:[...PALETTE,OTHER_COLOR], borderWidth:2, borderColor:'#FFFFFF'}]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false, cutout:'66%',
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>c.label+': '+fmtPct(c.raw)}}}
+    }
+  });
+  renderDonutLegend(legendId, d);
+}
+
+/* ---------- PIUTANG: BAR, DONUT, TABLE ---------- */
+charts.piBar = new Chart(document.getElementById('piutangBarChart'), {
+  type:'bar',
+  data:{
+    labels: piSorted.map(x=>x.name),
+    datasets:[{
+      label:'Piutang SAP',
+      data: piSorted.map(x=>+M(x.sap).toFixed(2)),
+      backgroundColor: piSorted.map((x,i)=> i<5 ? C.navy : C.light),
+      borderRadius:3, maxBarThickness:26
+    }]
+  },
+  options:{
+    indexAxis:'y', responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:c=>fmtMiliar(c.raw*1e9)+' ('+fmtPct(pct(piSorted[c.dataIndex].sap,piTotal))+')'}}
+    },
+    scales:{x:gridX, y:{grid:{display:false}}}
+  }
+});
+buildDonut('piutangDonut','piutangLegend', piSorted, 'sap');
+
+(function buildPiutangTable(){
+  const tb = document.querySelector('#piutangTable tbody');
+  piSorted.forEach((x,i)=>{
+    const tr = document.createElement('tr');
+    if(i<5) tr.className = 'highlight';
+    const sel = x.sap - x.ap2t;
+    tr.innerHTML = `
+      <td>${i+1}</td>
+      <td>${x.name}</td>
+      <td>${fmtMiliar(x.sap)}</td>
+      <td>${fmtMiliar(x.ap2t)}</td>
+      <td>${sel===0?'—':fmtMiliar(sel)}</td>
+      <td>${fmtPct(pct(x.sap,piTotal))}</td>`;
+    tb.appendChild(tr);
+  });
+  document.querySelector('#piutangTable tfoot').innerHTML = `<tr class="total">
+    <td>—</td><td>TOTAL</td>
+    <td>${fmtMiliar(piTotal)}</td>
+    <td>${fmtMiliar(piTotalAP2T)}</td>
+    <td>${piTotal-piTotalAP2T===0?'—':fmtMiliar(piTotal-piTotalAP2T)}</td>
+    <td>100,00%</td></tr>`;
+})();
+
+/* ---------- PRR: STACKED BAR, DONUT, TABLE ---------- */
+charts.prrBar = new Chart(document.getElementById('prrBarChart'), {
+  type:'bar',
+  data:{
+    labels: prrSorted.map(x=>x.name),
+    datasets:[
+      {label:'PRR AP2T', data:prrSorted.map(x=>+M(x.ap2t).toFixed(2)), backgroundColor:prrSorted.map((x,i)=>i===0?C.navy:C.blue), borderRadius:3, maxBarThickness:26, stack:'s'},
+      {label:'Selisih SAP–AP2T', data:prrSorted.map(x=>+M(x.sap-x.ap2t).toFixed(2)), backgroundColor:C.red, borderRadius:3, maxBarThickness:26, stack:'s'}
+    ]
+  },
+  options:{
+    indexAxis:'y', responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:legendOpts,
+      tooltip:{callbacks:{label:c=>{
+        const x = prrSorted[c.dataIndex];
+        return c.dataset.label==='PRR AP2T'
+          ? 'PRR AP2T: '+fmtMiliar(x.ap2t)
+          : (x.sap-x.ap2t)>0 ? 'Selisih: '+fmtMiliar(x.sap-x.ap2t) : null;
+      }}}
+    },
+    scales:{
+      x:{stacked:true, grid:{color:C.grid}, ticks:{callback:v=>v.toLocaleString('id-ID')}},
+      y:{stacked:true, grid:{display:false}}
+    }
+  }
+});
+buildDonut('prrDonut','prrLegend', prrSorted, 'sap');
+
+(function buildPrrTable(){
+  const tb = document.querySelector('#prrTable tbody');
+  prrSorted.forEach((x,i)=>{
+    const tr = document.createElement('tr');
+    const sel = x.sap - x.ap2t;
+    if(sel!==0) tr.className = 'alert';
+    else if(i<5) tr.className = 'highlight';
+    tr.innerHTML = `
+      <td>${i+1}</td>
+      <td>${x.name}</td>
+      <td>${fmtMiliar(x.sap)}</td>
+      <td>${fmtMiliar(x.ap2t)}</td>
+      <td class="${sel===0?'val-ok':'val-diff'}">${sel===0?'—':fmtMiliar(sel)}</td>
+      <td>${fmtPct(pct(x.sap,prrTotal))}</td>`;
+    tb.appendChild(tr);
+  });
+  document.querySelector('#prrTable tfoot').innerHTML = `<tr class="total">
+    <td>—</td><td>TOTAL</td>
+    <td>${fmtMiliar(prrTotal)}</td>
+    <td>${fmtMiliar(prrTotalAP2T)}</td>
+    <td>${fmtMiliar(prrTotal-prrTotalAP2T)}</td>
+    <td>100,00%</td></tr>`;
+})();
+
+/* ---------- ANALISIS: RASIO PRR & KONTRIBUSI ---------- */
+const avgRatio = pct(prrTotal, piTotal);
+
+const ratioRows = PIUTANG.map(p=>{
+  const r = PRR.find(x=>x.up3===p.up3);
+  return {name:nameCase(p.up3), ratio: pct(r.sap,p.sap)};
+}).sort((a,b)=>b.ratio-a.ratio);
+
+/* Garis rata-rata vertikal + label di ATAS area plot (di atas batang tertinggi, tidak tertindih batang) */
+const avgLinePlugin = {
+  id:'avgLine',
+  afterDatasetsDraw(chart){
+    if(chart.canvas.id!=='ratioChart') return;
+    const {ctx, chartArea:a, scales:{x}} = chart;
+    if(!a) return;
+    const xPos = x.getPixelForValue(avgRatio);
+    const label = 'Rata-rata '+fmtPct(avgRatio);
+    ctx.save();
+
+    /* garis putus-putus */
+    ctx.beginPath();
+    ctx.setLineDash([6,4]);
+    ctx.strokeStyle = C.gold;
+    ctx.lineWidth = 2;
+    ctx.moveTo(xPos, a.top);
+    ctx.lineTo(xPos, a.bottom);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    /* label di atas area plot, dengan latar putih agar terbaca */
+    ctx.font = 'bold 11px Arial';
+    const padX = 6, padY = 4;
+    const tw = ctx.measureText(label).width;
+    const boxW = tw + padX*2, boxH = 16 + padY;
+    const boxX = Math.min(Math.max(xPos - boxW/2, a.left), a.right - boxW);
+    const boxY = a.top - boxH - 6;
+    ctx.fillStyle = 'rgba(255,255,255,0.95)';
+    ctx.strokeStyle = C.gold;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(boxX, boxY, boxW, boxH, 3) : ctx.rect(boxX, boxY, boxW, boxH);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#8A6A12';
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'center';
+    ctx.fillText(label, boxX + boxW/2, boxY + boxH/2);
+    ctx.restore();
+  }
+};
+
+charts.ratio = new Chart(document.getElementById('ratioChart'), {
+  type:'bar',
+  plugins:[avgLinePlugin],
+  data:{
+    labels: ratioRows.map(r=>r.name),
+    datasets:[{
+      label:'PRR SAP thd Piutang SAP (%)',
+      data: ratioRows.map(r=>+r.ratio.toFixed(2)),
+      backgroundColor: ratioRows.map(r=> r.ratio>avgRatio ? C.red : C.navy),
+      borderRadius:3, maxBarThickness:22
+    }]
+  },
+  options:{
+    indexAxis:'y', responsive:true, maintainAspectRatio:false,
+    layout:{padding:{top:34}},
+    plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>'Rasio: '+fmtPct(c.raw)}}},
+    scales:{
+      x:{min:0, grid:{color:C.grid}, ticks:{callback:v=>v+'%'}},
+      y:{grid:{display:false}}
+    }
+  }
+});
+
+const shareRows = piSorted.map(x=>{
+  const r = PRR.find(p=>p.up3===x.up3);
+  return {name:x.name, piShare: pct(x.sap,piTotal), prrShare: pct(r.sap,prrTotal)};
+});
+charts.share = new Chart(document.getElementById('shareChart'), {
+  type:'bar',
+  data:{
+    labels: shareRows.map(r=>r.name),
+    datasets:[
+      {label:'% Kontribusi Piutang', data:shareRows.map(r=>+r.piShare.toFixed(2)), backgroundColor:C.navy, borderRadius:3, maxBarThickness:14},
+      {label:'% Kontribusi PRR', data:shareRows.map(r=>+r.prrShare.toFixed(2)), backgroundColor:C.gold, borderRadius:3, maxBarThickness:14}
+    ]
+  },
+  options:{
+    indexAxis:'y', responsive:true, maintainAspectRatio:false,
+    plugins:{legend:legendOpts, tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtPct(c.raw)}}},
+    scales:{x:{min:0, grid:{color:C.grid}, ticks:{callback:v=>v+'%'}}, y:{grid:{display:false}}}
+  }
+});
+
+/* ---------- INIT SORTABLE TABLES ---------- */
+document.querySelectorAll('table').forEach(t=>makeTableSortable(t));
+</script>
+</body>
+</html>
