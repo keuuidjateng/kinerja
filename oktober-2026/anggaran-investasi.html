@@ -1280,6 +1280,42 @@ const disZonePlugin = {
   }
 };
 
+/* Titik % Realisasi berpendar seperti radar saat ditunjuk (format grafik % thd SKKO) */
+const disPulsePlugin = {
+  id:'disPulse',
+  afterEvent(chart,args){
+    const li = chart.data.datasets.findIndex(d=>d.type==='line');
+    if(li < 0) return;
+    const e = args.event;
+    let hit = null;
+    if(e.type!=='mouseout'){
+      if(!chart.isDatasetVisible(li)){ chart._pulse = null; return; }
+      const els = chart.getElementsAtEventForMode(e,'nearest',{intersect:true},false);
+      const f = els.find(x=>x.datasetIndex===li);
+      if(f){
+        const pt = chart.getDatasetMeta(li).data[f.index];
+        hit = {x:pt.x, y:pt.y, r:(pt.options.radius||7), color:chart.data.datasets[li].pointBorderColor[f.index]};
+      }
+    }
+    chart._pulse = hit;
+    if(hit) pulseLoop(chart);
+  },
+  afterDatasetsDraw(chart){
+    const pl = chart._pulse;
+    if(!pl || pl.i !== undefined) return;
+    const ctx = chart.ctx, now = performance.now();
+    ctx.save();
+    for(let k = 0; k < 2; k++){
+      const ph = ((now/1400)+k*0.5) % 1;
+      const r = pl.r+4+ph*18, a = 1-ph;
+      ctx.beginPath(); ctx.arc(pl.x,pl.y,r,0,Math.PI*2);
+      ctx.fillStyle = pl.color+alphaHex(a*0.22); ctx.fill();
+      ctx.lineWidth = 2; ctx.strokeStyle = pl.color+alphaHex(a*0.9); ctx.stroke();
+    }
+    ctx.restore();
+  }
+};
+
 /* Garis putus-putus 98,78% membentang dari sumbu kiri ke sumbu kanan */
 const disLinePlugin = {
   id:'disLine',
@@ -1307,7 +1343,7 @@ function renderDisburse(key){
   if(charts.disburse) charts.disburse.destroy();
   charts.disburse = new Chart(document.getElementById('disburseChart'), {
     type:'bar',
-    plugins:[disZonePlugin, disLinePlugin],
+    plugins:[disZonePlugin, disLinePlugin, disPulsePlugin],
     data:{
       labels:list.map(p=>p.code),
       datasets:[
@@ -1332,10 +1368,10 @@ function renderDisburse(key){
           data:list.map(p=>+pct(p.rb,p.aki).toFixed(2)),
           showLine:false,
           pointStyle:'circle',
-          pointRadius:7, pointHoverRadius:9,
+          pointRadius:7, pointHoverRadius:11, pointHitRadius:14,
           pointBackgroundColor:list.map(p=>p.color+'99'),
           pointBorderColor:list.map(p=>p.color),
-          pointBorderWidth:1,
+          pointBorderWidth:1.5,
           yAxisID:'y', order:1, hidden:!v[2]
         }
       ]
