@@ -13,6 +13,7 @@
   --gold:#C9A227;--teal:#0E7C7B;--teal2:#159A98;
   --grey:#6B7280;--lgrey:#E7E9EC;--bg:#FBFBFA;--card:#FFF;
   --red:#B23A2E;--green:#1E7A4C;--line:#D7DBE1;--blue:#2877A8;--purple:#7656A6;
+  --text2:#41526B;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
@@ -47,6 +48,7 @@ button,select,input{font-family:inherit}
 .rule{height:3px;width:55px;background:var(--gold);margin:12px 0 20px}
 .intro{color:#41526B;margin-bottom:20px;max-width:1100px}
 .sub-title{font-family:Arial,serif;font-size:17px;color:var(--navy-d);margin:0 0 14px}
+.topic-h{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--navy);font-weight:700;margin:20px 0 4px}
 
 /* KPI */
 .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0}
@@ -54,6 +56,11 @@ button,select,input{font-family:inherit}
 .card.teal{background:#E3F1F0;border-top-color:var(--teal)}
 .card.gold{background:#F8F1DC;border-top-color:var(--gold)}
 .card.green{background:#E4F1EA;border-top-color:var(--green)}
+.card-score{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0}
+.card-score .value{margin:0;min-width:0;overflow-wrap:anywhere}
+.card-gauge{width:112px;flex:0 0 112px;text-align:center}
+.card-gauge svg{display:block;width:100%;height:auto}
+.gauge-basis{font-size:9px;color:var(--grey);line-height:1.3;margin-top:2px}
 .label{text-transform:uppercase;letter-spacing:.8px;font-size:10.5px;color:var(--grey);font-weight:700}
 .value{font-family:Arial,serif;font-size:22px;font-weight:700;color:var(--navy-d);margin:7px 0}
 .delta{font-size:12px;font-weight:700}
@@ -80,13 +87,26 @@ select:focus,input[type="search"]:focus{border-color:var(--teal);box-shadow:0 0 
 .box-head h3{margin:0}
 .chart{height:360px;position:relative}
 .chart.small-chart{height:320px}
+.chart.small-chart:has(#donutChart){height:340px}
 .chart.tall{height:460px}
 
 /* CHART TOOLBAR (dropdown Urutkan) */
-.chart-toolbar{display:flex;align-items:center;gap:8px;margin:0 0 10px}
-.chart-toolbar label{font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:var(--grey);font-weight:700}
+.chart-toolbar{display:flex;align-items:center;gap:8px;margin:0 0 10px;justify-content:flex-start}
+.chart-toolbar label{font-size:12px;font-weight:700;color:var(--grey);white-space:nowrap}
 .chart-toolbar select{width:auto;min-width:200px;padding:7px 10px;font-size:12.5px}
 .box-head .chart-toolbar{margin:0}
+.ctrl-row{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;margin:2px 0 10px}
+.ctrl-row .chart-toolbar{margin:0}
+
+/* LEGEND (klik untuk tampil/sembunyi) */
+.leg-wrap{display:flex;flex-direction:column;align-items:flex-end;margin-left:auto;gap:2px}
+.leg{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:11.5px;color:var(--text2);justify-content:flex-end}
+.leg span{display:inline-flex;align-items:center;gap:5px;cursor:pointer;user-select:none;transition:opacity .2s}
+.leg span.off{text-decoration:line-through;opacity:.4}
+.leg i{width:11px;height:10px;border-radius:2px;display:inline-block}
+.leg-hint{font-size:10.5px;font-style:italic;color:var(--grey)}
+.leg-left{display:flex;flex-direction:column;align-items:flex-start;gap:2px;margin-top:10px}
+.leg-left .leg{justify-content:flex-start}
 
 /* LEGEND DISBURSE */
 .dis-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11.5px;color:var(--grey);margin-top:10px}
@@ -165,8 +185,13 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
 .reco-card p{font-size:12.5px;color:#DCE4EE;margin:8px 0 0}
 
 /* LEGEND */
-.legend-row{font-size:11.5px;color:var(--grey);margin-top:10px}
-.legend-row .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:middle}
+.ai-donut-legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px 12px;margin:12px 0 6px}
+.ai-donut-legend button{display:flex;align-items:flex-start;gap:7px;border:0;background:none;padding:3px;text-align:left;font:400 10px Arial,sans-serif;color:var(--text2);cursor:pointer}
+.ai-donut-legend button span{min-width:0;overflow-wrap:anywhere}
+.ai-donut-legend i{width:10px;height:10px;flex:0 0 10px;margin-top:1px;border-radius:2px}
+.ai-donut-legend button.off{opacity:.4;text-decoration:line-through}
+.ai-donut-legend button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.leg-hint{font-size:10.5px;font-style:italic;color:var(--grey)}
 
 /* FOOTER */
 .footer{background:var(--navy-d);color:#B9C6D6;padding:25px 0;font-size:11px}
@@ -189,6 +214,7 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
   .rank-row{grid-template-columns:30px 1fr 110px}
 }
 @media(max-width:600px){
+  .chart.small-chart:has(#donutChart){height:300px}
   .wrap,.hero-inner,.tabbar{padding-left:15px;padding-right:15px}
   .cards{grid-template-columns:1fr}
   .filter-grid{grid-template-columns:1fr}
@@ -245,14 +271,14 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     <div class="rule"></div>
 
     <div class="cards">
-      <div class="card"><div class="label">Nilai AI</div><div class="value">Rp 2.563,5 M</div><div class="delta neutral">166 PRK</div><div class="small">Total anggaran investasi 7 program</div></div>
-      <div class="card teal"><div class="label">AKI (eBudget)</div><div class="value">Rp 1.138,7 M</div><div class="delta neutral">44,42% dari Nilai AI</div><div class="small">Terjadwal Jan–Okt</div></div>
-      <div class="card gold"><div class="label">SKKI</div><div class="value">Rp 2.563,5 M</div><div class="delta neutral">100,00% dari Nilai AI</div><div class="small">Basis kontrak</div></div>
-      <div class="card green"><div class="label">Total Komitmen</div><div class="value">Rp 2.354,7 M</div><div class="delta pos">153/166 PRK (92,17%)</div><div class="small">91,86% dari SKKI</div></div>
+      <div class="card" data-g="ov-ai"><div class="label">Nilai AI</div><div class="value">Rp 2.563,5 M</div><div class="delta neutral">166 PRK</div><div class="small">Total anggaran investasi 7 program</div></div>
+      <div class="card teal" data-g="ov-aki"><div class="label">AKI (eBudget)</div><div class="value">Rp 1.138,7 M</div><div class="delta neutral">44,42% dari Nilai AI</div><div class="small">Terjadwal Jan–Okt</div></div>
+      <div class="card gold" data-g="ov-skki"><div class="label">SKKI</div><div class="value">Rp 2.563,5 M</div><div class="delta neutral">100,00% dari Nilai AI</div><div class="small">Basis kontrak</div></div>
+      <div class="card green" data-g="ov-kom"><div class="label">Total Komitmen</div><div class="value">Rp 2.354,7 M</div><div class="delta pos">153/166 PRK (92,17%)</div><div class="small">91,86% dari SKKI</div></div>
     </div>
     <div class="cards">
-      <div class="card green"><div class="label">Realisasi Bayar</div><div class="value">Rp 1.124,9 M</div><div class="delta pos">98,78% dari AKI</div><div class="small">Selisih AKI Rp 13,9 M</div></div>
-      <div class="card gold"><div class="label">Sisa SKKI Belum Kontrak</div><div class="value">Rp 208,8 M</div><div class="delta neg">8,14% dari total SKKI</div><div class="small">Didominasi SAR</div></div>
+      <div class="card green" data-g="ov-rb"><div class="label">Realisasi Bayar</div><div class="value">Rp 1.124,9 M</div><div class="delta pos">98,78% dari AKI</div><div class="small">Selisih AKI Rp 13,9 M</div></div>
+      <div class="card gold" data-g="ov-sisa"><div class="label">Sisa SKKI Belum Kontrak</div><div class="value">Rp 208,8 M</div><div class="delta neg">8,14% dari total SKKI</div><div class="small">Didominasi SAR</div></div>
     </div>
 
     <div class="grid">
@@ -263,30 +289,39 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
       <div class="box">
         <h3>Komposisi Nilai AI per Program</h3>
         <div class="chart small-chart"><canvas id="donutChart"></canvas></div>
-        <div id="donut-legend" class="legend-row"></div>
+        <div id="aiDonutLegend" class="ai-donut-legend" aria-label="Legend komposisi nilai AI per program"></div>
+        <div class="leg-hint" style="text-align:center">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
       </div>
     </div>
 
     <div class="box">
       <h3>Tren Bulanan — AKI (eBudget) vs Realisasi Bayar (Rp Miliar)</h3>
+      <div class="leg-wrap">
+        <div class="leg" id="trendLeg"></div>
+        <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+      </div>
       <div class="chart"><canvas id="trendChart"></canvas></div>
     </div>
 
     <div class="box">
       <div class="box-head">
         <h3>% Realisasi Bayar terhadap AKI per Program</h3>
-        <div class="chart-toolbar"><label for="disSort">Urutkan</label>
+        <div class="chart-toolbar"><label for="disSort">Urutkan berdasarkan:</label>
           <select id="disSort">
+            <option value="all" selected>Semua parameter</option>
             <option value="aki">Nilai AKI</option>
             <option value="rb">Realisasi Bayar</option>
             <option value="pct">% Realisasi Bayar thd AKI</option>
           </select></div>
       </div>
+      <div class="ctrl-row">
+        <div class="leg-wrap">
+          <div class="leg" id="disLegend"></div>
+          <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+        </div>
+      </div>
       <div class="chart"><canvas id="disburseChart"></canvas></div>
       <div class="dis-legend">
-        <span><i class="lg-bar"></i>Nilai AKI (Rp M)</span>
-        <span><i class="lg-bar lg-soft"></i>Realisasi Bayar (Rp M)</span>
-        <span><i class="lg-dot"></i>% Realisasi Bayar thd AKI</span>
         <span><i class="lg-dash" style="border-top-color:#1E7A4C"></i>Total Disburse AKI (98,78%)</span>
         <span><i class="lg-dash" style="border-top-color:#1E7A4C"></i>95–100% (aman)</span>
         <span><i class="lg-dash" style="border-top-color:#C9A227"></i>90–95% / 100–105% (waspada)</span>
@@ -294,12 +329,6 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
       </div>
       <div id="disKey" class="dis-key"></div>
     </div>
-
-    <div class="grid">
-      <div class="callout teal"><b>Realisasi Bayar Hampir Penuh terhadap AKI.</b> Realisasi Rp 1.124,9 M setara 98,78% dari AKI Rp 1.138,7 M. Selisihnya hanya Rp 13,9 M, sehingga hampir seluruh rencana pencairan tahun berjalan sudah tertagih.</div>
-      <div class="callout"><b>Nilai AI Terkonsentrasi di Pemasaran (SAR).</b> SAR memegang Rp 1.415,3 M atau 55,21% dari total Nilai AI. Kontrak SAR baru 90,55% dari SKKI, sehingga kecepatannya sangat menentukan capaian keseluruhan.</div>
-    </div>
-    <div class="callout red"><b>Kontrak Tertinggal di SRN dan SPF.</b> SRN baru terkontrak 14,98% dari SKKI dan SPF hanya 6,22%. Sisa SKKI SRN sebesar Rp 25,3 M belum berbentuk kontrak dan perlu dipantau sebelum akhir tahun anggaran.</div>
   </div>
 </section>
 
@@ -310,22 +339,19 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     <div class="rule"></div>
 
     <div class="cards">
-      <div class="card"><div class="label">Total AKI (eBudget)</div><div class="value">Rp 1.138,7 M</div><div class="small">Jan–Okt terjadwal (Nov–Des kosong)</div></div>
-      <div class="card teal"><div class="label">Total Realisasi Bayar</div><div class="value">Rp 1.124,9 M</div><div class="small">Realisasi s.d. Oktober</div></div>
-      <div class="card green"><div class="label">% Realisasi thd AKI</div><div class="value">98,78%</div><div class="delta pos">Sehat</div><div class="small">Kumulatif s.d. Oktober</div></div>
-      <div class="card gold"><div class="label">Saldo AKI Oktober</div><div class="value">Rp 62,9 M</div><div class="delta neg">Perlu monitoring</div><div class="small">AKI Okt Rp 133,2 M − realisasi Rp 70,4 M</div></div>
+      <div class="card" data-g="bl-aki"><div class="label">Total AKI (eBudget)</div><div class="value">Rp 1.138,7 M</div><div class="small">Jan–Okt terjadwal (Nov–Des kosong)</div></div>
+      <div class="card teal" data-g="bl-rb"><div class="label">Total Realisasi Bayar</div><div class="value">Rp 1.124,9 M</div><div class="small">Realisasi s.d. Oktober</div></div>
+      <div class="card green" data-g="bl-pct"><div class="label">% Realisasi thd AKI</div><div class="value">98,78%</div><div class="delta pos">Sehat</div><div class="small">Kumulatif s.d. Oktober</div></div>
+      <div class="card gold" data-g="bl-saldo"><div class="label">Saldo AKI Oktober</div><div class="value">Rp 62,9 M</div><div class="delta neg">Perlu monitoring</div><div class="small">AKI Okt Rp 133,2 M − realisasi Rp 70,4 M</div></div>
     </div>
 
     <div class="box">
       <h3>Grafik AKI vs Realisasi per Bulan (Rp Miliar)</h3>
+      <div class="leg-wrap">
+        <div class="leg" id="mBarLeg"></div>
+        <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+      </div>
       <div class="chart"><canvas id="monthlyBarChart"></canvas></div>
-    </div>
-
-    <div class="grid">
-      <div class="callout"><b>September — Realisasi Melampaui AKI Bulan Berjalan.</b> Realisasi bayar September tercatat Rp 93,5 M, melampaui AKI terjadwal Rp 44,5 M sebesar +Rp 49,0 M (210%). Pola ini mengindikasikan pencairan tertunda dari periode sebelumnya, sehingga saldo September dan Oktober perlu dibaca bersama.</div>
-      <div class="callout red"><b>Oktober — Realisasi Baru 52,82% dari AKI.</b> AKI Oktober Rp 133,2 M dengan realisasi Rp 70,4 M, menyisakan saldo Rp 62,9 M. Perlu konfirmasi apakah data Oktober sudah final dan rencana pencairan sisanya.</div>
-      <div class="callout teal"><b>Januari–Agustus Realisasi Sesuai AKI.</b> Delapan bulan pertama tahun 2026 menunjukkan realisasi bayar tepat sama dengan AKI (100%) setiap bulannya, menandakan kesesuaian antara rencana pencairan dan realisasi.</div>
-      <div class="callout blue"><b>November &amp; Desember Belum Ada Data.</b> AKI maupun realisasi untuk November dan Desember belum terisi. Perlu konfirmasi ke unit terkait apakah memang tidak ada rencana pencairan atau data belum diinput.</div>
     </div>
 
     <div class="box">
@@ -346,34 +372,42 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     <div class="rule"></div>
 
     <div class="cards">
-      <div class="card"><div class="label">Total PRK Terkontrak</div><div class="value">153 / 166</div><div class="small">92,17% PRK terkontrak</div></div>
-      <div class="card teal"><div class="label">Total Komitmen</div><div class="value">Rp 2.354,7 M</div><div class="small">Nota Dinas + Terkontrak (SPK)</div></div>
-      <div class="card gold"><div class="label">Nota Dinas</div><div class="value">Rp 46,4 M</div><div class="small">1,97% dari total komitmen</div></div>
-      <div class="card green"><div class="label">Permintaan Bayar</div><div class="value">Rp 1.138,3 M</div><div class="delta pos">98,82% tertagih</div><div class="small">Realisasi Rp 1.124,9 M</div></div>
+      <div class="card" data-g="pg-prk"><div class="label">Total PRK Terkontrak</div><div class="value">153 / 166</div><div class="small">92,17% PRK terkontrak</div></div>
+      <div class="card teal" data-g="pg-kom"><div class="label">Total Komitmen</div><div class="value">Rp 2.354,7 M</div><div class="small">Nota Dinas + Terkontrak (SPK)</div></div>
+      <div class="card gold" data-g="pg-nd"><div class="label">Nota Dinas</div><div class="value">Rp 46,4 M</div><div class="small">1,97% dari total komitmen</div></div>
+      <div class="card green" data-g="pg-pb"><div class="label">Permintaan Bayar</div><div class="value">Rp 1.138,3 M</div><div class="delta pos">98,82% tertagih</div><div class="small">Realisasi Rp 1.124,9 M</div></div>
     </div>
 
     <div class="box">
-      <h3>Sebaran AI → AKI → Komitmen → Realisasi per Program (Rp Miliar)</h3>
+      <h3>Perbandingan Setiap Tahap Per Program (Rp Miliar)</h3>
+      <div class="ctrl-row">
+        <div class="chart-toolbar"><label for="pStackSort">Urutkan berdasarkan:</label>
+          <select id="pStackSort">
+            <option value="all" selected>Semua parameter</option>
+            <option value="ai">Nilai AI</option>
+            <option value="aki">AKI</option>
+            <option value="kom">Total Komitmen</option>
+            <option value="rb">Realisasi Bayar</option>
+          </select></div>
+        <div class="leg-wrap">
+          <div class="leg" id="pStackLeg"></div>
+          <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+        </div>
+      </div>
       <div class="chart"><canvas id="programStackChart"></canvas></div>
     </div>
 
     <div class="box">
       <div class="box-head">
         <h3>Progres Terkontrak &amp; Realisasi per Program — Terbesar ke Terkecil</h3>
-        <div class="chart-toolbar"><label for="progSort">Urutkan</label>
+        <div class="chart-toolbar"><label for="progSort">Urutkan berdasarkan:</label>
           <select id="progSort">
+            <option value="all" selected>Semua parameter</option>
             <option value="komPct">Terkontrak (SPK) thd SKKI</option>
             <option value="disPct">Realisasi Bayar thd AKI</option>
           </select></div>
       </div>
       <div id="progList"></div>
-    </div>
-
-    <div class="grid">
-      <div class="callout teal"><b>LUN — Kinerja Terbaik.</b> PRK 41/41 terkontrak, kontrak 99,82% dari SKKI, dan realisasi 98,78% dari AKI. Sisa SKKI hanya Rp 0,9 M.</div>
-      <div class="callout"><b>SAR Menyumbang 56,75% Sisa SKKI.</b> Sisa SKKI SAR Rp 118,5 M dari total Rp 208,8 M. Kontrak sudah 90,55% dari SKKI dan realisasi 99,40% dari AKI, sehingga percepatan kontrak menjadi prioritas utama.</div>
-      <div class="callout red"><b>SRN &amp; SPF — Kontrak Belum Berjalan.</b> SRN baru terkontrak 14,98% dengan sisa Rp 25,3 M. SPF baru 6,22%, dengan komitmen didominasi Nota Dinas Rp 1,42 M, sedangkan SPK baru Rp 94,7 juta.</div>
-      <div class="callout"><b>DIS — Kontrak Perlu Dipercepat.</b> Kontrak DIS 78,28% dari SKKI dengan sisa Rp 55,6 M (26,64% dari total sisa). Realisasi sudah 94,31% dari AKI, tetapi ruang kontrak masih besar.</div>
     </div>
 
     <div class="box">
@@ -399,30 +433,44 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     <div class="rule"></div>
 
     <div class="cards">
-      <div class="card"><div class="label">Total SKKI Terbit</div><div class="value">Rp 1.919,5 M</div><div class="small">4 bidang aktif (UP2K nihil)</div></div>
-      <div class="card teal"><div class="label">Total Terkontrak</div><div class="value">Rp 1.756,5 M</div><div class="delta neutral">91,51% dari SKKI terbit</div><div class="small">Rata-rata bidang</div></div>
-      <div class="card gold"><div class="label">Realisasi Bayar s.d M-4 Okt</div><div class="value">Rp 833,5 M</div><div class="delta neg">47,45% dari nilai terkontrak</div><div class="small">Perlu percepatan</div></div>
-      <div class="card green"><div class="label">Sisa Belum Terbayar</div><div class="value">Rp 923,1 M</div><div class="delta neg">52,55% dari nilai terkontrak</div><div class="small">Perlu tindak lanjut</div></div>
+      <div class="card" data-g="bd-skki"><div class="label">Total SKKI Terbit</div><div class="value">Rp 1.919,5 M</div><div class="small">4 bidang aktif (UP2K nihil)</div></div>
+      <div class="card teal" data-g="bd-kon"><div class="label">Total Terkontrak</div><div class="value">Rp 1.756,5 M</div><div class="delta neutral">91,51% dari SKKI terbit</div><div class="small">Rata-rata bidang</div></div>
+      <div class="card gold" data-g="bd-rb"><div class="label">Realisasi Bayar s.d M-4 Okt</div><div class="value">Rp 833,5 M</div><div class="delta neg">47,45% dari nilai terkontrak</div><div class="small">Perlu percepatan</div></div>
+      <div class="card green" data-g="bd-sisa"><div class="label">Sisa Belum Terbayar</div><div class="value">Rp 923,1 M</div><div class="delta neg">52,55% dari nilai terkontrak</div><div class="small">Perlu tindak lanjut</div></div>
     </div>
 
     <div class="grid">
       <div class="box">
         <h3>SKKI vs Terkontrak vs Realisasi per Bidang (Rp Miliar)</h3>
-        <div class="chart-toolbar"><label for="bidangBarSort">Urutkan</label>
-          <select id="bidangBarSort" data-chart="bidangBar">
-            <option value="skki">SKKI Terbit</option>
-            <option value="kon">Total Terkontrak</option>
-            <option value="rb">Realisasi Bayar</option>
-          </select></div>
+        <div class="ctrl-row">
+          <div class="chart-toolbar"><label for="bidangBarSort">Urutkan berdasarkan:</label>
+              <select id="bidangBarSort" data-chart="bidangBar">
+                <option value="all" selected>Semua parameter</option>
+                <option value="skki">SKKI Terbit</option>
+                <option value="kon">Total Terkontrak</option>
+                <option value="rb">Realisasi Bayar</option>
+              </select></div>
+          <div class="leg-wrap">
+            <div class="leg" id="bdBarLeg"></div>
+            <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+          </div>
+        </div>
         <div class="chart small-chart"><canvas id="bidangBarChart"></canvas></div>
       </div>
       <div class="box">
         <h3>% Terkontrak vs % Realisasi per Bidang</h3>
-        <div class="chart-toolbar"><label for="bidangPctSort">Urutkan</label>
-          <select id="bidangPctSort" data-chart="bidangPct">
-            <option value="pctKon">% Terkontrak</option>
-            <option value="pctRb">% Realisasi thd Kontrak</option>
-          </select></div>
+        <div class="ctrl-row">
+          <div class="chart-toolbar"><label for="bidangPctSort">Urutkan berdasarkan:</label>
+              <select id="bidangPctSort" data-chart="bidangPct">
+                <option value="all" selected>Semua parameter</option>
+                <option value="pctKon">% Terkontrak</option>
+                <option value="pctRb">% Realisasi thd Kontrak</option>
+              </select></div>
+          <div class="leg-wrap">
+            <div class="leg" id="bdPctLeg"></div>
+            <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+          </div>
+        </div>
         <div class="chart small-chart"><canvas id="bidangPctChart"></canvas></div>
       </div>
     </div>
@@ -430,13 +478,6 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     <div class="box">
       <h3>Sisa Belum Terbayar per Bidang (Rp Miliar)</h3>
       <div class="chart small-chart"><canvas id="bidangSisaChart"></canvas></div>
-    </div>
-
-    <div class="grid">
-      <div class="callout red"><b>NIAGA — Penyumbang Sisa Terbesar.</b> Sisa belum terbayar NIAGA Rp 681,2 M, setara 73,80% dari total sisa Rp 923,1 M. Realisasi baru 48,14% dari nilai kontrak Rp 1.313,5 M.</div>
-      <div class="callout"><b>DIS — Kontrak Tinggi, Realisasi Baru 48%.</b> Kontrak DIS mencapai 85,79% dari SKKI (Rp 412,8 M dari Rp 481,2 M), dengan realisasi 48,42% dari kontrak. Sisa Rp 212,9 M atau 23,07% dari total sisa.</div>
-      <div class="callout red"><b>SARANA — Gap Kontrak vs Penagihan Terbesar.</b> SARANA sudah mengontrak 99,77% dari SKKI, tetapi realisasi bayar hanya Rp 1,2 M atau 4,07% dari kontrak. Sisa Rp 29,0 M menunjukkan penagihan yang sangat tertinggal.</div>
-      <div class="callout teal"><b>K3L — Tuntas 100%.</b> Kontrak dan realisasi bayar K3L tercatat 100% dari SKKI tanpa sisa belum terbayar. Nilainya kecil, yakni Rp 2,6 juta.</div>
     </div>
 
     <div class="box">
@@ -462,30 +503,44 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     <div class="rule"></div>
 
     <div class="cards">
-      <div class="card"><div class="label">Total SKKI Terbit</div><div class="value">Rp 618,7 M</div><div class="small">14 unit (UP3 &amp; UP2D)</div></div>
-      <div class="card teal"><div class="label">Total Terkontrak</div><div class="value">Rp 551,8 M</div><div class="delta neutral">89,18% dari SKKI terbit</div><div class="small">Rata-rata unit</div></div>
-      <div class="card gold"><div class="label">Realisasi Bayar s.d M-4 Okt</div><div class="value">Rp 291,4 M</div><div class="delta neg">52,81% dari nilai terkontrak</div><div class="small">Perlu percepatan</div></div>
-      <div class="card green"><div class="label">Sisa Belum Terbayar</div><div class="value">Rp 260,4 M</div><div class="delta neg">47,19% dari nilai terkontrak</div><div class="small">Perlu tindak lanjut</div></div>
+      <div class="card" data-g="un-skki"><div class="label">Total SKKI Terbit</div><div class="value">Rp 618,7 M</div><div class="small">14 unit (UP3 &amp; UP2D)</div></div>
+      <div class="card teal" data-g="un-kon"><div class="label">Total Terkontrak</div><div class="value">Rp 551,8 M</div><div class="delta neutral">89,18% dari SKKI terbit</div><div class="small">Rata-rata unit</div></div>
+      <div class="card gold" data-g="un-rb"><div class="label">Realisasi Bayar s.d M-4 Okt</div><div class="value">Rp 291,4 M</div><div class="delta neg">52,81% dari nilai terkontrak</div><div class="small">Perlu percepatan</div></div>
+      <div class="card green" data-g="un-sisa"><div class="label">Sisa Belum Terbayar</div><div class="value">Rp 260,4 M</div><div class="delta neg">47,19% dari nilai terkontrak</div><div class="small">Perlu tindak lanjut</div></div>
     </div>
 
     <div class="grid">
       <div class="box">
         <h3>SKKI vs Terkontrak vs Realisasi per Unit (Rp Miliar)</h3>
-        <div class="chart-toolbar"><label for="unitBarSort">Urutkan</label>
-          <select id="unitBarSort" data-chart="unitBar">
-            <option value="skki">SKKI Terbit</option>
-            <option value="kon">Total Terkontrak</option>
-            <option value="rb">Realisasi Bayar</option>
-          </select></div>
+        <div class="ctrl-row">
+          <div class="chart-toolbar"><label for="unitBarSort">Urutkan berdasarkan:</label>
+              <select id="unitBarSort" data-chart="unitBar">
+                <option value="all" selected>Semua parameter</option>
+                <option value="skki">SKKI Terbit</option>
+                <option value="kon">Total Terkontrak</option>
+                <option value="rb">Realisasi Bayar</option>
+              </select></div>
+          <div class="leg-wrap">
+            <div class="leg" id="unBarLeg"></div>
+            <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+          </div>
+        </div>
         <div class="chart tall"><canvas id="unitBarChart"></canvas></div>
       </div>
       <div class="box">
         <h3>% Terkontrak vs % Realisasi per Unit</h3>
-        <div class="chart-toolbar"><label for="unitPctSort">Urutkan</label>
-          <select id="unitPctSort" data-chart="unitPct">
-            <option value="pctKon">% Terkontrak</option>
-            <option value="pctRb">% Realisasi thd Kontrak</option>
-          </select></div>
+        <div class="ctrl-row">
+          <div class="chart-toolbar"><label for="unitPctSort">Urutkan berdasarkan:</label>
+              <select id="unitPctSort" data-chart="unitPct">
+                <option value="all" selected>Semua parameter</option>
+                <option value="pctKon">% Terkontrak</option>
+                <option value="pctRb">% Realisasi thd Kontrak</option>
+              </select></div>
+          <div class="leg-wrap">
+            <div class="leg" id="unPctLeg"></div>
+            <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+          </div>
+        </div>
         <div class="chart tall"><canvas id="unitPctChart"></canvas></div>
       </div>
     </div>
@@ -493,16 +548,6 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     <div class="box">
       <h3>Sisa Belum Terbayar per Unit (Rp Miliar)</h3>
       <div class="chart"><canvas id="unitSisaChart"></canvas></div>
-    </div>
-
-    <div class="grid">
-      <div class="callout red"><b>UP3 Semarang — Realisasi Terendah &amp; Sisa Terbesar.</b> SKKI terbesar Rp 97,2 M dengan kontrak 89,02%, tetapi realisasi baru 38,31% dari kontrak. Sisa Rp 53,4 M atau 20,51% dari total sisa unit.</div>
-      <div class="callout"><b>UP3 Kudus — Sisa Terbesar Kedua.</b> Sisa belum terbayar Rp 41,8 M (16,07% dari total sisa) dengan realisasi 48,09% dari kontrak. Kontrak sudah 93,39% dari SKKI, sehingga fokus utama ada pada penagihan.</div>
-      <div class="callout red"><b>UP2D Jateng &amp; DIY — Kontrak Terendah.</b> Kontrak baru 71,03% dari SKKI terbit, terendah di antara seluruh unit. Sisa belum terbayar Rp 28,9 M dengan realisasi 50,62% dari kontrak.</div>
-      <div class="callout teal"><b>UP3 Surakarta — Realisasi Tertinggi di Luar Yogyakarta.</b> Realisasi 65,07% dari kontrak, tertinggi di antara unit selain UP3 Yogyakarta. Pola penagihannya layak dijadikan referensi.</div>
-      <div class="callout"><b>UP3 Cilacap — Kontrak Melampaui SKKI.</b> Total kontrak Rp 30.474,5 juta melampaui SKKI Rp 30.376,7 juta (100,32%), selisih Rp 97,8 juta. Perlu verifikasi kesesuaian nilai kontrak dengan SKKI.</div>
-      <div class="callout teal"><b>UP3 Yogyakarta — Tuntas 100%.</b> Kontrak dan realisasi bayar mencapai 100% dari SKKI dengan sisa nihil. Pola pengelolaannya layak direplikasi ke unit lain.</div>
-      <div class="callout"><b>UP3 Sukoharjo — Realisasi Rendah.</b> Kontrak sudah 97,27% dari SKKI, tetapi realisasi hanya 44,14% dari kontrak. Sisa Rp 12,3 M perlu didorong agar segera dicairkan.</div>
     </div>
 
     <div class="box">
@@ -525,7 +570,6 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
   <div class="section">
     <h2 class="section-title"><span class="num">06</span>Analisis &amp; Rekomendasi</h2>
     <div class="rule"></div>
-
     <h3 class="sub-title">Temuan Utama</h3>
     <div class="insight-grid">
       <div class="ins ok">
@@ -552,8 +596,99 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
         <div class="ins-title">Pencairan September Mengimbangi Oktober</div>
         <div class="ins-text">Realisasi September yang melampaui AKI (+Rp 49,0 M) menutup sebagian saldo Oktober (Rp 62,9 M), sehingga saldo kumulatif AKI tersisa Rp 13,9 M.</div>
       </div>
+      <div class="ins danger">
+        <div class="ins-title">Baru 44,42% Nilai AI Terjadwal di AKI</div>
+        <div class="ins-text">AKI (eBudget) Jan–Okt Rp 1.138,7 M dari Nilai AI Rp 2.563,5 M. Artinya Rp 1.424,8 M (55,58%) nilai investasi belum memiliki jadwal pencairan, dan November–Desember masih kosong. Realisasi terhadap Nilai AI berhenti di 43,88%.</div>
+      </div>
+      <div class="ins warn">
+        <div class="ins-title">Run-rate 2026 Tidak Cukup Menyerap SKKI</div>
+        <div class="ins-text">Rata-rata realisasi Januari–Oktober Rp 112,5 M per bulan. Untuk mengejar sisa Rp 1.438,7 M (SKKI − realisasi) dalam dua bulan, diperlukan sekitar Rp 719,3 M per bulan — enam kali lipat run-rate berjalan.</div>
+      </div>
+      <div class="ins warn">
+        <div class="ins-title">Komitmen Sudah Ada, Tagihan Belum Masuk</div>
+        <div class="ins-text">Total komitmen Rp 2.354,7 M tetapi permintaan bayar baru Rp 1.138,3 M (48,34%). Sebanyak Rp 1.229,9 M kontrak yang sudah berjalan belum ditagihkan — cadangan percepatan realisasi terbesar, di luar persoalan kontrak baru.</div>
+      </div>
+      <div class="ins danger">
+        <div class="ins-title">SPF: 93,75% Komitmennya Masih Nota Dinas</div>
+        <div class="ins-text">Komitmen SPF Rp 1,52 M didominasi Nota Dinas Rp 1,42 M, sedangkan SPK baru Rp 94,7 juta (6,22% dari SKKI). Komitmen jenis ini belum berbentuk kontrak kerja dan berisiko tidak terserap tahun berjalan.</div>
+      </div>
+      <div class="ins warn">
+        <div class="ins-title">3 Program Menguasai 89,00% Nilai AI</div>
+        <div class="ins-text">SAR (55,21%), LUN (19,37%), dan DIS (14,42%) memegang 89,00% Nilai AI. Empat program lain (LOS, EDP, SRN, SPF) hanya 11,00% sehingga pergerakan aggregate hampir sepenuhnya ditentukan tiga program tersebut.</div>
+      </div>
+      <div class="ins">
+        <div class="ins-title">Backlog Tagihan Kecil namun Terpusat</div>
+        <div class="ins-text">Permintaan bayar yang belum terealisasi hanya Rp 13,5 M, terbesar di LUN (Rp 5,7 M), DIS (Rp 4,1 M), dan SAR (Rp 2,8 M). Persoalan utama bukan pencairan, melainkan pengajuan tagihan atas kontrak yang sudah ada.</div>
+      </div>
+      <div class="ins ok">
+        <div class="ins-title">Rekonsiliasi Kontrak &amp; Realisasi Lintas Basis Cocok</div>
+        <div class="ins-text">Total SPK program Rp 2.308,3 M sama persis dengan jumlah kontrak bidang (Rp 1.756,5 M) ditambah unit (Rp 551,8 M). Realisasi bayar juga cocok: Rp 1.124,9 M = Rp 833,5 M bidang + Rp 291,4 M unit (selisih nol).</div>
+      </div>
+      <div class="ins warn">
+        <div class="ins-title">SKKI Lintas Basis Selisih Rp 25,3 M</div>
+        <div class="ins-text">SKKI program Rp 2.563,5 M dibandingkan bidang + unit Rp 2.538,2 M menyisakan selisih Rp 25,3 M — setingkat sisa SKKI SRN (Rp 25,3 M). Kemungkinan ada SKKI yang belum terdistribusi ke bidang/unit dan perlu diverifikasi.</div>
+      </div>
+      <div class="ins danger">
+        <div class="ins-title">13 PRK Belum Terkontrak, 10 di Antaranya SAR</div>
+        <div class="ins-text">Dari 166 PRK, baru 153 terkontrak (92,17%). Rinciannya SAR 10 item, SRN 2 item, DIS 1 item. Empat program (LUN, LOS, EDP, SPF) sudah 100% PRK terkontrak.</div>
+      </div>
+      <div class="ins warn">
+        <div class="ins-title">Hanya 5 dari 14 Unit dengan Realisasi di Atas 60%</div>
+        <div class="ins-text">Realisasi terhadap kontrak: UP3 Yogyakarta 100%, UP3 Surakarta 65,07%, UP3 Klaten 64,71%, UP3 Grobogan 60,86%, UP3 Purwokerto 60,01%. Sembilan unit lainnya, termasuk UP3 Semarang (38,31%), masih di bawah 60%.</div>
+      </div>
+      <div class="ins">
+        <div class="ins-title">Nilai AI = SKKI, Tidak Ada Ruang Reallocasi</div>
+        <div class="ins-text">SKKI Rp 2.563,5 M sama dengan Nilai AI (100,00%, selisih pembulatan Rp 265). Seluruh pagu sudah menjadi dasar komitmen sehingga percepatan hanya bisa lewat jadwal pencairan dan penagihan, bukan lewat realokasi pagu.
+        </div>
+      </div>
     </div>
 
+    <h3 class="sub-title" style="margin-top:30px">Temuan per Tab</h3>
+    <p class="intro" style="margin-bottom:14px">Seluruh uraian temuan yang sebelumnya tersebar di setiap tab dikumpulkan di sini. Angka pada setiap uraian sama dengan kartu skor, grafik, dan tabel pada tab asalnya.</p>
+
+    <h4 class="topic-h">Tab 01 · Ringkasan Eksekutif</h4>
+    <div class="grid">
+      <div class="callout teal"><b>Realisasi Bayar Hampir Penuh terhadap AKI.</b> Realisasi Rp 1.124,9 M setara 98,78% dari AKI Rp 1.138,7 M. Selisihnya hanya Rp 13,9 M, sehingga hampir seluruh rencana pencairan tahun berjalan sudah tertagih.</div>
+      <div class="callout"><b>Nilai AI Terkonsentrasi di Pemasaran (SAR).</b> SAR memegang Rp 1.415,3 M atau 55,21% dari total Nilai AI. Kontrak SAR baru 90,55% dari SKKI, sehingga kecepatannya sangat menentukan capaian keseluruhan.</div>
+      <div class="callout red"><b>Kontrak Tertinggal di SRN dan SPF.</b> SRN baru terkontrak 14,98% dari SKKI dan SPF hanya 6,22%. Sisa SKKI SRN sebesar Rp 25,3 M belum berbentuk kontrak dan perlu dipantau sebelum akhir tahun anggaran.</div>
+    </div>
+
+    <h4 class="topic-h">Tab 02 · Realisasi Bulanan</h4>
+    <div class="grid">
+      <div class="callout"><b>September — Realisasi Melampaui AKI Bulan Berjalan.</b> Realisasi bayar September tercatat Rp 93,5 M, melampaui AKI terjadwal Rp 44,5 M sebesar +Rp 49,0 M (210%). Pola ini mengindikasikan pencairan tertunda dari periode sebelumnya, sehingga saldo September dan Oktober perlu dibaca bersama.</div>
+      <div class="callout red"><b>Oktober — Realisasi Baru 52,82% dari AKI.</b> AKI Oktober Rp 133,2 M dengan realisasi Rp 70,4 M, menyisakan saldo Rp 62,9 M. Perlu konfirmasi apakah data Oktober sudah final dan rencana pencairan sisanya.</div>
+      <div class="callout teal"><b>Januari–Agustus Realisasi Sesuai AKI.</b> Delapan bulan pertama tahun 2026 menunjukkan realisasi bayar tepat sama dengan AKI (100%) setiap bulannya, menandakan kesesuaian antara rencana pencairan dan realisasi.</div>
+      <div class="callout blue"><b>November &amp; Desember Belum Ada Data.</b> AKI maupun realisasi untuk November dan Desember belum terisi. Perlu konfirmasi ke unit terkait apakah memang tidak ada rencana pencairan atau data belum diinput.</div>
+    </div>
+
+    <h4 class="topic-h">Tab 03 · Program &amp; Komitmen</h4>
+    <div class="grid">
+      <div class="callout teal"><b>LUN — Kinerja Terbaik.</b> PRK 41/41 terkontrak, kontrak 99,82% dari SKKI, dan realisasi 98,78% dari AKI. Sisa SKKI hanya Rp 0,9 M.</div>
+      <div class="callout"><b>SAR Menyumbang 56,75% Sisa SKKI.</b> Sisa SKKI SAR Rp 118,5 M dari total Rp 208,8 M. Kontrak sudah 90,55% dari SKKI dan realisasi 99,40% dari AKI, sehingga percepatan kontrak menjadi prioritas utama.</div>
+      <div class="callout red"><b>SRN &amp; SPF — Kontrak Belum Berjalan.</b> SRN baru terkontrak 14,98% dengan sisa Rp 25,3 M. SPF baru 6,22%, dengan komitmen didominasi Nota Dinas Rp 1,42 M, sedangkan SPK baru Rp 94,7 juta.</div>
+      <div class="callout"><b>DIS — Kontrak Perlu Dipercepat.</b> Kontrak DIS 78,28% dari SKKI dengan sisa Rp 55,6 M (26,64% dari total sisa). Realisasi sudah 94,31% dari AKI, tetapi ruang kontrak masih besar.</div>
+    </div>
+
+    <h4 class="topic-h">Tab 04 · AI Per Bidang</h4>
+    <div class="grid">
+      <div class="callout red"><b>NIAGA — Penyumbang Sisa Terbesar.</b> Sisa belum terbayar NIAGA Rp 681,2 M, setara 73,80% dari total sisa Rp 923,1 M. Realisasi baru 48,14% dari nilai kontrak Rp 1.313,5 M.</div>
+      <div class="callout"><b>DIS — Kontrak Tinggi, Realisasi Baru 48%.</b> Kontrak DIS mencapai 85,79% dari SKKI (Rp 412,8 M dari Rp 481,2 M), dengan realisasi 48,42% dari kontrak. Sisa Rp 212,9 M atau 23,07% dari total sisa.</div>
+      <div class="callout red"><b>SARANA — Gap Kontrak vs Penagihan Terbesar.</b> SARANA sudah mengontrak 99,77% dari SKKI, tetapi realisasi bayar hanya Rp 1,2 M atau 4,07% dari kontrak. Sisa Rp 29,0 M menunjukkan penagihan yang sangat tertinggal.</div>
+      <div class="callout teal"><b>K3L — Tuntas 100%.</b> Kontrak dan realisasi bayar K3L tercatat 100% dari SKKI tanpa sisa belum terbayar. Nilainya kecil, yakni Rp 2,6 juta.</div>
+    </div>
+
+    <h4 class="topic-h">Tab 05 · AI Per Unit</h4>
+    <div class="grid">
+      <div class="callout red"><b>UP3 Semarang — Realisasi Terendah &amp; Sisa Terbesar.</b> SKKI terbesar Rp 97,2 M dengan kontrak 89,02%, tetapi realisasi baru 38,31% dari kontrak. Sisa Rp 53,4 M atau 20,51% dari total sisa unit.</div>
+      <div class="callout"><b>UP3 Kudus — Sisa Terbesar Kedua.</b> Sisa belum terbayar Rp 41,8 M (16,07% dari total sisa) dengan realisasi 48,09% dari kontrak. Kontrak sudah 93,39% dari SKKI, sehingga fokus utama ada pada penagihan.</div>
+      <div class="callout red"><b>UP2D Jateng &amp; DIY — Kontrak Terendah.</b> Kontrak baru 71,03% dari SKKI terbit, terendah di antara seluruh unit. Sisa belum terbayar Rp 28,9 M dengan realisasi 50,62% dari kontrak.</div>
+      <div class="callout teal"><b>UP3 Surakarta — Realisasi Tertinggi di Luar Yogyakarta.</b> Realisasi 65,07% dari kontrak, tertinggi di antara unit selain UP3 Yogyakarta. Pola penagihannya layak dijadikan referensi.</div>
+      <div class="callout"><b>UP3 Cilacap — Kontrak Melampaui SKKI.</b> Total kontrak Rp 30.474,5 juta melampaui SKKI Rp 30.376,7 juta (100,32%), selisih Rp 97,8 juta. Perlu verifikasi kesesuaian nilai kontrak dengan SKKI.</div>
+      <div class="callout teal"><b>UP3 Yogyakarta — Tuntas 100%.</b> Kontrak dan realisasi bayar mencapai 100% dari SKKI dengan sisa nihil. Pola pengelolaannya layak direplikasi ke unit lain.</div>
+      <div class="callout"><b>UP3 Sukoharjo — Realisasi Rendah.</b> Kontrak sudah 97,27% dari SKKI, tetapi realisasi hanya 44,14% dari kontrak. Sisa Rp 12,3 M perlu didorong agar segera dicairkan.</div>
+    </div>
+
+    <h3 class="sub-title" style="margin-top:30px">Rekomendasi</h3>
     <div class="reco">
       <div class="reco-card"><div class="k">Rekomendasi 1 · Kontrak SAR</div><p>Prioritaskan lelang dan kontrak untuk sisa SKKI SAR Rp 118,5 M (56,75% dari total sisa) agar tidak menumpuk menjelang akhir tahun anggaran.</p></div>
       <div class="reco-card"><div class="k">Rekomendasi 2 · SRN &amp; SPF</div><p>Kontrak SRN baru 14,98% dengan sisa Rp 25,3 M, dan SPF baru 6,22%. Susun jadwal kontrak per program dan pastikan status SPK SPF sebagai pengganti Nota Dinas.</p></div>
@@ -562,7 +697,15 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
       <div class="reco-card"><div class="k">Rekomendasi 5 · Penagihan SARANA</div><p>Kontrak SARANA hampir penuh (99,77%), tetapi realisasi baru 4,07%. Konfirmasi status BAST dan invoicing agar sisa Rp 29,0 M dapat segera dicairkan.</p></div>
       <div class="reco-card"><div class="k">Rekomendasi 6 · UP3 Semarang &amp; Kudus</div><p>Kedua unit menyumbang Rp 95,2 M (36,58%) dari sisa belum terbayar unit. Berikan pendampingan khusus untuk mempercepat penagihan.</p></div>
       <div class="reco-card"><div class="k">Rekomendasi 7 · Verifikasi Cilacap</div><p>Nilai kontrak Cilacap melampaui SKKI sebesar Rp 97,8 juta. Pastikan tidak ada kesalahan input atau kontrak tambahan yang belum memiliki dasar SKKI.</p></div>
-      <div class="reco-card"><div class="k">Rekomendasi 8 · Rekonsiliasi Data</div><p>Total SPK Program (Rp 2.308,3 M) berbeda dengan total kontrak Bidang (Rp 1.756,5 M) dan Unit (Rp 551,8 M). Sisa SKKI Program (Rp 208,8 M) dan sisa terbayar Bidang/Unit juga memiliki basis berbeda sehingga tidak boleh dijumlahkan.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 8 · Rekonsiliasi Data</div><p>Total SPK Program (Rp 2.308,3 M) sudah sama persis dengan kontrak Bidang (Rp 1.756,5 M) + Unit (Rp 551,8 M), dan realisasi juga cocok (Rp 1.124,9 M). Yang masih perlu direkonsiliasi adalah SKKI: program Rp 2.563,5 M versus bidang + unit Rp 2.538,2 M (selisih Rp 25,3 M, setingkat sisa SKKI SRN). Sisa SKKI Program (Rp 208,8 M) dan sisa terbayar Bidang/Unit tetap berbasis berbeda sehingga tidak boleh dijumlahkan.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 9 · Jadwal AKI Nov–Des</div><p>AKI Rp 1.424,8 M (55,58% Nilai AI) belum memiliki profil pencairan. Minta setiap program mengisi rencana November–Desember beserta PRK dan kontrak pendampingnya, supaya eBudget kembali menjadi baseline yang bisa ditagih, bukan sekadar sisa pagu.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 10 · Recovery Plan SKKI</div><p>Dengan run-rate Rp 112,5 M/bulan, penyerapan penuh SKKI tahun 2026 tidak tercapai. Susun skenario: (a) percepatan penagihan atas kontrak existing, (b) perpanjangan/renegosiasi jadwal, atau (c) usulan revisi AI–SKKI untuk paket yang dipastikan tidak berjalan, sebelum tahun anggaran tertutup.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 11 · Kampanye Penagihan 90 Hari</div><p>Rp 1.229,9 M komitmen yang sudah berkontrak belum diajukan sebagai permintaan bayar. Tetapkan target bertingkat per program/bidang/unit (misal minimal 15% dari outstanding tiap bulan) dan pantau rasio permintaan bayar terhadap komitmen, bukan hanya realisasi terhadap AKI.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 12 · Konversi Nota Dinas ke SPK</div><p>Nota Dinas Rp 46,4 M (1,97% komitmen), dari mana Rp 1,42 M ada di SPF. Cantumkan batas waktu konversi per Nota Dinas pada daftar monitoring, dan laporkan yang berusia lebih dari 60 hari sebagai risiko tidak terserap.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 13 · Sanksi &amp; Review Nilai AI Tidak Bergerak</div><p>SKKI = 100% Nilai AI, sehingga tidak ada ruang realokasi. Tambahkan indikator “nilai AI/SKKI yang tidak berubah selama dua triwulan” per program; SRN (kontrak 14,98%) dan SPF (6,22%) adalah kandidat pertama untuk review pagu dan kelayakan paket.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 14 · Quality Gate Data Bulanan</div><p>Oktober baru terisi 52,82% sementara September melampaui AKI (210%). Terapkan pemeriksaan rutin: realisasi di luar rentang 80–120% AKI bulan berjalan wajib disertai catatan (pencairan periode sebelumnya, retensi, atau koreksi) agar saldo bulan tidak salah dibaca.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 15 · Penambahan Dimensi Monitoring</div><p>Tambahkan kolom umur sisa SKKI (bulan sejak SKKI terbit), status lelang, dan nama kontraktor/SPK pada tabel program–bidang–unit. Tanpa umur pagu, paket macet seperti sebagian SRN sulit dibedakan dari paket yang memang baru dimulai.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 16 · Belajar dari yang Tuntas</div><p>Dokumentasikan praktik UP3 Yogyakarta dan K3L (100% kontrak dan realisasi) serta LUN/LOS (PRK seluruhnya terkontrak): pola lelang, jadwal BAST, dan ritme penagihan. Jadikan acuan pendampingan untuk UP3 Semarang, UP3 Sukoharjo, UP3 Kudus, dan program SRN.</p></div>
     </div>
 
     <div class="callout red"><b>Catatan Basis Data:</b> Basis data pada tab Realisasi Bulanan, AI Per Bidang, dan AI Per Unit adalah berbeda, sehingga sisa/ saldo dari ketiga tab tidak dijumlahkan. Saldo pada tab Realisasi Bulanan adalah saldo AKI Bulan Oktober, sedangkan sisa pada tab AI Per Bidang dan AI Per Unit adalah sisa belum terbayar berdasarkan nilai terkontrak.</div>
@@ -598,7 +741,50 @@ const fmtPct = (v,d=2) => v.toLocaleString('id-ID',{minimumFractionDigits:d,maxi
 const fmtN1 = v => v.toLocaleString('id-ID',{minimumFractionDigits:1,maximumFractionDigits:1});
 
 const charts = {};
-const legendOpts = {position:'top',align:'end',labels:{boxWidth:10,boxHeight:10,font:{size:11}}};
+/* ---------- LEGEND HTML UNTUK GRAFIK BATANG (klik = transparan/sembunyi) ---------- */
+const LEGDEF = {};                                   // kunci chart -> {el, series}
+function togArr(a,i){                                 // minimal satu seri tetap tampil
+  if(a[i] && a.filter(Boolean).length===1) return false;
+  a[i] = !a[i]; return true;
+}
+const LEGVIS = {};                                   // elemen legend -> status tampil per seri
+function defLegend(chartKey, el, series){
+  LEGDEF[chartKey] = {el, series};
+  if(!LEGVIS[el]) LEGVIS[el] = series.map(()=>true);
+}
+function legParam(chartKey, map, val){                 // dropdown = filter parameter pada legend
+  const d = LEGDEF[chartKey]; if(!d) return;
+  const only = map[val];
+  LEGVIS[d.el] = d.series.map((x,i)=> only === -1 ? true : i === only);
+}
+function legVis(chartKey){
+  const d = LEGDEF[chartKey];
+  return (d && LEGVIS[d.el]) || [];
+}
+function legSet(chartKey){
+  const d = LEGDEF[chartKey]; if(!d) return;
+  const c = charts[chartKey]; if(!c) return;
+  const el = document.getElementById(d.el);
+  const v = LEGVIS[d.el];
+  el.innerHTML = d.series.map((x,i)=>`<span data-i="${i}" class="${v[i]?'':'off'}"><i style="background:${x.color}"></i>${x.label}</span>`).join('');
+  el.onclick = e=>{
+    const t = e.target.closest('span[data-i]'); if(!t) return;
+    if(!togArr(v, +t.dataset.i)) return;
+    legSet(chartKey);
+  };
+  v.forEach((on,i)=>c.setDatasetVisibility(i,on));
+  c.update('none');
+}
+
+defLegend('monthlyBar','mBarLeg',[{label:'AKI / eBudget (Rp M)',color:C.pln},{label:'Realisasi Bayar (Rp M)',color:C.greenL}]);
+defLegend('trend','trendLeg',[{label:'AKI / eBudget (Rp M)',color:C.pln},{label:'Realisasi Bayar (Rp M)',color:C.greenL}]);
+defLegend('programStack','pStackLeg',[{label:'Nilai AI',color:C.pln},{label:'AKI',color:C.blue},{label:'Total Komitmen',color:C.gold},{label:'Realisasi Bayar',color:C.greenL}]);
+defLegend('disburse','disLegend',[{label:'Nilai AKI (Rp M)',color:C.pln},{label:'Realisasi Bayar (Rp M)',color:'#0B2E4F73'},{label:'% Realisasi Bayar thd AKI',color:'#0B2E4F99'}]);
+defLegend('bidangBar','bdBarLeg',[{label:'SKKI Terbit',color:C.pln},{label:'Total Terkontrak',color:C.gold},{label:'Realisasi Bayar',color:C.greenL}]);
+defLegend('bidangPct','bdPctLeg',[{label:'% Terkontrak',color:C.pln},{label:'% Realisasi thd Kontrak',color:C.greenL}]);
+defLegend('unitBar','unBarLeg',[{label:'SKKI Terbit',color:C.pln},{label:'Total Terkontrak',color:C.gold},{label:'Realisasi Bayar',color:C.greenL}]);
+defLegend('unitPct','unPctLeg',[{label:'% Terkontrak',color:C.pln},{label:'% Realisasi thd Kontrak',color:C.greenL}]);
+
 const gridY = {grid:{color:C.grid},ticks:{callback:v=>v.toLocaleString('id-ID')}};
 const MONTH_ORDER = ['jan','feb','mar','apr','mei','jun','jul','agu','sep','okt','nov','des'];
 
@@ -762,6 +948,7 @@ document.getElementById('monthlyTableFoot').innerHTML = `<tr class="total"><td>T
 
 /* ---------- MONTHLY CHARTS ---------- */
 charts.monthlyBar = new Chart(document.getElementById('monthlyBarChart'), {
+
   type:'bar',
   data:{
     labels: monthly.map(m=>m.b),
@@ -772,10 +959,11 @@ charts.monthlyBar = new Chart(document.getElementById('monthlyBarChart'), {
   },
   options:{
     responsive:true, maintainAspectRatio:false,
-    plugins:{legend:legendOpts, tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtM(c.raw)}}},
+    plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtM(c.raw)}}},
     scales:{x:{grid:{display:false}}, y:gridY}
   }
 });
+legSet('monthlyBar');
 
 charts.trend = new Chart(document.getElementById('trendChart'), {
   type:'line',
@@ -788,10 +976,11 @@ charts.trend = new Chart(document.getElementById('trendChart'), {
   },
   options:{
     responsive:true, maintainAspectRatio:false,
-    plugins:{legend:legendOpts, tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtM(c.raw)}}},
+    plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtM(c.raw)}}},
     scales:{x:{grid:{display:false}}, y:gridY}
   }
 });
+legSet('trend');
 
 /* ---------- PROGRAM TABLE ---------- */
 const pTbody = document.querySelector('#programTable tbody');
@@ -838,7 +1027,9 @@ const PROG_SORT = {
 };
 const progList = document.getElementById('progList');
 function renderProgList(key){
-  const list = [...programs].sort((a,b)=>PROG_SORT[key](b)-PROG_SORT[key](a));
+  const sortBy = key==='all' ? 'komPct' : key;
+  const list = [...programs].sort((a,b)=>PROG_SORT[sortBy](b)-PROG_SORT[sortBy](a));
+  const showKom = key!=='disPct', showDis = key!=='komPct';
   progList.innerHTML = '';
   list.forEach(p=>{
     const komPct = pct(p.spk,p.skki);
@@ -847,10 +1038,12 @@ function renderProgList(key){
     row.innerHTML = `
       <div class="prog-row" style="margin-bottom:14px">
         <div style="display:flex;justify-content:space-between;font-size:12.5px;color:#41526B;margin-bottom:4px"><span><strong style="color:${p.color}">${p.code}</strong> — ${p.name}</span><strong style="color:#0B2E4F">${fmtM(M(p.ai))}</strong></div>
-        <div style="height:6px;background:#E8EDF1;border-radius:6px;overflow:hidden;margin-bottom:6px"><div style="height:100%;width:${komPct}%;background:linear-gradient(90deg,#0B2E4F,#0E7C7B)"></div></div>
-        <div style="display:flex;justify-content:space-between;font-size:11px;color:#6B7280;margin-bottom:4px"><span>Terkontrak (SPK) thd SKKI</span><span>${fmtPct(komPct)}</span></div>
-        <div style="height:6px;background:#E8EDF1;border-radius:6px;overflow:hidden;margin-bottom:6px"><div style="height:100%;width:${disPct}%;background:#C9A227"></div></div>
-        <div style="display:flex;justify-content:space-between;font-size:11px;color:#6B7280"><span>Realisasi Bayar thd AKI</span><span>${fmtPct(disPct)}</span></div>
+        ${showKom?`
+        <div style="height:6px;background:#E8EDF1;border-radius:6px;overflow:hidden;margin-bottom:4px"><div style="height:100%;width:${komPct}%;background:linear-gradient(90deg,#0B2E4F,#0E7C7B)"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:#6B7280;${showDis?'':'margin-bottom:0'}"><span>Terkontrak (SPK) thd SKKI</span><span>${fmtPct(komPct)}</span></div>`:''}
+        ${showDis?`
+        <div style="height:6px;background:#E8EDF1;border-radius:6px;overflow:hidden;margin-bottom:4px"><div style="height:100%;width:${disPct}%;background:#C9A227"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:#6B7280"><span>Realisasi Bayar thd AKI</span><span>${fmtPct(disPct)}</span></div>`:''}
       </div>`;
     progList.appendChild(row);
   });
@@ -876,21 +1069,180 @@ charts.funnel = new Chart(document.getElementById('funnelChart'), {
   }
 });
 
-charts.donut = new Chart(document.getElementById('donutChart'), {
+/* ---------- DONUT KOMPOSISI AI (format mengikuti donut AO per Program) ---------- */
+const mod2 = a => { a = a % (2*Math.PI); return a < 0 ? a + 2*Math.PI : a; };
+const alphaHex = a => Math.round(Math.max(0,Math.min(1,a))*255).toString(16).padStart(2,'0');
+
+function pulseLoop(chart){
+  if(chart._pulseRaf) return;
+  const step = () => {
+    chart._pulseRaf = null;
+    if(!chart._pulse){ try{ chart.draw(); }catch(e){} return; }
+    try{ chart.draw(); }catch(e){ chart._pulse = null; return; }
+    chart._pulseRaf = requestAnimationFrame(step);
+  };
+  chart._pulseRaf = requestAnimationFrame(step);
+}
+
+function setDonutHover(chart,hit,p){
+  const st = chart._dfx;
+  const vis = hit >= 0 && chart.getDataVisibility(hit);
+  const want = (vis && st) ? hit : -1;
+  chart.canvas.style.cursor = want >= 0 ? 'pointer' : 'default';
+  if(want === (chart._dhover ?? -1)){
+    if(want >= 0){
+      chart.setActiveElements([{datasetIndex:0,index:want}]);
+      chart.tooltip.setActiveElements([{datasetIndex:0,index:want}],p || {x:0,y:0});
+      chart.draw();
+    }
+    return;
+  }
+  chart._dhover = want;
+  if(want >= 0){
+    chart.setActiveElements([{datasetIndex:0,index:want}]);
+    chart.tooltip.setActiveElements([{datasetIndex:0,index:want}],p || {x:0,y:0});
+    const ds = chart.data.datasets[0];
+    chart._pulse = {i:want, color:(ds.glowColors || ds.backgroundColor)[want]};
+    pulseLoop(chart);
+  } else {
+    chart.setActiveElements([]);
+    chart.tooltip.setActiveElements([],{x:0,y:0});
+    chart._pulse = null;
+  }
+  chart.update('none');
+}
+
+function drawDonutGlow(chart,ctx,arcs){
+  const pl = chart._pulse;
+  if(!pl || pl.i === undefined || !arcs[pl.i]) return;
+  const ha = arcs[pl.i], now = performance.now();
+  for(let k = 0; k < 2; k++){
+    const ph = ((now/1400)+k*0.5) % 1, r = ha.outerRadius+3+ph*16, a = 1-ph;
+    ctx.beginPath(); ctx.arc(ha.x,ha.y,r,ha.startAngle,ha.endAngle);
+    ctx.lineWidth = 3; ctx.strokeStyle = pl.color+alphaHex(a*0.9); ctx.stroke();
+    ctx.beginPath(); ctx.arc(ha.x,ha.y,ha.outerRadius+1,ha.startAngle,ha.endAngle);
+    ctx.lineWidth = 1; ctx.strokeStyle = pl.color+alphaHex(a*0.5); ctx.stroke();
+  }
+}
+
+const centerTextPlugin = {
+  id:'centerText',
+  afterDraw(chart){
+    const cv = chart.canvas;
+    const val = cv.dataset.center;
+    if(!val) return;
+    const el = chart.getDatasetMeta(0).data[0];
+    if(!el) return;
+    const {x, y, innerRadius} = el;
+    const ctx = chart.ctx;
+    const maxW = innerRadius*1.8;
+    ctx.save();
+    let fs = Math.round(innerRadius*0.5);
+    ctx.font = `700 ${fs}px Arial, Helvetica, sans-serif`;
+    while(ctx.measureText(val).width > maxW && fs > 8){ fs--; ctx.font = `700 ${fs}px Arial, Helvetica, sans-serif`; }
+    ctx.fillStyle = C.pln; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(val,x,y+fs*0.35);
+    const lab = cv.dataset.label;
+    if(lab){
+      const fl = Math.max(9,Math.round(fs*0.42));
+      ctx.font = `600 ${fl}px Arial, Helvetica, sans-serif`;
+      ctx.fillStyle = '#6B7280';
+      ctx.fillText(lab.toUpperCase(),x,y-fs*0.85);
+    }
+    ctx.restore();
+  }
+};
+
+const donutFx = {
+  id:'donutFx',
+  beforeLayout(chart){
+    chart.options.layout.padding = {left:8,right:8,top:8,bottom:8};
+    chart.options.radius = Math.min(chart.width*0.42, chart.height*0.44);
+  },
+  afterEvent(chart,args){
+    const st = chart._dfx; if(!st) return;
+    const e = args.event;
+    if(e.type === 'mouseout'){ setDonutHover(chart,-1,null); return; }
+    if(e.x == null) return;
+    const p = {x:e.x, y:e.y};
+    let hit = -1;
+    const dx = p.x-st.cx, dy = p.y-st.cy, d = Math.hypot(dx,dy);
+    if(d >= st.inner && d <= st.R+8){
+      const a = Math.atan2(dy,dx);
+      for(const A of st.arcs){
+        if(!A.vis) continue;
+        if(mod2(a-A.s) <= A.e-A.s){ hit = A.i; break; }
+      }
+    }
+    if(e.type === 'click'){
+      if(hit >= 0){
+        chart.setActiveElements([]);
+        chart.tooltip.setActiveElements([],{x:0,y:0});
+        chart._pulse = null; chart._dhover = -1;
+        chart.toggleDataVisibility(hit);
+        chart.update();
+      }
+      return;
+    }
+    setDonutHover(chart,hit,p);
+  },
+  afterDraw(chart){
+    const arcs = chart.getDatasetMeta(0).data;
+    if(!arcs.length) return;
+    const a0 = arcs[0];
+    chart._dfx = {
+      arcs:arcs.map((a,i)=>({i, s:a.startAngle, e:a.endAngle, vis:chart.getDataVisibility(i) && a.endAngle > a.startAngle})),
+      cx:a0.x, cy:a0.y, R:a0.outerRadius, inner:a0.innerRadius
+    };
+    document.querySelectorAll('#aiDonutLegend button').forEach(button=>{
+      const visible = chart.getDataVisibility(+button.dataset.i);
+      button.classList.toggle('off',!visible); button.setAttribute('aria-pressed',String(visible));
+    });
+    const ctx = chart.ctx; ctx.save(); drawDonutGlow(chart,ctx,arcs); ctx.restore();
+  }
+};
+
+const donutEl = document.getElementById('donutChart');
+donutEl.dataset.center = fmtM(M(TOT.ai));
+donutEl.dataset.label = 'Total Nilai AI';
+
+charts.donut = new Chart(donutEl, {
   type:'doughnut',
   data:{
     labels:programs.map(p=>p.code),
-    datasets:[{data:programs.map(p=>M(p.ai)), backgroundColor:programs.map(p=>p.color), borderWidth:2, borderColor:'#FFFFFF'}]
+    datasets:[{data:programs.map(p=>M(p.ai)), backgroundColor:programs.map(p=>p.color),
+      glowColors:programs.map(p=>p.color), borderColor:'#FFFFFF', borderWidth:2, hoverOffset:10}]
   },
   options:{
-    responsive:true, maintainAspectRatio:false, cutout:'68%',
-    plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>c.label+': '+fmtM(c.raw)+' ('+fmtN1(c.raw/M(TOT.ai)*100)+'%)'}}}
-  }
+    responsive:true, maintainAspectRatio:false, animation:false, cutout:'62%',
+    layout:{padding:8},
+    plugins:{legend:{display:false}, tooltip:{callbacks:{
+      label:c=>c.label+': '+fmtM(c.raw)+' ('+fmtN1(pct(c.raw*1e9,TOT.ai))+'% dari Nilai AI)',
+      labelColor:c=>({backgroundColor:programs[c.dataIndex].color,borderColor:'#FFFFFF',borderWidth:2})
+    }}}
+  },
+  plugins:[centerTextPlugin, donutFx]
 });
-const dLegend = document.getElementById('donut-legend');
-programs.forEach(p=>{
-  dLegend.innerHTML += `<span style="display:inline-flex;align-items:center;gap:5px;margin-right:12px"><i style="width:10px;height:10px;border-radius:2px;background:${p.color};display:inline-block"></i>${p.code} ${fmtN1(pct(p.ai,TOT.ai))}%</span>`;
-});
+
+const aiLegend = document.getElementById('aiDonutLegend');
+aiLegend.innerHTML = programs.map((p,i)=>`<button type="button" data-i="${i}" aria-pressed="true"><i style="background:${p.color}"></i><span>${p.code} — ${p.name}</span></button>`).join('');
+aiLegend.onclick = e=>{
+  const button = e.target.closest('button[data-i]'); if(!button) return;
+  setDonutHover(charts.donut,-1,null);
+  charts.donut.toggleDataVisibility(+button.dataset.i);
+  charts.donut.update('none');
+};
+const aiLegendHighlight = e=>{
+  const button = e.target.closest('button[data-i]'); if(!button) return;
+  const i = +button.dataset.i, a = charts.donut.getDatasetMeta(0).data[i];
+  if(!a) return;
+  const mid = (a.startAngle+a.endAngle)/2;
+  setDonutHover(charts.donut,i,{x:a.x+a.outerRadius*Math.cos(mid),y:a.y+a.outerRadius*Math.sin(mid)});
+};
+aiLegend.onmouseover = aiLegendHighlight;
+aiLegend.onfocusin = aiLegendHighlight;
+aiLegend.onmouseleave = ()=>setDonutHover(charts.donut,-1,null);
+aiLegend.onfocusout = e=>{ if(!aiLegend.contains(e.relatedTarget)) setDonutHover(charts.donut,-1,null); };
 
 /* ---------- DISBURSE: Nilai AKI | Realisasi Bayar (batang, Rp M) + % Realisasi (titik) + garis 98,78% ---------- */
 const DIS_SORT = {
@@ -907,7 +1259,7 @@ disKeyEl.innerHTML = programs.map(p=>`<span><i style="background:${p.color}"></i
 const disZonePlugin = {
   id:'disZones',
   beforeDatasetsDraw(chart){
-    if(chart.canvas.id!=='disburseChart') return;
+    if(chart.canvas.id!=='disburseChart' || !chart.isDatasetVisible(2)) return;
     const {ctx, chartArea:a, scales:{y}} = chart;
     if(!a) return;
     const zones = [
@@ -932,7 +1284,7 @@ const disZonePlugin = {
 const disLinePlugin = {
   id:'disLine',
   afterDatasetsDraw(chart){
-    if(chart.canvas.id!=='disburseChart') return;
+    if(chart.canvas.id!=='disburseChart' || !chart.isDatasetVisible(2)) return;
     const {ctx, chartArea:a, scales:{y}} = chart;
     if(!a) return;
     const yPos = y.getPixelForValue(TOTAL_DISBURSE);
@@ -949,7 +1301,9 @@ const disLinePlugin = {
 };
 
 function renderDisburse(key){
-  const list = [...programs].sort((a,b)=>DIS_SORT[key](b)-DIS_SORT[key](a));
+  legParam('disburse', {all:-1, aki:0, rb:1, pct:2}, key);
+  const v = legVis('disburse');
+  const list = [...programs].sort((a,b)=>DIS_SORT[key==='all'?'aki':key](b)-DIS_SORT[key==='all'?'aki':key](a));
   if(charts.disburse) charts.disburse.destroy();
   charts.disburse = new Chart(document.getElementById('disburseChart'), {
     type:'bar',
@@ -963,7 +1317,7 @@ function renderDisburse(key){
           backgroundColor:list.map(p=>p.color),
           borderColor:list.map(p=>p.color),
           borderWidth:1, borderRadius:3, maxBarThickness:30,
-          yAxisID:'y1', order:2
+          yAxisID:'y1', order:2, hidden:!v[0]
         },
         {
           type:'bar', label:'Realisasi Bayar',
@@ -971,7 +1325,7 @@ function renderDisburse(key){
           backgroundColor:list.map(p=>p.color+'73'),
           borderColor:list.map(p=>p.color),
           borderWidth:1, borderRadius:3, maxBarThickness:30,
-          yAxisID:'y1', order:2
+          yAxisID:'y1', order:2, hidden:!v[1]
         },
         {
           type:'line', label:'% Realisasi Bayar thd AKI',
@@ -982,7 +1336,7 @@ function renderDisburse(key){
           pointBackgroundColor:list.map(p=>p.color+'99'),
           pointBorderColor:list.map(p=>p.color),
           pointBorderWidth:1,
-          yAxisID:'y', order:1
+          yAxisID:'y', order:1, hidden:!v[2]
         }
       ]
     },
@@ -1007,41 +1361,58 @@ function renderDisburse(key){
       scales:{
         x:{grid:{display:false}},
         y:{
-          position:'left', min:0, max:120,
+          display:v[2], position:'left', min:0, max:120,
           grid:{color:C.grid},
           ticks:{stepSize:20, callback:v=>v+'%'},
           title:{display:true, text:'% Realisasi Bayar thd AKI'}
         },
         y1:{
-          position:'right', min:0, grid:{display:false},
+          display:(v[0]||v[1]), position:'right', min:0, grid:{display:false},
           ticks:{callback:v=>v.toLocaleString('id-ID')+' M'},
           title:{display:true, text:'Rp Miliar'}
         }
       }
     }
   });
+  legSet('disburse');
 }
 const disSortEl = document.getElementById('disSort');
 disSortEl.addEventListener('change',()=>renderDisburse(disSortEl.value));
 renderDisburse(disSortEl.value);
 
-charts.programStack = new Chart(document.getElementById('programStackChart'), {
-  type:'bar',
-  data:{
-    labels:programs.map(p=>p.code),
-    datasets:[
-      {label:'Nilai AI', data:programs.map(p=>M(p.ai)), backgroundColor:C.pln+'55', borderColor:C.pln, borderWidth:1, borderRadius:3},
-      {label:'AKI', data:programs.map(p=>M(p.aki)), backgroundColor:C.blue, borderRadius:3},
-      {label:'Total Komitmen', data:programs.map(p=>M(p.kom)), backgroundColor:C.gold, borderRadius:3},
-      {label:'Realisasi Bayar', data:programs.map(p=>M(p.rb)), backgroundColor:C.greenL, borderRadius:3}
-    ]
-  },
-  options:{
-    responsive:true, maintainAspectRatio:false,
-    plugins:{legend:legendOpts, tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtM(c.raw)}}},
-    scales:{x:{grid:{display:false}}, y:gridY}
-  }
-});
+const STACK_SORT = {
+  ai:  p=>p.ai,
+  aki: p=>p.aki,
+  kom: p=>p.kom,
+  rb:  p=>p.rb
+};
+function renderProgStack(key){
+  legParam('programStack', {all:-1, ai:0, aki:1, kom:2, rb:3}, key);
+  const v = legVis('programStack');
+  const list = [...programs].sort((a,b)=>STACK_SORT[key==='all'?'ai':key](b)-STACK_SORT[key==='all'?'ai':key](a));
+  if(charts.programStack) charts.programStack.destroy();
+  charts.programStack = new Chart(document.getElementById('programStackChart'), {
+    type:'bar',
+    data:{
+      labels:list.map(p=>p.code),
+      datasets:[
+        {label:'Nilai AI', data:list.map(p=>M(p.ai)), backgroundColor:C.pln+'55', borderColor:C.pln, borderWidth:1, borderRadius:3, hidden:!v[0]},
+        {label:'AKI', data:list.map(p=>M(p.aki)), backgroundColor:C.blue, borderRadius:3, hidden:!v[1]},
+        {label:'Total Komitmen', data:list.map(p=>M(p.kom)), backgroundColor:C.gold, borderRadius:3, hidden:!v[2]},
+        {label:'Realisasi Bayar', data:list.map(p=>M(p.rb)), backgroundColor:C.greenL, borderRadius:3, hidden:!v[3]}
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtM(c.raw)}}},
+      scales:{x:{grid:{display:false}}, y:gridY}
+    }
+  });
+  legSet('programStack');
+}
+const pStackSortEl = document.getElementById('pStackSort');
+pStackSortEl.addEventListener('change',()=>renderProgStack(pStackSortEl.value));
+renderProgStack(pStackSortEl.value);
 
 /* ---------- GENERIC DATA (BIDANG & UNIT) ---------- */
 const bidangData = [
@@ -1113,24 +1484,27 @@ function buildCharts(prefix, items, shortName){
   // 1. SKKI vs Terkontrak vs Realisasi
   const barSortEl = document.getElementById(prefix+'BarSort');
   const renderBar = (key)=>{
-    const list = sortItems(items, key);
+    legParam(prefix+'Bar', {all:-1, skki:0, kon:1, rb:2}, key);
+    const v = legVis(prefix+'Bar');
+    const list = sortItems(items, key==='all' ? 'skki' : key);
     if(charts[prefix+'Bar']) charts[prefix+'Bar'].destroy();
     charts[prefix+'Bar'] = new Chart(document.getElementById(prefix+'BarChart'), {
       type:'bar',
       data:{
         labels: list.map(u=>shortName(u.name)),
         datasets:[
-          {label:'SKKI Terbit', data:list.map(u=>M(u.skki)), backgroundColor:C.pln+'55', borderColor:C.pln, borderWidth:1, borderRadius:3},
-          {label:'Total Terkontrak', data:list.map(u=>M(u.kon)), backgroundColor:C.gold, borderRadius:3},
-          {label:'Realisasi Bayar', data:list.map(u=>M(u.rb)), backgroundColor:C.greenL, borderRadius:3}
+          {label:'SKKI Terbit', data:list.map(u=>M(u.skki)), backgroundColor:C.pln+'55', borderColor:C.pln, borderWidth:1, borderRadius:3, hidden:!v[0]},
+          {label:'Total Terkontrak', data:list.map(u=>M(u.kon)), backgroundColor:C.gold, borderRadius:3, hidden:!v[1]},
+          {label:'Realisasi Bayar', data:list.map(u=>M(u.rb)), backgroundColor:C.greenL, borderRadius:3, hidden:!v[2]}
         ]
       },
       options:{
         indexAxis:'y', responsive:true, maintainAspectRatio:false,
-        plugins:{legend:legendOpts, tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtM(c.raw)}}},
+        plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtM(c.raw)}}},
         scales:{x:{grid:{color:C.grid},ticks:{callback:v=>v.toLocaleString('id-ID')}}, y:{grid:{display:false}}}
       }
     });
+    legSet(prefix+'Bar');
   };
   barSortEl.addEventListener('change',()=>renderBar(barSortEl.value));
   renderBar(barSortEl.value);
@@ -1138,23 +1512,26 @@ function buildCharts(prefix, items, shortName){
   // 2. % Terkontrak vs % Realisasi
   const pctSortEl = document.getElementById(prefix+'PctSort');
   const renderPct = (key)=>{
-    const list = sortItems(items, key);
+    legParam(prefix+'Pct', {all:-1, pctKon:0, pctRb:1}, key);
+    const v = legVis(prefix+'Pct');
+    const list = sortItems(items, key==='all' ? 'pctKon' : key);
     if(charts[prefix+'Pct']) charts[prefix+'Pct'].destroy();
     charts[prefix+'Pct'] = new Chart(document.getElementById(prefix+'PctChart'), {
       type:'bar',
       data:{
         labels: list.map(u=>shortName(u.name)),
         datasets:[
-          {label:'% Terkontrak', data:list.map(u=>+pct(u.kon,u.skki).toFixed(2)), backgroundColor:C.pln, borderRadius:3, maxBarThickness:14},
-          {label:'% Realisasi thd Kontrak', data:list.map(u=>+pct(u.rb,u.kon).toFixed(2)), backgroundColor:C.greenL, borderRadius:3, maxBarThickness:14}
+          {label:'% Terkontrak', data:list.map(u=>+pct(u.kon,u.skki).toFixed(2)), backgroundColor:C.pln, borderRadius:3, maxBarThickness:14, hidden:!v[0]},
+          {label:'% Realisasi thd Kontrak', data:list.map(u=>+pct(u.rb,u.kon).toFixed(2)), backgroundColor:C.greenL, borderRadius:3, maxBarThickness:14, hidden:!v[1]}
         ]
       },
       options:{
         indexAxis:'y', responsive:true, maintainAspectRatio:false,
-        plugins:{legend:legendOpts, tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.raw+'%'}}},
+        plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.raw+'%'}}},
         scales:{x:{grid:{color:C.grid},ticks:{callback:v=>v+'%'},min:0,max:100}, y:{grid:{display:false}}}
       }
     });
+    legSet(prefix+'Pct');
   };
   pctSortEl.addEventListener('change',()=>renderPct(pctSortEl.value));
   renderPct(pctSortEl.value);
@@ -1189,6 +1566,76 @@ buildCharts('bidang', bidangData, n=>n);
 const unitColors = [C.pln,C.blue,C.teal,C.gold,'#B8872F',C.greenL,C.purple,C.red,'#8B5E34','#4B7BA8','#B8860B','#6B8F3C','#A0526D','#5B7C99'];
 fillTable('unitTable', unitData, unitColors);
 buildCharts('unit', unitData, n=>n.replace('UP3 ',''));
+
+/* ---------- SPEEDOMETER KARTU SKOR ---------- */
+function speedometer(label, amount, reference, basis, cls){
+  const percent = pct(amount, reference);
+  const max = Math.max(100, Math.ceil(percent/25)*25);
+  const fraction = Math.max(0, Math.min(1, percent/max));
+  const angle = Math.PI + Math.PI*fraction;
+  const x = 80 + 52*Math.cos(angle), y = 78 + 52*Math.sin(angle);
+  const color = {teal:C.teal, gold:C.gold, green:C.green}[cls] || C.pln;
+  const ticks = [0,.25,.5,.75,1].map(t=>{
+    const a = Math.PI + Math.PI*t;
+    return `<line x1="${80+56*Math.cos(a)}" y1="${78+56*Math.sin(a)}" x2="${80+61*Math.cos(a)}" y2="${78+61*Math.sin(a)}" stroke="#8D9AAC" stroke-width="1"/>`;
+  }).join('');
+  return `<div class="card-gauge" data-amount="${amount}" data-reference="${reference}" data-percent="${percent}" data-max="${max}" data-angle="${angle*180/Math.PI}">
+    <svg viewBox="0 0 160 110" role="img" aria-label="Speedometer ${label}: ${fmtPct(percent)}, ${basis}">
+      <title>${label}: ${fmtPct(percent)}, ${basis}</title>
+      <path d="M16 78 A64 64 0 0 1 144 78" fill="none" stroke="#CED8E3" stroke-width="9" stroke-linecap="round"/>
+      <path d="M16 78 A64 64 0 0 1 144 78" fill="none" stroke="${color}" stroke-width="9" stroke-linecap="${fraction>0?'round':'butt'}" pathLength="100" stroke-dasharray="${fraction*100} 100"/>
+      ${ticks}<line class="gauge-needle" x1="80" y1="78" x2="${x}" y2="${y}" stroke="${C.pln}" stroke-width="2.8" stroke-linecap="round"/>
+      <circle cx="80" cy="78" r="4.5" fill="${C.pln}"/>
+      <text x="8" y="96" font-size="10" fill="#6B7280">0%</text>
+      <text x="153" y="96" text-anchor="end" font-size="10" fill="#6B7280">${max}%</text>
+      <text x="80" y="104" text-anchor="middle" font-size="14" font-weight="700" fill="${C.pln}">${fmtPct(percent)}</text>
+    </svg><div class="gauge-basis">${basis}</div></div>`;
+}
+
+const BID = {skki:sum(bidangData,u=>u.skki), kon:sum(bidangData,u=>u.kon), rb:sum(bidangData,u=>u.rb), sisa:sum(bidangData,u=>u.sisa)};
+const UNT = {skki:sum(unitData,u=>u.skki), kon:sum(unitData,u=>u.kon), rb:sum(unitData,u=>u.rb), sisa:sum(unitData,u=>u.sisa)};
+const mOkt = monthly.find(m=>m.b==='Okt');
+
+const GAUGES = {
+  'ov-ai':     {amount:TOT.ai,    reference:TOT.ai,    basis:'Dari total AI'},
+  'ov-aki':    {amount:TOT.aki,   reference:TOT.ai,    basis:'Dari Nilai AI'},
+  'ov-skki':   {amount:TOT.skki,  reference:TOT.ai,    basis:'Dari Nilai AI'},
+  'ov-kom':    {amount:TOT.kom,   reference:TOT.skki,  basis:'Dari SKKI'},
+  'ov-rb':     {amount:TOT.rb,    reference:TOT.aki,   basis:'Dari AKI'},
+  'ov-sisa':   {amount:TOT.sisa,  reference:TOT.skki,  basis:'Dari SKKI'},
+
+  'bl-aki':    {amount:mAkiTot,   reference:TOT.ai,    basis:'Dari Nilai AI'},
+  'bl-rb':     {amount:mRealTot,  reference:mAkiTot,   basis:'Dari AKI'},
+  'bl-pct':    {amount:mRealTot,  reference:mAkiTot,   basis:'Dari AKI'},
+  'bl-saldo':  {amount:mOkt.aki-mOkt.real, reference:mOkt.aki, basis:'Dari AKI Oktober'},
+
+  'pg-prk':    {amount:TOT.prkK,  reference:TOT.prkT,  basis:'Dari total PRK'},
+  'pg-kom':    {amount:TOT.kom,   reference:TOT.skki,  basis:'Dari SKKI'},
+  'pg-nd':     {amount:TOT.nd,    reference:TOT.kom,   basis:'Dari total komitmen'},
+  'pg-pb':     {amount:TOT.pb,    reference:TOT.skki,  basis:'Dari SKKI'},
+
+  'bd-skki':   {amount:BID.skki,  reference:BID.skki,  basis:'Dari total SKKI bidang'},
+  'bd-kon':    {amount:BID.kon,   reference:BID.skki,  basis:'Dari SKKI terbit'},
+  'bd-rb':     {amount:BID.rb,    reference:BID.kon,   basis:'Dari nilai terkontrak'},
+  'bd-sisa':   {amount:BID.sisa,  reference:BID.kon,   basis:'Dari nilai terkontrak'},
+
+  'un-skki':   {amount:UNT.skki,  reference:UNT.skki,  basis:'Dari total SKKI unit'},
+  'un-kon':    {amount:UNT.kon,   reference:UNT.skki,  basis:'Dari SKKI terbit'},
+  'un-rb':     {amount:UNT.rb,    reference:UNT.kon,   basis:'Dari nilai terkontrak'},
+  'un-sisa':   {amount:UNT.sisa,  reference:UNT.kon,   basis:'Dari nilai terkontrak'}
+};
+
+document.querySelectorAll('.card[data-g]').forEach(card=>{
+  const g = GAUGES[card.dataset.g];
+  const val = card.querySelector('.value'), lab = card.querySelector('.label');
+  if(!g || !val || !lab) return;
+  const cls = ['teal','gold','green'].find(c=>card.classList.contains(c)) || '';
+  const score = document.createElement('div');
+  score.className = 'card-score';
+  card.insertBefore(score, val);
+  score.appendChild(val);
+  score.insertAdjacentHTML('beforeend', speedometer(lab.textContent, g.amount, g.reference, g.basis, cls));
+});
 
 /* ---------- INIT SORTABLE TABLES ---------- */
 document.querySelectorAll('table').forEach(t=>makeTableSortable(t, false));
