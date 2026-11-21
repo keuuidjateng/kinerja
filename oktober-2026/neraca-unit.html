@@ -63,6 +63,11 @@ button,select,input{font-family:inherit}
 .neg{color:var(--red)}
 .neutral{color:var(--grey)}
 .small{font-size:11px;color:var(--grey)}
+.card-score{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0}
+.card-score .value{margin:0;min-width:0;overflow-wrap:anywhere}
+.card-gauge{width:112px;flex:0 0 112px;text-align:center}
+.card-gauge svg{display:block;width:100%;height:auto}
+.gauge-basis{font-size:9px;color:var(--grey);line-height:1.3;margin-top:2px}
 
 /* FILTER */
 .filter-box{background:#fff;border:1px solid var(--line);border-radius:4px;padding:16px;margin:18px 0}
@@ -81,6 +86,38 @@ select:focus{border-color:var(--teal);box-shadow:0 0 0 2px rgba(14,124,123,.10)}
 .chart{height:360px;position:relative}
 .chart.small-chart{height:320px}
 .chart.tall{height:460px}
+
+/* BOX HEAD + CHART TOOLBAR (dropdown Urutkan) */
+.box-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.box-head h3{margin:0}
+.chart-toolbar{display:flex;align-items:center;gap:8px;margin:0 0 10px;justify-content:flex-start}
+.chart-toolbar label{font-size:12px;font-weight:700;color:var(--grey);white-space:nowrap}
+.chart-toolbar select{width:auto;min-width:200px;padding:7px 10px;font-size:12.5px}
+.box-head .chart-toolbar{margin:0}
+.ctrl-row{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;margin:2px 0 10px}
+.ctrl-row .chart-toolbar{margin:0}
+
+/* LEGEND GRAFIK BATANG (klik untuk tampil/sembunyi) */
+.leg-wrap{display:flex;flex-direction:column;align-items:flex-end;margin-left:auto;gap:2px}
+.leg{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:11.5px;color:var(--text2);justify-content:flex-end}
+.leg span{display:inline-flex;align-items:center;gap:5px;cursor:pointer;user-select:none;transition:opacity .2s}
+.leg span.off{text-decoration:line-through;opacity:.4}
+.leg i{width:11px;height:10px;border-radius:2px;display:inline-block}
+.leg-hint{font-size:10.5px;font-style:italic;color:var(--grey)}
+.leg-left{display:flex;flex-direction:column;align-items:flex-start;gap:2px;margin-top:10px}
+.leg-left .leg{justify-content:flex-start}
+
+/* LEGEND DONUT (format "Komposisi Nilai AI Per Program") */
+.ai-donut-legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px 12px;margin:12px 0 6px}
+.ai-donut-legend button{display:flex;align-items:flex-start;gap:7px;border:0;background:none;padding:3px;text-align:left;font:400 10px Arial,sans-serif;color:var(--text2);cursor:pointer}
+.ai-donut-legend button span{min-width:0;overflow-wrap:anywhere}
+.ai-donut-legend i{width:10px;height:10px;flex:0 0 10px;margin-top:1px;border-radius:2px}
+.ai-donut-legend button.off{opacity:.4;text-decoration:line-through}
+.ai-donut-legend button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.ai-donut-popup{position:fixed;z-index:10000;display:none;pointer-events:none;width:max-content;max-width:250px;border-radius:5px;padding:10px 12px;font:12px/1.45 Arial,Helvetica,sans-serif;color:var(--navy-d);background:rgba(255,255,255,.7);border:1px solid var(--line);box-shadow:0 3px 10px rgba(8,30,54,.22)}
+.ai-donut-popup strong{display:block;margin-bottom:4px;font-size:12px}
+.ai-donut-popup .popup-value{display:flex;align-items:center;gap:7px;font-weight:700}
+.ai-donut-popup .popup-swatch{width:10px;height:10px;flex:0 0 10px;border-radius:1px}
 
 /* STACK (infografis komposisi) */
 .stack-title{font-weight:700;color:var(--navy-d);font-size:13px;margin:14px 0 2px}
@@ -160,7 +197,7 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
   th,td{padding:7px 5px;font-size:11px}
 }
 @media print{
-  .tabs,.filter-box{display:none}
+  .tabs,.filter-box,.chart-toolbar{display:none}
   .panel{display:block!important}
   .hero{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
@@ -207,28 +244,24 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     </div>
 
     <div class="cards">
-      <div class="card">
+      <div class="card" data-g="ov-aset">
         <div class="label">Total Aset</div>
         <div class="value" id="kpiAssets">-</div>
-        <div class="delta neutral" id="kpiAssetsPct">-</div>
         <div class="small" id="kpiUnit">-</div>
       </div>
-      <div class="card red">
+      <div class="card red" data-g="ov-ekuitas">
         <div class="label">Total Ekuitas</div>
         <div class="value" id="kpiEquity">-</div>
-        <div class="delta neutral" id="kpiEquityPct">-</div>
         <div class="small">Saldo laba / ekuitas entitas induk</div>
       </div>
-      <div class="card gold">
+      <div class="card gold" data-g="ov-liab">
         <div class="label">Total Liabilitas</div>
         <div class="value" id="kpiLiab">-</div>
-        <div class="delta neutral" id="kpiLiabPct">-</div>
         <div class="small">Liabilitas jangka panjang + jangka pendek</div>
       </div>
-      <div class="card teal">
+      <div class="card teal" data-g="ov-inter">
         <div class="label">Total Antar Satuan Administrasi</div>
         <div class="value" id="kpiInter">-</div>
-        <div class="delta neutral" id="kpiInterPct">-</div>
         <div class="small">Akun antar satuan administrasi</div>
       </div>
     </div>
@@ -245,10 +278,14 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
       <div class="box">
         <h3>Komposisi Aset</h3>
         <div class="chart"><canvas id="overviewAssetChart"></canvas></div>
+        <div id="overviewAssetChartLegend" class="ai-donut-legend" aria-label="Legend komposisi aset"></div>
+        <div class="leg-hint" style="text-align:center">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
       </div>
       <div class="box">
         <h3>Komposisi Ekuitas &amp; Liabilitas</h3>
         <div class="chart"><canvas id="overviewELChart"></canvas></div>
+        <div id="overviewELChartLegend" class="ai-donut-legend" aria-label="Legend komposisi ekuitas dan liabilitas"></div>
+        <div class="leg-hint" style="text-align:center">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
       </div>
     </div>
 
@@ -279,28 +316,24 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     </div>
 
     <div class="cards">
-      <div class="card teal">
+      <div class="card teal" data-g="as-fixed">
         <div class="label">Aset Tetap Netto</div>
         <div class="value" id="asKpiFixed">-</div>
-        <div class="delta neutral" id="asKpiFixedPct">-</div>
         <div class="small">Setelah akumulasi penyusutan &amp; rugi penurunan</div>
       </div>
-      <div class="card">
+      <div class="card" data-g="as-pdp">
         <div class="label">Pekerjaan Dalam Pelaksanaan</div>
         <div class="value" id="asKpiPdp">-</div>
-        <div class="delta neutral" id="asKpiPdpPct">-</div>
         <div class="small">Aset dalam proses pembangunan</div>
       </div>
-      <div class="card gold">
+      <div class="card gold" data-g="as-lancar">
         <div class="label">Aset Lancar</div>
         <div class="value" id="asKpiCurrent">-</div>
-        <div class="delta neutral" id="asKpiCurrentPct">-</div>
         <div class="small">Termasuk piutang &amp; persediaan</div>
       </div>
-      <div class="card green">
+      <div class="card green" data-g="as-piutang">
         <div class="label">Piutang Usaha Netto</div>
         <div class="value" id="asKpiReceivable">-</div>
-        <div class="delta neutral" id="asKpiReceivablePct">-</div>
         <div class="small">Komponen utama aset lancar</div>
       </div>
     </div>
@@ -309,46 +342,121 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
       <div class="box">
         <h3>Komposisi Aset</h3>
         <div class="chart"><canvas id="asetStructChart"></canvas></div>
+        <div id="asetStructChartLegend" class="ai-donut-legend" aria-label="Legend komposisi aset"></div>
+        <div class="leg-hint" style="text-align:center">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
       </div>
       <div class="box">
-        <h3>Perbandingan Sumber Aset</h3>
+        <div class="box-head">
+          <h3>Perbandingan Sumber Aset</h3>
+          <div class="chart-toolbar"><label for="asetBarSort">Urutkan berdasarkan:</label>
+            <select id="asetBarSort" data-chart="asetBarChart">
+              <option value="all" selected>Semua parameter</option>
+            </select></div>
+        </div>
+        <div class="leg-wrap">
+          <div class="leg" id="asetBarLeg"></div>
+          <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+        </div>
         <div class="chart"><canvas id="asetBarChart"></canvas></div>
       </div>
     </div>
 
     <div class="grid">
       <div class="box">
-        <h3>Total Aset per Unit</h3>
+        <div class="box-head">
+          <h3>Total Aset per Unit</h3>
+          <div class="chart-toolbar"><label for="unitAssetChartSort">Urutkan berdasarkan:</label>
+            <select id="unitAssetChartSort" data-chart="unitAssetChart">
+              <option value="all" selected>Semua parameter</option>
+              <option value="terbesar">Nilai (terbesar ke terkecil)</option>
+              <option value="terkecil">Nilai (terkecil ke terbesar)</option>
+              <option value="nama">Nama (A ke Z)</option>
+            </select></div>
+        </div>
         <div class="chart tall"><canvas id="unitAssetChart"></canvas></div>
       </div>
     </div>
 
     <div class="grid">
       <div class="box">
-        <h3>Aset Tetap Netto per Unit</h3>
+        <div class="box-head">
+          <h3>Aset Tetap Netto per Unit</h3>
+          <div class="chart-toolbar"><label for="srcFixedSort">Urutkan berdasarkan:</label>
+            <select id="srcFixedSort" data-chart="srcFixed">
+              <option value="all" selected>Semua parameter</option>
+              <option value="terbesar">Nilai (terbesar ke terkecil)</option>
+              <option value="terkecil">Nilai (terkecil ke terbesar)</option>
+              <option value="nama">Nama (A ke Z)</option>
+            </select></div>
+        </div>
         <div class="chart tall"><canvas id="srcFixed"></canvas></div>
       </div>
       <div class="box">
-        <h3>Pekerjaan Dalam Pelaksanaan per Unit</h3>
+        <div class="box-head">
+          <h3>Pekerjaan Dalam Pelaksanaan per Unit</h3>
+          <div class="chart-toolbar"><label for="srcPdpSort">Urutkan berdasarkan:</label>
+            <select id="srcPdpSort" data-chart="srcPdp">
+              <option value="all" selected>Semua parameter</option>
+              <option value="terbesar">Nilai (terbesar ke terkecil)</option>
+              <option value="terkecil">Nilai (terkecil ke terbesar)</option>
+              <option value="nama">Nama (A ke Z)</option>
+            </select></div>
+        </div>
         <div class="chart tall"><canvas id="srcPdp"></canvas></div>
       </div>
       <div class="box">
-        <h3>Properti Investasi per Unit</h3>
+        <div class="box-head">
+          <h3>Properti Investasi per Unit</h3>
+          <div class="chart-toolbar"><label for="srcPropSort">Urutkan berdasarkan:</label>
+            <select id="srcPropSort" data-chart="srcProp">
+              <option value="all" selected>Semua parameter</option>
+              <option value="terbesar">Nilai (terbesar ke terkecil)</option>
+              <option value="terkecil">Nilai (terkecil ke terbesar)</option>
+              <option value="nama">Nama (A ke Z)</option>
+            </select></div>
+        </div>
         <div class="chart tall"><canvas id="srcProp"></canvas></div>
       </div>
       <div class="box">
-        <h3>Aset Tidak Lancar Lain per Unit</h3>
+        <div class="box-head">
+          <h3>Aset Tidak Lancar Lain per Unit</h3>
+          <div class="chart-toolbar"><label for="srcNcaSort">Urutkan berdasarkan:</label>
+            <select id="srcNcaSort" data-chart="srcNca">
+              <option value="all" selected>Semua parameter</option>
+              <option value="terbesar">Nilai (terbesar ke terkecil)</option>
+              <option value="terkecil">Nilai (terkecil ke terbesar)</option>
+              <option value="nama">Nama (A ke Z)</option>
+            </select></div>
+        </div>
         <div class="chart tall"><canvas id="srcNca"></canvas></div>
       </div>
       <div class="box">
-        <h3>Aset Lancar per Unit</h3>
+        <div class="box-head">
+          <h3>Aset Lancar per Unit</h3>
+          <div class="chart-toolbar"><label for="srcCurrentSort">Urutkan berdasarkan:</label>
+            <select id="srcCurrentSort" data-chart="srcCurrent">
+              <option value="all" selected>Semua parameter</option>
+              <option value="terbesar">Nilai (terbesar ke terkecil)</option>
+              <option value="terkecil">Nilai (terkecil ke terbesar)</option>
+              <option value="nama">Nama (A ke Z)</option>
+            </select></div>
+        </div>
         <div class="chart tall"><canvas id="srcCurrent"></canvas></div>
       </div>
     </div>
 
     <div class="grid">
       <div class="box">
-        <h3>Piutang Usaha per Unit</h3>
+        <div class="box-head">
+          <h3>Piutang Usaha per Unit</h3>
+          <div class="chart-toolbar"><label for="receivableUnitChartSort">Urutkan berdasarkan:</label>
+            <select id="receivableUnitChartSort" data-chart="receivableUnitChart">
+              <option value="all" selected>Semua parameter</option>
+              <option value="terbesar">Nilai (terbesar ke terkecil)</option>
+              <option value="terkecil">Nilai (terkecil ke terbesar)</option>
+              <option value="nama">Nama (A ke Z)</option>
+            </select></div>
+        </div>
         <div class="chart tall"><canvas id="receivableUnitChart"></canvas></div>
       </div>
     </div>
@@ -369,70 +477,146 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     </div>
 
     <div class="cards">
-      <div class="card red">
+      <div class="card red" data-g="el-ekuitas">
         <div class="label">Total Ekuitas</div>
         <div class="value" id="elEquity">-</div>
-        <div class="delta neutral" id="elEquityPct">-</div>
         <div class="small">Saldo laba / ekuitas</div>
       </div>
-      <div class="card teal">
+      <div class="card teal" data-g="el-inter">
         <div class="label">Antar Satuan Administrasi</div>
         <div class="value" id="elInter">-</div>
-        <div class="delta neutral" id="elInterPct">-</div>
         <div class="small">Akun antar satuan administrasi</div>
       </div>
-      <div class="card gold">
+      <div class="card gold" data-g="el-ljp">
         <div class="label">Liabilitas Jangka Panjang</div>
         <div class="value" id="elLong">-</div>
-        <div class="delta neutral" id="elLongPct">-</div>
         <div class="small">Terutama pendapatan ditangguhkan</div>
       </div>
-      <div class="card">
+      <div class="card" data-g="el-ljk">
         <div class="label">Liabilitas Jangka Pendek</div>
         <div class="value" id="elShort">-</div>
-        <div class="delta neutral" id="elShortPct">-</div>
         <div class="small">Utang &amp; kewajiban lancar</div>
       </div>
     </div>
 
     <div class="grid">
-      <div class="box"><h3>Komposisi Ekuitas &amp; Liabilitas</h3><div class="chart"><canvas id="elStructureChart"></canvas></div></div>
-      <div class="box"><h3>Perbandingan Sumber Pendanaan</h3><div class="chart"><canvas id="elBarChart"></canvas></div></div>
+      <div class="box"><h3>Komposisi Ekuitas &amp; Liabilitas</h3>
+        <div class="chart"><canvas id="elStructureChart"></canvas></div>
+        <div id="elStructureChartLegend" class="ai-donut-legend" aria-label="Legend komposisi ekuitas dan liabilitas"></div>
+        <div class="leg-hint" style="text-align:center">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+      </div>
+      <div class="box">
+        <div class="box-head">
+          <h3>Perbandingan Sumber Pendanaan</h3>
+          <div class="chart-toolbar"><label for="elBarSort">Urutkan berdasarkan:</label>
+            <select id="elBarSort" data-chart="elBarChart">
+              <option value="all" selected>Semua parameter</option>
+            </select></div>
+        </div>
+        <div class="leg-wrap">
+          <div class="leg" id="elBarLeg"></div>
+          <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+        </div>
+        <div class="chart"><canvas id="elBarChart"></canvas></div>
+      </div>
     </div>
 
     <div class="grid">
       <div class="box">
-        <h3>Total Ekuitas &amp; Liabilitas per Unit (Total Pasiva)</h3>
+        <div class="box-head">
+          <h3>Total Ekuitas &amp; Liabilitas per Unit (Total Pasiva)</h3>
+          <div class="chart-toolbar"><label for="pasivaUnitChartSort">Urutkan berdasarkan:</label>
+            <select id="pasivaUnitChartSort" data-chart="pasivaUnitChart">
+              <option value="all" selected>Semua parameter</option>
+              <option value="terbesar">Nilai (terbesar ke terkecil)</option>
+              <option value="terkecil">Nilai (terkecil ke terbesar)</option>
+              <option value="nama">Nama (A ke Z)</option>
+            </select></div>
+        </div>
         <div class="chart tall"><canvas id="pasivaUnitChart"></canvas></div>
       </div>
     </div>
 
     <div class="grid">
       <div class="box">
-        <h3>Ekuitas per Unit</h3>
+        <div class="box-head">
+          <h3>Ekuitas per Unit</h3>
+          <div class="chart-toolbar"><label for="eqUnitChartSort">Urutkan berdasarkan:</label>
+            <select id="eqUnitChartSort" data-chart="eqUnitChart">
+              <option value="all" selected>Semua parameter</option>
+              <option value="terbesar">Nilai (terbesar ke terkecil)</option>
+              <option value="terkecil">Nilai (terkecil ke terbesar)</option>
+              <option value="nama">Nama (A ke Z)</option>
+            </select></div>
+        </div>
         <div class="chart tall"><canvas id="eqUnitChart"></canvas></div>
       </div>
       <div class="box">
-        <h3>Akun Antar Satuan Administrasi per Unit</h3>
+        <div class="box-head">
+          <h3>Akun Antar Satuan Administrasi per Unit</h3>
+          <div class="chart-toolbar"><label for="interUnitChartSort">Urutkan berdasarkan:</label>
+            <select id="interUnitChartSort" data-chart="interUnitChart">
+              <option value="all" selected>Semua parameter</option>
+              <option value="terbesar">Nilai (terbesar ke terkecil)</option>
+              <option value="terkecil">Nilai (terkecil ke terbesar)</option>
+              <option value="nama">Nama (A ke Z)</option>
+            </select></div>
+        </div>
         <div class="chart tall"><canvas id="interUnitChart"></canvas></div>
       </div>
       <div class="box">
-        <h3>Liabilitas Jangka Panjang per Unit</h3>
+        <div class="box-head">
+          <h3>Liabilitas Jangka Panjang per Unit</h3>
+          <div class="chart-toolbar"><label for="ljpUnitChartSort">Urutkan berdasarkan:</label>
+            <select id="ljpUnitChartSort" data-chart="ljpUnitChart">
+              <option value="all" selected>Semua parameter</option>
+              <option value="terbesar">Nilai (terbesar ke terkecil)</option>
+              <option value="terkecil">Nilai (terkecil ke terbesar)</option>
+              <option value="nama">Nama (A ke Z)</option>
+            </select></div>
+        </div>
         <div class="chart tall"><canvas id="ljpUnitChart"></canvas></div>
       </div>
       <div class="box">
-        <h3>Liabilitas Jangka Pendek per Unit</h3>
+        <div class="box-head">
+          <h3>Liabilitas Jangka Pendek per Unit</h3>
+          <div class="chart-toolbar"><label for="ljkUnitChartSort">Urutkan berdasarkan:</label>
+            <select id="ljkUnitChartSort" data-chart="ljkUnitChart">
+              <option value="all" selected>Semua parameter</option>
+              <option value="terbesar">Nilai (terbesar ke terkecil)</option>
+              <option value="terkecil">Nilai (terkecil ke terbesar)</option>
+              <option value="nama">Nama (A ke Z)</option>
+            </select></div>
+        </div>
         <div class="chart tall"><canvas id="ljkUnitChart"></canvas></div>
       </div>
     </div>
 
     <div class="grid">
       <div class="box">
-        <h3>Rincian Liabilitas Jangka Panjang</h3>
+        <div class="box-head">
+          <h3>Rincian Liabilitas Jangka Panjang</h3>
+          <div class="chart-toolbar"><label for="liabPanjangSort">Urutkan berdasarkan:</label>
+            <select id="liabPanjangSort" data-chart="liabPanjangChart">
+              <option value="all" selected>Semua parameter</option>
+              <option value="terbesar">Nilai (terbesar ke terkecil)</option>
+              <option value="terkecil">Nilai (terkecil ke terbesar)</option>
+              <option value="nama">Nama (A ke Z)</option>
+            </select></div>
+        </div>
         <div class="chart"><canvas id="liabPanjangChart"></canvas></div>
       </div>
       <div class="box">
-        <h3>Rincian Liabilitas Jangka Pendek</h3>
+        <div class="box-head">
+          <h3>Rincian Liabilitas Jangka Pendek</h3>
+          <div class="chart-toolbar"><label for="liabPendekSort">Urutkan berdasarkan:</label>
+            <select id="liabPendekSort" data-chart="liabPendekChart">
+              <option value="all" selected>Semua parameter</option>
+              <option value="terbesar">Nilai (terbesar ke terkecil)</option>
+              <option value="terkecil">Nilai (terkecil ke terbesar)</option>
+              <option value="nama">Nama (A ke Z)</option>
+            </select></div>
+        </div>
         <div class="chart tall"><canvas id="liabPendekChart"></canvas></div>
       </div>
     </div>
@@ -500,7 +684,17 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     </div>
 
     <div class="box">
-      <h3>Rasio Lancar per Unit</h3>
+      <div class="box-head">
+        <h3>Rasio Lancar per Unit</h3>
+        <div class="chart-toolbar"><label for="rasioSort">Urutkan berdasarkan:</label>
+          <select id="rasioSort" data-chart="rasioChart">
+            <option value="all" selected>Semua parameter</option>
+          </select></div>
+      </div>
+      <div class="leg-wrap">
+        <div class="leg" id="rasioChartLeg"></div>
+        <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+      </div>
       <div class="chart"><canvas id="rasioChart"></canvas></div>
       <div class="small">Rasio Lancar = Aset Lancar ÷ Liabilitas Jangka Pendek. Diurutkan dari rasio terbesar ke terkecil. Merah = ekuitas defisit; kuning = rasio &lt; 0,8x; hijau = wajar. UP3 Yogyakarta tidak tampil karena total aset nol.</div>
     </div>
@@ -583,12 +777,14 @@ function rupiah(n){return new Intl.NumberFormat("id-ID",{maximumFractionDigits:0
 function fmt2(n){return n.toLocaleString("id-ID",{minimumFractionDigits:2,maximumFractionDigits:2});}
 function shortRp(n){
   const abs=Math.abs(n||0), sign=n<0?"-":"";
-  if(abs>=1e12) return sign+"Rp "+fmt2(abs/1e12)+" T";
-  if(abs>=1e9)  return sign+"Rp "+fmt2(abs/1e9)+" M";
-  if(abs>=1e6)  return sign+"Rp "+fmt2(abs/1e6)+" Jt";
-  return sign+"Rp "+rupiah(abs);
+  if(abs>=1e12) return sign+"Rp"+fmt2(abs/1e12)+" T";
+  if(abs>=1e9)  return sign+"Rp"+fmt2(abs/1e9)+" M";
+  if(abs>=1e6)  return sign+"Rp"+fmt2(abs/1e6)+" Jt";
+  return sign+"Rp"+rupiah(abs);
 }
 function pct(n,t){ if(!t) return "0,00%"; return fmt2(n/t*100)+"%"; }
+const pctN=(a,b)=>b ? a/b*100 : 0;
+const fmtPct=(v,d=2)=>v.toLocaleString("id-ID",{minimumFractionDigits:d,maximumFractionDigits:d})+"%";
 function rasioLancar(d){ return d.liabPendek? d.asetLancar/d.liabPendek : 0; }
 function rasioTxt(x){ return fmt2(x)+"x"; }
 
@@ -620,35 +816,249 @@ Chart.defaults.font.family = "Arial, Helvetica, sans-serif";
 Chart.defaults.color = C.text2;
 Chart.defaults.font.size = 11;
 
-/* Plugin: teks total di tengah donut yang bolong.
-   Ukuran judul dan nilai otomatis menyesuaikan agar memenuhi lebar lubang donut, dengan huruf tebal. */
-const centerPlugin={
+/* ==========================================================
+    DONUT ENGINE (format mengikuti donut "Komposisi Nilai AI Per Program")
+    - Teks total di tengah (canvas.dataset.center / dataset.label)
+    - Sorot berpendar (glow) saat kursor di irisan atau legend
+    - Pop-up nilai HTML dengan warna latar kontras (WCAG AA)
+    - Klik irisan / legend untuk menyembunyikan atau menampilkan bagian
+ ========================================================== */
+const mod2=a=>{a=a%(2*Math.PI);return a<0?a+2*Math.PI:a;};
+const alphaHex=a=>Math.round(Math.max(0,Math.min(1,a))*255).toString(16).padStart(2,'0');
+
+function pulseLoop(chart){
+  if(chart._pulseRaf) return;
+  const step=()=>{
+    chart._pulseRaf=null;
+    if(!chart._pulse){ try{ chart.draw(); }catch(e){} return; }
+    try{ chart.draw(); }catch(e){ chart._pulse=null; return; }
+    chart._pulseRaf=requestAnimationFrame(step);
+  };
+  chart._pulseRaf=requestAnimationFrame(step);
+}
+
+function setDonutHover(chart,hit,p){
+  const st=chart._dfx;
+  const vis=hit>=0 && chart.getDataVisibility(hit);
+  const want=(vis && st) ? hit : -1;
+  chart.canvas.style.cursor=want>=0?'pointer':'default';
+  if(want===(chart._dhover ?? -1)){
+    if(want>=0){
+      chart.setActiveElements([{datasetIndex:0,index:want}]);
+      chart.tooltip.setActiveElements([{datasetIndex:0,index:want}],p||{x:0,y:0});
+      chart.draw();
+    }
+    return;
+  }
+  chart._dhover=want;
+  if(want>=0){
+    chart.setActiveElements([{datasetIndex:0,index:want}]);
+    chart.tooltip.setActiveElements([{datasetIndex:0,index:want}],p||{x:0,y:0});
+    const ds=chart.data.datasets[0];
+    chart._pulse={i:want,color:(ds.glowColors||ds.backgroundColor)[want]};
+    pulseLoop(chart);
+  } else {
+    chart.setActiveElements([]);
+    chart.tooltip.setActiveElements([],{x:0,y:0});
+    chart._pulse=null;
+    hideAiDonutPopup();
+  }
+  chart.update('none');
+}
+
+function drawDonutGlow(chart,ctx,arcs){
+  const pl=chart._pulse;
+  if(!pl || pl.i===undefined || !arcs[pl.i]) return;
+  const ha=arcs[pl.i], now=performance.now();
+  for(let k=0;k<2;k++){
+    const ph=((now/1400)+k*0.5)%1, r=ha.outerRadius+3+ph*16, a=1-ph;
+    ctx.beginPath(); ctx.arc(ha.x,ha.y,r,ha.startAngle,ha.endAngle);
+    ctx.lineWidth=3; ctx.strokeStyle=pl.color+alphaHex(a*0.9); ctx.stroke();
+    ctx.beginPath(); ctx.arc(ha.x,ha.y,ha.outerRadius+1,ha.startAngle,ha.endAngle);
+    ctx.lineWidth=1; ctx.strokeStyle=pl.color+alphaHex(a*0.5); ctx.stroke();
+  }
+}
+
+const centerTextPlugin={
   id:'centerText',
-  afterDatasetsDraw(chart){
-    const o=chart.options.plugins.centerText; if(!o) return;
-    const arc=chart.getDatasetMeta(0).data[0]; if(!arc) return;
+  afterDraw(chart){
+    const cv=chart.canvas;
+    const val=cv.dataset.center;
+    if(!val) return;
+    const el=chart.getDatasetMeta(0).data[0];
+    if(!el) return;
+    const {x,y,innerRadius}=el;
     const ctx=chart.ctx;
-    const inner=arc.innerRadius||arc.outerRadius*0.62;
-    const maxW=inner*2*0.86;
-    const fill=(text,cap)=>{
-      ctx.font='700 100px Arial, Helvetica, sans-serif';
-      const w=ctx.measureText(text).width||1;
-      return Math.max(8,Math.min(cap,100*maxW/w));
-    };
+    const maxW=innerRadius*1.8;
     ctx.save();
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    const vS=fill(o.value,44);
-    const tS=fill(o.title,16);
-    ctx.font=`700 ${tS}px Arial, Helvetica, sans-serif`;
-    ctx.fillStyle=C.text2;
-    ctx.fillText(o.title,arc.x,arc.y-vS*0.55);
-    ctx.font=`700 ${vS}px Arial, Helvetica, sans-serif`;
-    ctx.fillStyle=C.navyD;
-    ctx.fillText(o.value,arc.x,arc.y+tS*0.6);
+    let fs=Math.round(innerRadius*0.5);
+    ctx.font=`700 ${fs}px Arial, Helvetica, sans-serif`;
+    while(ctx.measureText(val).width>maxW && fs>8){ fs--; ctx.font=`700 ${fs}px Arial, Helvetica, sans-serif`; }
+    ctx.fillStyle=C.pln; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(val,x,y+fs*0.35);
+    const lab=cv.dataset.label;
+    if(lab){
+      const up=String(lab).toUpperCase();
+      const maxWL=innerRadius*1.55;           // label tidak boleh melewati lubang donut
+      let fl=Math.max(9,Math.round(fs*0.42));
+      let lines=[up];
+      ctx.font=`600 ${fl}px Arial, Helvetica, sans-serif`;
+      if(ctx.measureText(up).width>maxWL && up.split(' ').length>1){
+        const w=wrapLbl(up);                  // pecah menjadi 2 baris agar tidak menumpuk dengan donut
+        lines=Array.isArray(w)?w:[up];
+      }
+      const widest=()=>Math.max.apply(null,lines.map(l=>ctx.measureText(l).width||1));
+      while(widest()>maxWL && fl>7){ fl--; ctx.font=`600 ${fl}px Arial, Helvetica, sans-serif`; }
+      ctx.fillStyle='#6B7280';
+      const lh=fl*1.15, top=y-fs*0.85-(lines.length-1)*lh;
+      lines.forEach((ln,i)=>ctx.fillText(ln,x,top+i*lh));
+    }
     ctx.restore();
   }
 };
-Chart.register(centerPlugin);
+
+const donutFx={
+  id:'donutFx',
+  beforeLayout(chart){
+    chart.options.layout.padding={left:8,right:8,top:8,bottom:8};
+  },
+  afterEvent(chart,args){
+    const st=chart._dfx; if(!st) return;
+    const e=args.event;
+    if(e.type==='mouseout'){ setDonutHover(chart,-1,null); return; }
+    if(e.x==null) return;
+    const p={x:e.x,y:e.y};
+    let hit=-1;
+    const dx=p.x-st.cx, dy=p.y-st.cy, d=Math.hypot(dx,dy);
+    if(d>=st.inner && d<=st.R+8){
+      const a=Math.atan2(dy,dx);
+      for(const A of st.arcs){
+        if(!A.vis) continue;
+        if(mod2(a-A.s)<=A.e-A.s){ hit=A.i; break; }
+      }
+    }
+    if(e.type==='click' && e.native && e.native.pointerType==='touch'){
+      setDonutHover(chart,hit,p);
+      return;
+    }
+    if(e.type==='click'){
+      if(hit>=0){
+        hideAiDonutPopup();
+        chart.setActiveElements([]);
+        chart.tooltip.setActiveElements([],{x:0,y:0});
+        chart._pulse=null; chart._dhover=-1;
+        chart.toggleDataVisibility(hit);
+        chart.update();
+      }
+      return;
+    }
+    setDonutHover(chart,hit,p);
+  },
+  afterDraw(chart){
+    const arcs=chart.getDatasetMeta(0).data;
+    if(!arcs.length) return;
+    const a0=arcs[0];
+    chart._dfx={
+      arcs:arcs.map((a,i)=>({i,s:a.startAngle,e:a.endAngle,vis:chart.getDataVisibility(i)&&a.endAngle>a.startAngle})),
+      cx:a0.x, cy:a0.y, R:a0.outerRadius, inner:a0.innerRadius
+    };
+    const legEl=document.getElementById(chart.canvas.dataset.legend||'');
+    if(legEl) legEl.querySelectorAll('button').forEach(button=>{
+      const visible=chart.getDataVisibility(+button.dataset.i);
+      button.classList.toggle('off',!visible); button.setAttribute('aria-pressed',String(visible));
+    });
+    const ctx=chart.ctx; ctx.save(); drawDonutGlow(chart,ctx,arcs); ctx.restore();
+  }
+};
+
+/* ---------- warna pop-up & kontras teks ---------- */
+const ALPHA_POPUP=0.75;   // latar pop-up: warna legend 75%, transparan 25%
+const hexRgb=h=>{h=String(h).replace('#','');
+  if(h.length===3) h=h.split('').map(c=>c+c).join('');
+  const n=parseInt(h.slice(0,6),16); return [(n>>16)&255,(n>>8)&255,n&255];};
+const rgbHex=a=>'#'+a.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');
+const mixHex=(a,b,t)=>{const A=hexRgb(a),B=hexRgb(b);return rgbHex(A.map((v,i)=>v+(B[i]-v)*t));};
+const rgbaStr=(h,a)=>{const c=hexRgb(h);return 'rgba('+c[0]+','+c[1]+','+c[2]+','+a+')';};
+const lumHex=h=>{const c=hexRgb(h).map(v=>{v/=255;return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4);});
+  return 0.2126*c[0]+0.7152*c[1]+0.0722*c[2];};
+const contrastHex=(a,b)=>{const l1=lumHex(a),l2=lumHex(b);return (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05);};
+
+const VEILS=[0,0.06,0.12,0.18,0.24,0.30,0.36,0.42];
+const POPUP_BASE_BACKDROPS=['#FFFFFF','#E8EEF5','#000000','#20304A'];
+function popupSkin(color,extras){
+  const white='#FFFFFF', ink='#081E36';
+  const backdrops=POPUP_BASE_BACKDROPS.concat((extras||[]).map(String));
+  const wajah=(veil,veilHex,bg)=>{const dasar=mixHex(bg,color,ALPHA_POPUP);return veil?mixHex(dasar,veilHex,veil):dasar;};
+  let out=null;
+  [[ink,white],[white,ink]].forEach(pair=>{              // teks gelap → lapisan putih
+    const txt=pair[0], veilHex=pair[1];                  // teks terang → lapisan gelap
+    for(const v of VEILS){
+      const min=Math.min(...backdrops.map(bg=>contrastHex(wajah(v,veilHex,bg),txt)));
+      if(min>=4.5){
+        if(!out||v<out.veil||(v===out.veil&&min>out.gain)) out={text:txt,veilHex,veil:v,gain:min};
+        break;
+      }
+    }
+  });
+  if(!out) out={text:white,veilHex:ink,veil:0.42,gain:0};
+  return {hue:rgbaStr(color,ALPHA_POPUP),text:out.text,
+          veil:out.veil?rgbaStr(out.veilHex,out.veil):null,
+          edge:mixHex(wajah(out.veil,out.veilHex,'#FFFFFF'),out.text,0.65),
+          swatch:mixHex(wajah(out.veil,out.veilHex,'#FFFFFF'),out.text,0.8)};
+}
+
+function hideAiDonutPopup(){
+  const box=document.getElementById('aiDonutPopup');
+  if(box){box.style.display='none';box.setAttribute('aria-hidden','true');}
+}
+function externalAiDonutTooltip({chart,tooltip}){
+  let box=document.getElementById('aiDonutPopup');
+  if(!box){
+    box=document.createElement('div');box.id='aiDonutPopup';box.className='ai-donut-popup';
+    box.setAttribute('role','tooltip');document.body.appendChild(box);
+    const reposition=()=>{const active=box._chartRef;if(active) externalAiDonutTooltip({chart:active,tooltip:active.tooltip});};
+    window.addEventListener('scroll',reposition,true);window.addEventListener('resize',reposition);
+  }
+  box._chartRef=chart;
+  const point=tooltip.dataPoints && tooltip.dataPoints[0];
+  // tampil selama ada irisan yang sedang disorot (kursor di irisan, di legend-nya, atau sentuhan)
+  if((chart._dhover ?? -1)<0 || !point || chart.canvas.offsetParent===null){
+    box.style.display='none';box.setAttribute('aria-hidden','true');return;
+  }
+  const ds=chart.data.datasets[0];
+  const color=ds.backgroundColor[point.dataIndex]||C.pln;
+  const skin=popupSkin(color,ds.backgroundColor);
+  const tot=ds.data.reduce((s,x)=>s+Math.abs(+x||0),0);
+  const share=tot?' ('+fmt2(Math.abs(+point.raw||0)/tot*100)+'%)':'';
+  const title=document.createElement('strong');
+  title.textContent=point.label;
+  const row=document.createElement('div');row.className='popup-value';
+  const swatch=document.createElement('i');swatch.className='popup-swatch';
+  const value=document.createElement('span');
+  value.textContent=shortRp(point.raw)+share;
+  swatch.style.background=skin.swatch;
+  swatch.style.boxShadow='inset 0 0 0 1px '+skin.edge;
+  row.append(swatch,value);box.replaceChildren(title,row);
+  box.style.backgroundColor=skin.hue;                // warna legend 75% = transparan 25%
+  box.style.backgroundImage=skin.veil?'linear-gradient('+skin.veil+','+skin.veil+')':'none';
+  box.style.color=skin.text;                         // teks kontras terhadap latar
+  box.style.borderColor=skin.edge;                   // outline tipis mengikuti warna teks
+  box.style.display='block';box.setAttribute('aria-hidden','false');
+  const r=chart.canvas.getBoundingClientRect(),vw=document.documentElement.clientWidth,vh=window.innerHeight;
+  box.style.maxWidth=Math.max(120,Math.min(250,vw-16))+'px';
+  const w=box.offsetWidth,h=box.offsetHeight,gap=12;
+  const clampN=n=>Math.max(8,Math.min(vw-w-8,Math.max(8,n)));
+  const cx=r.left+tooltip.caretX,cy=r.top+tooltip.caretY;
+  const choices=[
+    {side:'above',x:clampN(cx-w/2),y:clampN(cy-h-gap)},
+    {side:'below',x:clampN(cx-w/2),y:clampN(cy+gap)},
+    {side:'right',x:clampN(cx+gap),y:clampN(cy-h/2)},
+    {side:'left',x:clampN(cx-w-gap),y:clampN(cy-h/2)}
+  ];
+  const fits=q=>q.x>=8&&q.y>=8&&q.x+w<=vw-8&&q.y+h<=vh-8;
+  const position=choices.find(fits)||choices[0];
+  box.style.left=position.x+'px';box.style.top=position.y+'px';box.dataset.side=position.side;
+}
 
 /* Plugin: sorot batang terpilih dengan pendar (glow) dan garis tipis */
 const glowPlugin={
@@ -674,45 +1084,163 @@ const charts={};
 const chartColors=[C.pln,C.gold,C.teal,C.red,'#6B7280',C.pln2,'#7A8B99','#9A7D18'];
 function killChart(id){ if(charts[id]) charts[id].destroy(); }
 
-function doughnut(id,labels,values,colors,center){
-  killChart(id);
-  charts[id]=new Chart($(id),{
-    type:"doughnut",
-    data:{labels,datasets:[{data:values,backgroundColor:colors||chartColors,borderColor:"#fff",borderWidth:2}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:"62%",
-      plugins:{
-        legend:{position:"bottom",labels:{boxWidth:10,boxHeight:10,padding:12,font:{size:11}}},
-        tooltip:{callbacks:{label:c=>" "+c.label+": "+shortRp(c.raw)+shareOf(c.dataset,c.raw)}},
-        centerText:center||null
-      }}
-  });
+/* ----------_DROPDOWN "URUTKAN BERDASARKAN:" GRAFIK BATANG_---------- */
+const SORT_MODE={};   // chartId -> mode urut
+const BAR_REG={};     // grafik batang (vertikal) -> data item
+const HB_REG={};      // batang mendatar -> data item
+const LEG_EL={asetBarChart:'asetBarLeg',elBarChart:'elBarLeg',rasioChart:'rasioChartLeg'}; // chart -> elemen legend
+const LEGHIDE={};     // chartId -> Set(label yang disembunyikan)
+function sortById(id,items){
+  const m=SORT_MODE[id]||'all';
+  const arr=[...items];
+  if(m==='terkecil') return arr.sort((a,b)=>a.value-b.value);
+  if(m==='nama') return arr.sort((a,b)=>String(a.label).localeCompare(String(b.label),'id'));
+  return arr.sort((a,b)=>b.value-a.value); // 'all' & 'terbesar': terbesar ke terkecil
+}
+/* Grafik batang dengan lebih dari 1 legend: dropdown memakai parameter sesuai item legend */
+function legendParams(id,items){
+  const R=BAR_REG[id]; if(!R) return [];
+  if(R.legGroups) return R.legGroups.map(g=>({key:g.label,memberLabels:items.filter(x=>x.color===g.color).map(x=>x.label)}));
+  return items.map(x=>({key:x.label,memberLabels:[x.label]}));
+}
+const escAttr=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+function buildSortSelect(id,items,reset){
+  if(!LEG_EL[id]) return;
+  const sel=document.querySelector('.chart-toolbar select[data-chart="'+id+'"]');
+  if(!sel) return;
+  const params=legendParams(id,items);
+  const keep=(!reset && params.some(p=>String(p.key)===sel.value)) ? sel.value : 'all';
+  sel.innerHTML='<option value="all">Semua parameter</option>'+params.map(p=>`<option value="${escAttr(p.key)}">${escAttr(p.key)}</option>`).join('');
+  sel.value=keep;
 }
 
-function bar(id,labels,values,{horizontal=false,colors=null,fmt=shortRp,share=true}={}){
+/* Donut format "Komposisi Nilai AI Per Program": teks tengah, glow hover,
+   pop-up nilai, dan legend HTML yang bisa diklik untuk sembunyikan bagian */
+function doughnut(id,labels,values,colors,center){
   killChart(id);
+  hideAiDonutPopup();
+  const cv=$(id);
+  const cols=(colors||chartColors).slice(0,labels.length);
+  if(center){ cv.dataset.center=center.value; cv.dataset.label=center.title; }
+  else { delete cv.dataset.center; delete cv.dataset.label; }
+  const legId=id+'Legend';
+  cv.dataset.legend=legId;
+  charts[id]=new Chart(cv,{
+    type:"doughnut",
+    data:{labels,datasets:[{data:values,backgroundColor:cols,glowColors:cols,borderColor:"#FFFFFF",borderWidth:2,hoverOffset:10}]},
+    options:{responsive:true,maintainAspectRatio:false,animation:false,cutout:"62%",layout:{padding:8},
+      plugins:{legend:{display:false},tooltip:{enabled:false,external:externalAiDonutTooltip}}},
+    plugins:[centerTextPlugin,donutFx]
+  });
+  const chart=charts[id];
+  const oldLeg=$(legId);
+  if(!oldLeg) return;
+  const legEl=oldLeg.cloneNode(false); // elemen segar: bebas listener lama
+  oldLeg.replaceWith(legEl);
+  legEl.innerHTML=labels.map((l,i)=>`<button type="button" data-i="${i}" aria-pressed="true"><i style="background:${cols[i]}"></i><span>${l}</span></button>`).join('');
+  legEl.onclick=e=>{
+    const b=e.target.closest('button[data-i]'); if(!b) return;
+    setDonutHover(chart,-1,null);
+    chart.toggleDataVisibility(+b.dataset.i);
+    chart.update();
+  };
+  const hl=e=>{
+    const b=e.target.closest('button[data-i]'); if(!b) return;
+    const i=+b.dataset.i, a=chart.getDatasetMeta(0).data[i]; if(!a) return;
+    const mid=(a.startAngle+a.endAngle)/2;
+    setDonutHover(chart,i,{x:a.x+a.outerRadius*Math.cos(mid),y:a.y+a.outerRadius*Math.sin(mid)});
+  };
+  legEl.onmouseover=hl;
+  legEl.onmouseleave=()=>setDonutHover(chart,-1,null);
+  legEl.addEventListener('focusin',hl);
+  legEl.addEventListener('focusout',ev=>{ if(!legEl.contains(ev.relatedTarget)) setDonutHover(chart,-1,null); });
+}
+
+/* Batang kategori dengan legend HTML (.leg) yang bisa diklik per item/grup */
+function bar(id,labels,values,{horizontal=false,colors=null,fmt=shortRp,share=true,legGroups=null}={}){
+  const items=labels.map((l,i)=>({
+    label:l,value:values[i],
+    color:Array.isArray(colors)?(colors[i]||C.teal):(colors||C.teal)
+  }));
+  BAR_REG[id]={items,fmt,share,horizontal,legGroups,fresh:true};
+  if(!LEGHIDE[id]) LEGHIDE[id]=new Set(); else LEGHIDE[id].clear(); // data baru: reset parameter
+  drawBar(id);
+}
+function drawBar(id){
+  const R=BAR_REG[id]; if(!R) return;
+  const reset=!!R.fresh; R.fresh=false;
+  killChart(id);
+  const items=sortById(id,R.items);
+  const hid=LEGHIDE[id];
   charts[id]=new Chart($(id),{
     type:"bar",
     data:{
-      labels: horizontal ? labels : labels.map(wrapLbl),
-      datasets:[{label:"Nilai",data:values,backgroundColor:colors||C.teal,borderRadius:3,borderWidth:0,maxBarThickness:28}]
+      labels:R.horizontal ? items.map(x=>x.label) : items.map(x=>wrapLbl(x.label)),
+      datasets:[{label:"Nilai",data:items.map(x=>hid.has(x.label)?null:x.value),
+        backgroundColor:items.map(x=>x.color),borderRadius:3,borderWidth:0,maxBarThickness:28}]
     },
-    options:{responsive:true,maintainAspectRatio:false,indexAxis:horizontal?"y":"x",
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:R.horizontal?"y":"x",
       plugins:{
         legend:{display:false},
-        tooltip:{callbacks:{label:c=>" "+fmt(c.raw)+(share?shareOf(c.dataset,c.raw):"")}}
+        tooltip:{callbacks:{label:c=>" "+R.fmt(c.raw)+(R.share?shareOf(c.dataset,c.raw):"")}}
       },
       scales:{
-        x:{grid:{display:false},ticks:horizontal
-            ? {font:{size:10},callback:function(v){return fmt(v);}}
+        x:{grid:{display:false},ticks:R.horizontal
+            ? {font:{size:10},callback:function(v){return R.fmt(v);}}
             : {...xTicksFlat, callback:function(v){return this.getLabelForValue(v);}}},
-        y:{grid:{color:C.grid},ticks:{font:{size:10},callback:function(v){return horizontal?this.getLabelForValue(v):fmt(v);}}}
+        y:{grid:{color:C.grid},ticks:{font:{size:10},callback:function(v){return R.horizontal?this.getLabelForValue(v):R.fmt(v);}}}
       }}
   });
+  renderBarLeg(id,items);
+  buildSortSelect(id,items,reset);
+}
+function renderBarLeg(id,items){
+  const elId=LEG_EL[id]; if(!elId) return;
+  const el=$(elId); if(!el) return;
+  const R=BAR_REG[id], hid=LEGHIDE[id];
+  const anyoneVisible=set=>items.some(x=>!set.has(x.label));
+  if(R.legGroups){
+    // grup warna (mis. status rasio lancar): satu entri legend mewakili banyak batang
+    const groups=R.legGroups.map(g=>({...g,labels:items.filter(x=>x.color===g.color).map(x=>x.label)}));
+    el.innerHTML=groups.map((g,i)=>{
+      const off=g.labels.length>0 && g.labels.every(l=>hid.has(l));
+      return `<span data-g="${i}" class="${off?'off':''}"><i style="background:${g.color}"></i>${g.label}</span>`;
+    }).join('');
+    el.onclick=e=>{
+      const t=e.target.closest('span[data-g]'); if(!t) return;
+      const g=groups[+t.dataset.g]; if(!g || !g.labels.length) return;
+      const allOff=g.labels.every(l=>hid.has(l));
+      if(allOff){ g.labels.forEach(l=>hid.delete(l)); drawBar(id); return; }
+      const test=new Set(hid); g.labels.forEach(l=>test.add(l));
+      if(!anyoneVisible(test)) return; // minimal satu batang tetap tampil
+      g.labels.forEach(l=>hid.add(l));
+      drawBar(id);
+    };
+  } else {
+    el.innerHTML=items.map((x,i)=>`<span data-i="${i}" class="${hid.has(x.label)?'off':''}"><i style="background:${x.color}"></i>${x.label}</span>`).join('');
+    el.onclick=e=>{
+      const t=e.target.closest('span[data-i]'); if(!t) return;
+      const x=items[+t.dataset.i]; if(!x) return;
+      if(hid.has(x.label)) hid.delete(x.label);
+      else {
+        const test=new Set(hid); test.add(x.label);
+        if(!anyoneVisible(test)) return; // minimal satu batang tetap tampil
+        hid.add(x.label);
+      }
+      drawBar(id);
+    };
+  }
 }
 
-/* Batang mendatar per unit: warna sesuai legend, unit terpilih disorot */
+/* Batang mendatar per unit: warna sesuai legend, unit terpilih disorot, bisa diurutkan */
 function hbar(id,items,sel){
+  HB_REG[id]={items,sel};
+  drawHbar(id);
+}
+function drawHbar(id){
+  const R=HB_REG[id]; if(!R) return;
   killChart(id);
+  const items=sortById(id,R.items), sel=R.sel;
   const hi=items.map(x=>x.label===sel);
   charts[id]=new Chart($(id),{
     type:"bar",
@@ -763,13 +1291,52 @@ SEL_IDS.forEach(id=>{
 });
 
 /* ==========================================================
-   DYNAMIC UPDATE (per unit)
+   SPEEDOMETER KARTU SKOR (format kartu skor anggaran-investasi)
 ========================================================== */
-const SN=n=>n.replace("UP3 ","");
-function setCard(valId,pctId,value,base){
-  $(valId).textContent=shortRp(value);
-  $(pctId).textContent=pct(value,base)+" Total Aset";
+function speedometer(label,amount,reference,basis,cls){
+  const percent=pctN(amount,reference);
+  const max=Math.max(100,Math.ceil(percent/25)*25);
+  const fraction=Math.max(0,Math.min(1,percent/max));
+  const angle=Math.PI+Math.PI*fraction;
+  const x=80+52*Math.cos(angle), y=78+52*Math.sin(angle);
+  const color={teal:C.teal,gold:C.gold,green:C.green}[cls]||C.pln;
+  const pTxt=fmtPct(Math.max(-9999,Math.min(9999,percent)));
+  const ticks=[0,.25,.5,.75,1].map(t=>{
+    const a=Math.PI+Math.PI*t;
+    return `<line x1="${80+56*Math.cos(a)}" y1="${78+56*Math.sin(a)}" x2="${80+61*Math.cos(a)}" y2="${78+61*Math.sin(a)}" stroke="#8D9AAC" stroke-width="1"/>`;
+  }).join('');
+  return `<div class="card-gauge" data-amount="${amount}" data-reference="${reference}" data-percent="${percent}" data-max="${max}" data-angle="${angle*180/Math.PI}">
+    <svg viewBox="0 0 160 110" role="img" aria-label="Speedometer ${label}: ${pTxt}, ${basis}">
+      <title>${label}: ${pTxt}, ${basis}</title>
+      <path d="M16 78 A64 64 0 0 1 144 78" fill="none" stroke="#CED8E3" stroke-width="9" stroke-linecap="round"/>
+      <path d="M16 78 A64 64 0 0 1 144 78" fill="none" stroke="${color}" stroke-width="9" stroke-linecap="${fraction>0?'round':'butt'}" pathLength="100" stroke-dasharray="${fraction*100} 100"/>
+      ${ticks}<line class="gauge-needle" x1="80" y1="78" x2="${x}" y2="${y}" stroke="${C.pln}" stroke-width="2.8" stroke-linecap="round"/>
+      <circle cx="80" cy="78" r="4.5" fill="${C.pln}"/>
+      <text x="8" y="96" font-size="10" fill="#6B7280">0%</text>
+      <text x="153" y="96" text-anchor="end" font-size="10" fill="#6B7280">${max}%</text>
+      <text x="80" y="104" text-anchor="middle" font-size="14" font-weight="700" fill="${C.pln}">${pTxt}</text>
+    </svg><div class="gauge-basis">${basis}</div></div>`;
 }
+/* Pasang speedometer di dalam kartu skor (diperbarui tiap ganti unit) */
+function setScore(key,amount,reference,basis){
+  const card=document.querySelector('.card[data-g="'+key+'"]'); if(!card) return;
+  const val=card.querySelector('.value'), lab=card.querySelector('.label');
+  if(!val||!lab) return;
+  let score=card.querySelector('.card-score');
+  if(!score){
+    score=document.createElement('div'); score.className='card-score';
+    card.insertBefore(score,val);
+  }
+  if(val.parentElement!==score) score.appendChild(val);
+  score.querySelectorAll('.card-gauge').forEach(g=>g.remove());
+  const cls=['teal','gold','green'].find(c=>card.classList.contains(c))||'';
+  score.insertAdjacentHTML('beforeend',speedometer(lab.textContent,amount,reference,basis,cls));
+}
+
+/* ==========================================================
+   DYNAMIC UPDATE (per unit)
+ ========================================================== */
+const SN=n=>n.replace("UP3 ","");
 
 function updateDashboard(){
   const u=currentUnit, d=data[u];
@@ -778,23 +1345,26 @@ function updateDashboard(){
   const passiva=d.ekuitas+d.liabPanjang+d.liabPendek+d.antarSatuan;
   const SEL = u==="GABUNGAN" ? null : SN(u);
 
-  /* KPI overview */
+  /* Kartu skor overview (speedometer % dari Total Aset) */
   $("kpiAssets").textContent=shortRp(d.totalAset);
-  $("kpiAssetsPct").textContent="100% Total Aset";
   $("kpiUnit").textContent=u;
   $("kpiEquity").textContent=shortRp(d.ekuitas);
-  $("kpiEquityPct").textContent=pct(d.ekuitas,d.totalAset)+" Total Aset";
-  $("kpiEquityPct").className="delta "+(d.ekuitas<0?"neg":"pos");
   $("kpiLiab").textContent=shortRp(liabTotal);
-  $("kpiLiabPct").textContent=pct(liabTotal,d.totalAset)+" Total Aset";
   $("kpiInter").textContent=shortRp(d.antarSatuan);
-  $("kpiInterPct").textContent=pct(d.antarSatuan,d.totalAset)+" Total Aset";
+  setScore("ov-aset",d.totalAset,d.totalAset,"Dari Total Aset");
+  setScore("ov-ekuitas",d.ekuitas,d.totalAset,"Dari Total Aset");
+  setScore("ov-liab",liabTotal,d.totalAset,"Dari Total Aset");
+  setScore("ov-inter",d.antarSatuan,d.totalAset,"Dari Total Aset");
 
-  /* KPI aset */
-  setCard("asKpiFixed","asKpiFixedPct",d.asetTetap,d.totalAset);
-  setCard("asKpiPdp","asKpiPdpPct",d.pdp,d.totalAset);
-  setCard("asKpiCurrent","asKpiCurrentPct",d.asetLancar,d.totalAset);
-  setCard("asKpiReceivable","asKpiReceivablePct",d.piutangUsaha,d.totalAset);
+  /* Kartu skor tab Aset */
+  $("asKpiFixed").textContent=shortRp(d.asetTetap);
+  $("asKpiPdp").textContent=shortRp(d.pdp);
+  $("asKpiCurrent").textContent=shortRp(d.asetLancar);
+  $("asKpiReceivable").textContent=shortRp(d.piutangUsaha);
+  setScore("as-fixed",d.asetTetap,d.totalAset,"Dari Total Aset");
+  setScore("as-pdp",d.pdp,d.totalAset,"Dari Total Aset");
+  setScore("as-lancar",d.asetLancar,d.totalAset,"Dari Total Aset");
+  setScore("as-piutang",d.piutangUsaha,d.asetLancar,"Dari Aset Lancar");
 
   /* Infografis stack */
   const lainnya=d.totalAset-d.asetTetap-d.pdp-d.asetLancar;
@@ -857,15 +1427,15 @@ function updateDashboard(){
     asetSorted.map(x=>x.value),
     {colors:asetSorted.map(x=>x.color),fmt:shortRp});
 
-  /* Ekuitas & liabilitas KPI (persentase terhadap total aset) */
+  /* Kartu skor tab Ekuitas & Liabilitas (speedometer % dari Total Aset) */
   $("elEquity").textContent=shortRp(d.ekuitas);
-  $("elEquityPct").textContent=pct(d.ekuitas,d.totalAset)+" Total Aset";
   $("elInter").textContent=shortRp(d.antarSatuan);
-  $("elInterPct").textContent=pct(d.antarSatuan,d.totalAset)+" Total Aset";
   $("elLong").textContent=shortRp(d.liabPanjang);
-  $("elLongPct").textContent=pct(d.liabPanjang,d.totalAset)+" Total Aset";
   $("elShort").textContent=shortRp(d.liabPendek);
-  $("elShortPct").textContent=pct(d.liabPendek,d.totalAset)+" Total Aset";
+  setScore("el-ekuitas",d.ekuitas,d.totalAset,"Dari Total Aset");
+  setScore("el-inter",d.antarSatuan,d.totalAset,"Dari Total Aset");
+  setScore("el-ljp",d.liabPanjang,d.totalAset,"Dari Total Aset");
+  setScore("el-ljk",d.liabPendek,d.totalAset,"Dari Total Aset");
 
   doughnut("elStructureChart",pasivaLabels,pasivaVals,null,
     {title:"Total Ekuitas & Liabilitas", value:shortRp(passiva)});
@@ -941,7 +1511,12 @@ function renderStatic(){
   bar("rasioChart",rasioUnits.map(u=>label(u)),rasioUnits.map(u=>rasioLancar(data[u])),{
     colors:rasioUnits.map(u=>{const d=data[u];return d.ekuitas<0?C.red:rasioLancar(d)<0.8?C.gold:C.teal;}),
     fmt:x=>rasioTxt(x),
-    share:false
+    share:false,
+    legGroups:[
+      {label:"Wajar",color:C.teal},
+      {label:"Rasio < 0,8x",color:C.gold},
+      {label:"Ekuitas defisit",color:C.red}
+    ]
   });
 }
 
@@ -1006,7 +1581,26 @@ document.querySelectorAll('.tab').forEach(btn=>{
 
 /* ==========================================================
    INIT
-========================================================== */
+ ========================================================== */
+document.querySelectorAll('.chart-toolbar select[data-chart]').forEach(sel=>{
+  sel.addEventListener('change',()=>{
+    const id=sel.dataset.chart;
+    if(LEG_EL[id]&&BAR_REG[id]){
+      // grafik batang multi-legend: parameter = item legend (menampilkan bagian terpilih saja)
+      const params=legendParams(id,sortById(id,BAR_REG[id].items));
+      const hid=LEGHIDE[id]||(LEGHIDE[id]=new Set());
+      hid.clear();
+      if(sel.value!=='all'){
+        params.forEach(p=>{ if(String(p.key)!==sel.value) p.memberLabels.forEach(l=>hid.add(l)); });
+      }
+      drawBar(id);
+      return;
+    }
+    SORT_MODE[id]=sel.value;
+    if(BAR_REG[id]) drawBar(id);
+    if(HB_REG[id]) drawHbar(id);
+  });
+});
 renderStatic();
 updateDashboard();
 makeTableSortable(document.getElementById('ratioTableEl'));
