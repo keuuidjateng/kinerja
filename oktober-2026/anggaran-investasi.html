@@ -191,7 +191,7 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
 .ai-donut-legend i{width:10px;height:10px;flex:0 0 10px;margin-top:1px;border-radius:2px}
 .ai-donut-legend button.off{opacity:.4;text-decoration:line-through}
 .ai-donut-legend button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
-.ai-donut-popup{position:fixed;z-index:10000;display:none;pointer-events:none;width:max-content;max-width:250px;border-radius:5px;padding:10px 12px;font:12px/1.45 Arial,Helvetica,sans-serif;color:var(--navy-d);background:rgba(255,255,255,.7);border:1px solid var(--line);box-shadow:0 4px 16px rgba(11,46,79,.16)}
+.ai-donut-popup{position:fixed;z-index:10000;display:none;pointer-events:none;width:max-content;max-width:250px;border-radius:5px;padding:10px 12px;font:12px/1.45 Arial,Helvetica,sans-serif;color:var(--navy-d);background:rgba(255,255,255,.7);border:1px solid var(--line);box-shadow:0 3px 10px rgba(8,30,54,.22)}
 .ai-donut-popup strong{display:block;margin-bottom:4px;font-size:12px}
 .ai-donut-popup .popup-value{display:flex;align-items:center;gap:7px;font-weight:700}
 .ai-donut-popup .popup-swatch{width:10px;height:10px;flex:0 0 10px;border-radius:1px}
@@ -1216,7 +1216,36 @@ const donutEl = document.getElementById('donutChart');
 donutEl.dataset.center = fmtM(M(TOT.ai));
 donutEl.dataset.label = 'Total Nilai AI';
 
-/* Pop-up label donut: dasar warna legend program (transparan) dengan outline tipis */
+/* ---------- warna pop-up & kontras teks ---------- */
+const ALPHA_POPUP = 0.94;                                  // kepekatan latar pop-up: 94% warna legend, 6% bening
+const hexRgb = h => { h = String(h).replace('#','');
+  if(h.length === 3) h = h.split('').map(c=>c+c).join('');
+  const n = parseInt(h.slice(0,6),16); return [(n>>16)&255,(n>>8)&255,n&255]; };
+const rgbHex = a => '#' + a.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');
+const mixHex = (a,b,t) => { const A = hexRgb(a), B = hexRgb(b); return rgbHex(A.map((v,i)=>v+(B[i]-v)*t)); };
+const lumHex = h => { const c = hexRgb(h).map(v => { v /= 255; return v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4); });
+  return 0.2126*c[0] + 0.7152*c[1] + 0.0722*c[2]; };
+const contrastHex = (a,b) => { const l1 = lumHex(a), l2 = lumHex(b); return (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05); };
+/* Warna latar pop-up = warna legend (hampir pekat) dengan teks yang dijamin kontras.
+   Kontras diuji pada dua kondisi nyata: pop-up di atas panel putih dan di atas
+   irisan berwarna penuh. Bila perlu, warna dasar digeser sedikit (maks 8 langkah). */
+function popupSkin(color){
+  const white = '#FFFFFF', ink = '#081E36';
+  const uji = (c, t) => Math.min(contrastHex(mixHex('#FFFFFF', c, ALPHA_POPUP), t), contrastHex(c, t));
+  let best = null;
+  [white, ink].forEach(t => {
+    let c = color, step = 0;
+    while(uji(c, t) < 4.5 && step < 8){ c = mixHex(c, t === white ? '#000000' : '#FFFFFF', 0.06); step++; }
+    const gain = uji(c, t);
+    if(!best || step < best.step || (step === best.step && gain > best.gain)) best = { base:c, text:t, step, gain };
+  });
+  const rgb = hexRgb(best.base);
+  return { fill: 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',' + ALPHA_POPUP + ')',
+           text: best.text, edge: mixHex(best.base, best.text, 0.65),
+           swatch: mixHex(best.base, best.text, 0.8) };   // kotak kecil tetap terlihat
+}
+
+/* Pop-up label donut: dasar warna legend program (hampir pekat) dengan outline tipis & teks kontras */
 function hideAiDonutPopup(){
   const box = document.getElementById('aiDonutPopup');
   if(box){ box.style.display = 'none'; box.setAttribute('aria-hidden','true'); }
@@ -1236,15 +1265,19 @@ function externalAiDonutTooltip({chart, tooltip}){
     box.style.display = 'none'; box.setAttribute('aria-hidden','true'); return;
   }
   const color = chart.data.datasets[0].backgroundColor[point.dataIndex] || C.pln;
+  const skin = popupSkin(color);
   const title = document.createElement('strong');
   title.textContent = point.label + ' — ' + programs[point.dataIndex].name;
   const row = document.createElement('div'); row.className = 'popup-value';
-  const swatch = document.createElement('i'); swatch.className = 'popup-swatch'; swatch.style.background = color;
+  const swatch = document.createElement('i'); swatch.className = 'popup-swatch';   // warna kotak diisi dari skin di bawah
   const value = document.createElement('span');
   value.textContent = 'Nilai AI: ' + fmtM(point.raw) + ' (' + fmtN1(pct(point.raw*1e9, TOT.ai)) + '% dari Nilai AI)';
+  swatch.style.background = skin.swatch;               // tetap terlihat di atas latar sewarna
+  swatch.style.boxShadow = 'inset 0 0 0 1px ' + skin.edge;
   row.append(swatch, value); box.replaceChildren(title, row);
-  box.style.background = color + '2E';                 // warna legend, dibuat transparan
-  box.style.borderColor = color;                       // outline tipis
+  box.style.background = skin.fill;                    // warna legend, hanya sedikit transparan
+  box.style.color = skin.text;                         // teks kontras terhadap latar
+  box.style.borderColor = skin.edge;                   // outline tipis mengikuti warna teks
   box.style.display = 'block'; box.setAttribute('aria-hidden','false');
   const r = chart.canvas.getBoundingClientRect(), vw = document.documentElement.clientWidth, vh = window.innerHeight;
   box.style.maxWidth = Math.max(120, Math.min(250, vw-16)) + 'px';
@@ -1293,9 +1326,10 @@ const aiLegendHighlight = e=>{
   setDonutHover(charts.donut,i,{x:a.x+a.outerRadius*Math.cos(mid),y:a.y+a.outerRadius*Math.sin(mid)});
 };
 aiLegend.onmouseover = aiLegendHighlight;
-aiLegend.onfocusin = aiLegendHighlight;
 aiLegend.onmouseleave = ()=>setDonutHover(charts.donut,-1,null);
-aiLegend.onfocusout = e=>{ if(!aiLegend.contains(e.relatedTarget)) setDonutHover(charts.donut,-1,null); };
+// focusin/focusout tidak punya atribut on* di semua peramban → pakai addEventListener
+aiLegend.addEventListener('focusin', aiLegendHighlight);
+aiLegend.addEventListener('focusout', e=>{ if(!aiLegend.contains(e.relatedTarget)) setDonutHover(charts.donut,-1,null); });
 
 /* ---------- DISBURSE: Nilai AKI | Realisasi Bayar (batang, Rp M) + % Realisasi (titik) + garis 98,78% ---------- */
 const DIS_SORT = {
