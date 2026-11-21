@@ -1217,35 +1217,43 @@ donutEl.dataset.center = fmtM(M(TOT.ai));
 donutEl.dataset.label = 'Total Nilai AI';
 
 /* ---------- warna pop-up & kontras teks ---------- */
-const ALPHA_POPUP = 0.94;                                  // kepekatan latar pop-up: 94% warna legend, 6% bening
+const ALPHA_POPUP = 0.75;                                  // latar pop-up: warna legend 75%, transparan 25%
 const hexRgb = h => { h = String(h).replace('#','');
   if(h.length === 3) h = h.split('').map(c=>c+c).join('');
   const n = parseInt(h.slice(0,6),16); return [(n>>16)&255,(n>>8)&255,n&255]; };
 const rgbHex = a => '#' + a.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');
 const mixHex = (a,b,t) => { const A = hexRgb(a), B = hexRgb(b); return rgbHex(A.map((v,i)=>v+(B[i]-v)*t)); };
+const rgbaStr = (h,a) => { const c = hexRgb(h); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; };
 const lumHex = h => { const c = hexRgb(h).map(v => { v /= 255; return v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4); });
   return 0.2126*c[0] + 0.7152*c[1] + 0.0722*c[2]; };
 const contrastHex = (a,b) => { const l1 = lumHex(a), l2 = lumHex(b); return (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05); };
-/* Warna latar pop-up = warna legend (hampir pekat) dengan teks yang dijamin kontras.
-   Kontras diuji pada dua kondisi nyata: pop-up di atas panel putih dan di atas
-   irisan berwarna penuh. Bila perlu, warna dasar digeser sedikit (maks 8 langkah). */
+
+/* Latar pop-up: warna legend 75% (transparan 25%). Agar teks tetap terbaca di latar
+   mana pun yang sedang lewat di bawahnya (panel putih, kartu, atau irisan berwarna),
+   ditambahkan lapisan tipis sewarna teks. Pilih teks + ketebalan lapisan paling hemat
+   yang menghasilkan kontras ≥ 4.5:1 (WCAG AA). */
+const VEILS = [0,0.06,0.12,0.18,0.24,0.30,0.36,0.42];
+const BACKDROPS = ['#FFFFFF','#E8EEF5','#000000','#20304A'].concat(programs.map(p=>p.color));
 function popupSkin(color){
   const white = '#FFFFFF', ink = '#081E36';
-  const uji = (c, t) => Math.min(contrastHex(mixHex('#FFFFFF', c, ALPHA_POPUP), t), contrastHex(c, t));
-  let best = null;
-  [white, ink].forEach(t => {
-    let c = color, step = 0;
-    while(uji(c, t) < 4.5 && step < 8){ c = mixHex(c, t === white ? '#000000' : '#FFFFFF', 0.06); step++; }
-    const gain = uji(c, t);
-    if(!best || step < best.step || (step === best.step && gain > best.gain)) best = { base:c, text:t, step, gain };
+  const wajah = (veil, veilHex, bg) => { const dasar = mixHex(bg, color, ALPHA_POPUP); return veil ? mixHex(dasar, veilHex, veil) : dasar; };
+  let out = null;
+  [[ink, white], [white, ink]].forEach(pair => {              // teks gelap → lapisan putih
+    const txt = pair[0], veilHex = pair[1];                   // teks terang → lapisan gelap
+    for(const v of VEILS){
+      const min = Math.min(...BACKDROPS.map(bg => contrastHex(wajah(v, veilHex, bg), txt)));
+      if(min >= 4.5){
+        if(!out || v < out.veil || (v === out.veil && min > out.gain)) out = { text:txt, veilHex, veil:v, gain:min };
+        break;
+      }
+    }
   });
-  const rgb = hexRgb(best.base);
-  return { fill: 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',' + ALPHA_POPUP + ')',
-           text: best.text, edge: mixHex(best.base, best.text, 0.65),
-           swatch: mixHex(best.base, best.text, 0.8) };   // kotak kecil tetap terlihat
-}
-
-/* Pop-up label donut: dasar warna legend program (hampir pekat) dengan outline tipis & teks kontras */
+  if(!out) out = { text:white, veilHex:ink, veil:0.42, gain:0 };
+  return { hue: rgbaStr(color, ALPHA_POPUP), text: out.text,
+           veil: out.veil ? rgbaStr(out.veilHex, out.veil) : null,
+           edge: mixHex(wajah(out.veil, out.veilHex, '#FFFFFF'), out.text, 0.65),
+           swatch: mixHex(wajah(out.veil, out.veilHex, '#FFFFFF'), out.text, 0.8) };
+}/* Pop-up label donut: dasar warna legend program (hampir pekat) dengan outline tipis & teks kontras */
 function hideAiDonutPopup(){
   const box = document.getElementById('aiDonutPopup');
   if(box){ box.style.display = 'none'; box.setAttribute('aria-hidden','true'); }
@@ -1275,7 +1283,8 @@ function externalAiDonutTooltip({chart, tooltip}){
   swatch.style.background = skin.swatch;               // tetap terlihat di atas latar sewarna
   swatch.style.boxShadow = 'inset 0 0 0 1px ' + skin.edge;
   row.append(swatch, value); box.replaceChildren(title, row);
-  box.style.background = skin.fill;                    // warna legend, hanya sedikit transparan
+  box.style.backgroundColor = skin.hue;                // warna legend 75% = transparan 25%
+  box.style.backgroundImage = skin.veil ? 'linear-gradient(' + skin.veil + ',' + skin.veil + ')' : 'none';
   box.style.color = skin.text;                         // teks kontras terhadap latar
   box.style.borderColor = skin.edge;                   // outline tipis mengikuti warna teks
   box.style.display = 'block'; box.setAttribute('aria-hidden','false');
