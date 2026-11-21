@@ -13,6 +13,7 @@
   --gold:#C9A227;--teal:#0E7C7B;--teal2:#159A98;
   --grey:#6B7280;--lgrey:#E7E9EC;--bg:#FBFBFA;--card:#FFF;
   --red:#B23A2E;--green:#1E7A4C;--line:#D7DBE1;--blue:#2877A8;--purple:#7656A6;
+  --text2:#41526B;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
@@ -54,6 +55,11 @@ button,select,input{font-family:inherit}
 .card.teal{background:#E3F1F0;border-top-color:var(--teal)}
 .card.gold{background:#F8F1DC;border-top-color:var(--gold)}
 .card.green{background:#E4F1EA;border-top-color:var(--green)}
+.card-score{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0}
+.card-score .value{margin:0;min-width:0;overflow-wrap:anywhere}
+.card-gauge{width:112px;flex:0 0 112px;text-align:center}
+.card-gauge svg{display:block;width:100%;height:auto}
+.gauge-basis{font-size:9px;color:var(--grey);line-height:1.3;margin-top:2px}
 .label{text-transform:uppercase;letter-spacing:.8px;font-size:10.5px;color:var(--grey);font-weight:700}
 .value{font-family:Arial,serif;font-size:22px;font-weight:700;color:var(--navy-d);margin:7px 0}
 .delta{font-size:12px;font-weight:700}
@@ -67,16 +73,48 @@ button,select,input{font-family:inherit}
 .box{background:#fff;border:1px solid var(--line);border-radius:4px;padding:17px;margin:16px 0;box-shadow:0 1px 4px rgba(11,46,79,.025);min-width:0}
 .col .box{margin:0}
 .box h3{margin:0 0 12px;font-family:Arial,serif;color:var(--navy-d);font-size:17px}
+.box-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.box-head h3{margin:0}
 .chart{height:340px;position:relative}
 .chart.small-chart{height:300px}
+.chart.small-chart.donut{height:340px}
+
+/* SELECT (dropdown Urutkan) */
+select{border:1px solid #CCD3DB;background:#fff;border-radius:4px;color:var(--navy-d);outline:none}
+select:focus{border-color:var(--teal);box-shadow:0 0 0 2px rgba(14,124,123,.10)}
+
+/* CHART TOOLBAR (dropdown Urutkan) */
+.chart-toolbar{display:flex;align-items:center;gap:8px;margin:0 0 10px;justify-content:flex-start;text-transform:none;letter-spacing:normal;font-weight:400}
+.chart-toolbar label{font-size:12px;font-weight:700;color:var(--grey);white-space:nowrap}
+.chart-toolbar select{width:auto;min-width:200px;padding:7px 10px;font-size:12.5px}
+.box-head .chart-toolbar,.grp-head .chart-toolbar{margin:0}
+
+/* LEGEND (klik untuk tampil/sembunyi) */
+.leg{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:11.5px;color:var(--text2);justify-content:flex-end}
+.leg span{display:inline-flex;align-items:center;gap:5px;cursor:pointer;user-select:none;transition:opacity .2s}
+.leg span.off{text-decoration:line-through;opacity:.4}
+.leg i{width:11px;height:10px;border-radius:2px;display:inline-block}
+.leg-hint{font-size:10.5px;font-style:italic;color:var(--grey)}
+.leg-left{display:flex;flex-direction:column;align-items:flex-start;gap:2px;margin:0 0 10px}
+.leg-left .leg{justify-content:flex-start}
+
+/* LEGEND DONUT (klik untuk tampil/sembunyi) */
+.ai-donut-legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px 12px;margin:12px 0 6px}
+.ai-donut-legend button{display:flex;align-items:flex-start;gap:7px;border:0;background:none;padding:3px;text-align:left;font:400 10px Arial,sans-serif;color:var(--text2);cursor:pointer}
+.ai-donut-legend button span{min-width:0;overflow-wrap:anywhere}
+.ai-donut-legend i{width:10px;height:10px;flex:0 0 10px;margin-top:1px;border-radius:2px}
+.ai-donut-legend button.off{opacity:.4;text-decoration:line-through}
+.ai-donut-legend button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.ai-donut-popup{position:fixed;z-index:10000;display:none;pointer-events:none;width:max-content;max-width:250px;border-radius:5px;padding:10px 12px;font:12px/1.45 Arial,Helvetica,sans-serif;color:var(--navy-d);background:rgba(255,255,255,.7);border:1px solid var(--line);box-shadow:0 3px 10px rgba(8,30,54,.22)}
+.ai-donut-popup strong{display:block;margin-bottom:4px;font-size:12px}
+.ai-donut-popup .popup-value{display:flex;align-items:center;gap:7px;font-weight:700}
+.ai-donut-popup .popup-swatch{width:10px;height:10px;flex:0 0 10px;border-radius:1px}
 
 /* KELOMPOK GRAFIK */
 .grp{border-radius:4px;padding:14px;border:1px solid transparent;min-width:0}
 .grp.navy{background:rgba(11,46,79,.08);border-color:rgba(11,46,79,.18)}
 .grp.gold{background:rgba(201,162,39,.16);border-color:rgba(201,162,39,.42)}
-.grp-head{font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;font-weight:700;color:var(--navy-d);margin:0 0 10px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.grp-legend{font-size:11px;color:var(--grey);font-weight:400;text-transform:none;letter-spacing:0}
-.grp-legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 4px 0 10px;vertical-align:middle}
+.grp-head{font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;font-weight:700;color:var(--navy-d);margin:0 0 10px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .mini-chart{background:#fff;border:1px solid var(--line);border-radius:4px;padding:12px 14px;margin-bottom:10px}
 .mini-chart:last-child{margin-bottom:0}
 .mini-chart h4{margin:0 0 6px;font-family:Arial,serif;font-size:13px;color:var(--navy-d)}
@@ -140,6 +178,7 @@ tr.l2 td:first-child{padding-left:28px;color:#41526B}
   .hero h1{font-size:28px}
   .chart{height:300px}
   .chart.small-chart{height:280px}
+  .chart.small-chart.donut{height:300px}
 }
 @media(max-width:600px){
   .wrap,.hero-inner,.tabbar{padding-left:15px;padding-right:15px}
@@ -150,10 +189,12 @@ tr.l2 td:first-child{padding-left:28px;color:#41526B}
   .section{padding-top:26px}
   .metabar strong{font-size:18px}
   .chart{height:260px}
+  .chart.small-chart.donut{height:260px}
+  .ai-donut-legend{grid-template-columns:repeat(2,minmax(0,1fr))}
   td,th{padding:7px 6px;font-size:11.5px}
 }
 @media print{
-  .tabs{display:none}
+  .tabs,.chart-toolbar{display:none}
   .panel{display:block!important}
   .hero{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
@@ -192,10 +233,10 @@ tr.l2 td:first-child{padding-left:28px;color:#41526B}
     <div class="rule"></div>
     <div class="intro">Sampai dengan 31 Oktober 2026, Pendapatan Usaha mencapai <b>Rp55.430.533 juta</b>, naik <b>15,22%</b> YoY. Beban Usaha naik <b>3,29%</b>, sehingga Laba Usaha melonjak menjadi <b>Rp6.619.559 juta</b> dan Laba Bersih mencapai <b>Rp4.988.973 juta</b>.</div>
     <div class="cards">
-      <div class="card"><div class="label">Pendapatan Usaha</div><div class="value">Rp 55,43 T</div><div class="delta pos">▲ 15,22% YoY</div><div class="small">Okt 2025: Rp 48,11 T</div></div>
-      <div class="card teal"><div class="label">Beban Usaha</div><div class="value">Rp 48,81 T</div><div class="delta neg">▲ 3,29% YoY</div><div class="small">Okt 2025: Rp 47,26 T</div></div>
-      <div class="card gold"><div class="label">Laba Usaha</div><div class="value">Rp 6,62 T</div><div class="delta pos">▲ Rp 5,77 T</div><div class="small">YoY: +679,35% · margin 11,94%</div></div>
-      <div class="card green"><div class="label">Laba Bersih</div><div class="value">Rp 4,99 T</div><div class="delta pos">▲ Rp 3,72 T</div><div class="small">YoY: +293,79% · margin 9,00%</div></div>
+      <div class="card" data-g="lr-rev"><div class="label">Pendapatan Usaha</div><div class="value">Rp55,43 T</div><div class="delta pos">▲ 15,22% YoY</div><div class="small">Okt 2025: Rp48,11 T</div></div>
+      <div class="card teal" data-g="lr-beban"><div class="label">Beban Usaha</div><div class="value">Rp48,81 T</div><div class="delta neg">▲ 3,29% YoY</div><div class="small">Okt 2025: Rp47,26 T</div></div>
+      <div class="card gold" data-g="lr-laba"><div class="label">Laba Usaha</div><div class="value">Rp6,62 T</div><div class="delta pos">▲ Rp5,77 T</div><div class="small">YoY: +679,35% · margin 11,94%</div></div>
+      <div class="card green" data-g="lr-labab"><div class="label">Laba Bersih</div><div class="value">Rp4,99 T</div><div class="delta pos">▲ Rp3,72 T</div><div class="small">YoY: +293,79% · margin 9,00%</div></div>
     </div>
   </div>
 
@@ -203,20 +244,50 @@ tr.l2 td:first-child{padding-left:28px;color:#41526B}
     <div class="col">
       <div class="box">
         <h3>Pendapatan Usaha — Komposisi</h3>
-        <div class="chart small-chart"><canvas id="revChart"></canvas></div>
+        <div class="chart small-chart donut"><canvas id="revChart"></canvas></div>
+        <div id="revLegend" class="ai-donut-legend" aria-label="Legend komposisi pendapatan usaha"></div>
+        <div class="leg-hint" style="text-align:center">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
       </div>
       <div class="grp navy">
-        <div class="grp-head"><span>Year On Year Pendapatan Usaha</span><span class="grp-legend"><i style="background:rgba(11,46,79,.35);border:1px solid #0B2E4F"></i>s.d. 31-Okt-25<i style="background:#0B2E4F"></i>s.d. 31-Okt-26</span></div>
+        <div class="grp-head"><span>Year On Year Pendapatan Usaha</span>
+          <div class="chart-toolbar"><label for="grpRevSort">Urutkan berdasarkan:</label>
+            <select id="grpRevSort">
+              <option value="all" selected>Semua parameter</option>
+              <option value="c">Realisasi s.d. 31-Okt-26</option>
+              <option value="p">Realisasi s.d. 31-Okt-25</option>
+              <option value="v">Deviasi (Rp)</option>
+              <option value="pct">Deviasi (%)</option>
+            </select></div>
+        </div>
+        <div class="leg-left">
+          <div class="leg" id="grpRevLeg"></div>
+          <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+        </div>
         <div id="grpRev"></div>
       </div>
     </div>
     <div class="col">
       <div class="box">
         <h3>Beban Usaha — Komposisi Utama</h3>
-        <div class="chart small-chart"><canvas id="expChart"></canvas></div>
+        <div class="chart small-chart donut"><canvas id="expChart"></canvas></div>
+        <div id="expLegend" class="ai-donut-legend" aria-label="Legend komposisi beban usaha"></div>
+        <div class="leg-hint" style="text-align:center">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
       </div>
       <div class="grp gold">
-        <div class="grp-head"><span>Year On Year Beban Usaha</span><span class="grp-legend"><i style="background:rgba(201,162,39,.35);border:1px solid #C9A227"></i>s.d. 31-Okt-25<i style="background:#C9A227"></i>s.d. 31-Okt-26</span></div>
+        <div class="grp-head"><span>Year On Year Beban Usaha</span>
+          <div class="chart-toolbar"><label for="grpExpSort">Urutkan berdasarkan:</label>
+            <select id="grpExpSort">
+              <option value="all" selected>Semua parameter</option>
+              <option value="c">Realisasi s.d. 31-Okt-26</option>
+              <option value="p">Realisasi s.d. 31-Okt-25</option>
+              <option value="v">Deviasi (Rp)</option>
+              <option value="pct">Deviasi (%)</option>
+            </select></div>
+        </div>
+        <div class="leg-left">
+          <div class="leg" id="grpExpLeg"></div>
+          <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+        </div>
         <div id="grpExp"></div>
       </div>
     </div>
@@ -224,11 +295,31 @@ tr.l2 td:first-child{padding-left:28px;color:#41526B}
 
   <div class="grid">
     <div class="box">
-      <h3 id="devTitle">Deviasi YoY Pendapatan (Rp Juta)</h3>
+      <div class="box-head">
+        <h3 id="devTitle">Deviasi YoY Pendapatan (Rp Juta)</h3>
+        <div class="chart-toolbar"><label for="devSort">Urutkan berdasarkan:</label>
+          <select id="devSort">
+            <option value="all" selected>Semua parameter</option>
+            <option value="v">Kenaikan terbesar</option>
+            <option value="n">Penurunan terbesar</option>
+            <option value="a">Deviasi terbesar (absolut)</option>
+            <option value="pct">Deviasi (%)</option>
+          </select></div>
+      </div>
       <div class="chart"><canvas id="devChart"></canvas></div>
     </div>
     <div class="box">
-      <h3 id="begTitle">Deviasi YoY Beban Usaha (Rp Juta)</h3>
+      <div class="box-head">
+        <h3 id="begTitle">Deviasi YoY Beban Usaha (Rp Juta)</h3>
+        <div class="chart-toolbar"><label for="begSort">Urutkan berdasarkan:</label>
+          <select id="begSort">
+            <option value="all" selected>Semua parameter</option>
+            <option value="v">Kenaikan terbesar</option>
+            <option value="n">Penurunan terbesar</option>
+            <option value="a">Deviasi terbesar (absolut)</option>
+            <option value="pct">Deviasi (%)</option>
+          </select></div>
+      </div>
       <div class="chart"><canvas id="begChart"></canvas></div>
     </div>
   </div>
@@ -247,10 +338,10 @@ tr.l2 td:first-child{padding-left:28px;color:#41526B}
     <div class="rule"></div>
     <div class="intro">Posisi keuangan per 31 Oktober 2026 menunjukkan Total Aset <b>Rp28.335.183 juta</b>, turun <b>11,09%</b> dibanding 31 Oktober 2025. Penurunan terutama berasal dari Aset Tetap Neto (−12,17%) dan berkurangnya Akun Antar Satuan Administrasi (−35,09%).</div>
     <div class="cards">
-      <div class="card"><div class="label">Total Aset</div><div class="value">Rp 28,34 T</div><div class="delta neg">▼ 11,09% YoY</div><div class="small">Okt 2025: Rp 31,87 T</div></div>
-      <div class="card teal"><div class="label">Aset Tidak Lancar</div><div class="value">Rp 25,47 T</div><div class="delta neg">▼ 11,99% YoY</div><div class="small">89,89% dari total aset</div></div>
-      <div class="card gold"><div class="label">Aset Lancar</div><div class="value">Rp 2,87 T</div><div class="delta neg">▼ 2,20% YoY</div><div class="small">Rasio lancar 0,75x (Okt 2025: 0,84x)</div></div>
-      <div class="card green"><div class="label">Ekuitas</div><div class="value">Rp 4,99 T</div><div class="delta pos">▲ 293,79% YoY</div><div class="small">Okt 2025: Rp 1,27 T</div></div>
+      <div class="card" data-g="nr-aset"><div class="label">Total Aset</div><div class="value">Rp28,34 T</div><div class="delta neg">▼ 11,09% YoY</div><div class="small">Okt 2025: Rp31,87 T</div></div>
+      <div class="card teal" data-g="nr-atl"><div class="label">Aset Tidak Lancar</div><div class="value">Rp25,47 T</div><div class="delta neg">▼ 11,99% YoY</div><div class="small">89,89% dari total aset</div></div>
+      <div class="card gold" data-g="nr-al"><div class="label">Aset Lancar</div><div class="value">Rp2,87 T</div><div class="delta neg">▼ 2,20% YoY</div><div class="small">Rasio lancar 0,75x (Okt 2025: 0,84x)</div></div>
+      <div class="card green" data-g="nr-ek"><div class="label">Ekuitas</div><div class="value">Rp4,99 T</div><div class="delta pos">▲ 293,79% YoY</div><div class="small">Okt 2025: Rp1,27 T</div></div>
     </div>
   </div>
 
@@ -258,10 +349,25 @@ tr.l2 td:first-child{padding-left:28px;color:#41526B}
     <div class="col">
       <div class="box">
         <h3>Struktur Aset</h3>
-        <div class="chart small-chart"><canvas id="assetChart"></canvas></div>
+        <div class="chart small-chart donut"><canvas id="assetChart"></canvas></div>
+        <div id="assetLegend" class="ai-donut-legend" aria-label="Legend struktur aset"></div>
+        <div class="leg-hint" style="text-align:center">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
       </div>
       <div class="grp navy">
-        <div class="grp-head"><span>Year On Year Struktur Aset</span><span class="grp-legend"><i style="background:rgba(11,46,79,.35);border:1px solid #0B2E4F"></i>s.d. 31-Okt-25<i style="background:#0B2E4F"></i>s.d. 31-Okt-26</span></div>
+        <div class="grp-head"><span>Year On Year Struktur Aset</span>
+          <div class="chart-toolbar"><label for="grpAsetSort">Urutkan berdasarkan:</label>
+            <select id="grpAsetSort">
+              <option value="all" selected>Semua parameter</option>
+              <option value="c">Realisasi s.d. 31-Okt-26</option>
+              <option value="p">Realisasi s.d. 31-Okt-25</option>
+              <option value="v">Deviasi (Rp)</option>
+              <option value="pct">Deviasi (%)</option>
+            </select></div>
+        </div>
+        <div class="leg-left">
+          <div class="leg" id="grpAsetLeg"></div>
+          <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+        </div>
         <div id="grpAset"></div>
       </div>
       <div id="devAsetBox"></div>
@@ -269,10 +375,25 @@ tr.l2 td:first-child{padding-left:28px;color:#41526B}
     <div class="col">
       <div class="box">
         <h3>Struktur Pendanaan (Ekuitas &amp; Liabilitas)</h3>
-        <div class="chart small-chart"><canvas id="liabChart"></canvas></div>
+        <div class="chart small-chart donut"><canvas id="liabChart"></canvas></div>
+        <div id="liabLegend" class="ai-donut-legend" aria-label="Legend struktur pendanaan"></div>
+        <div class="leg-hint" style="text-align:center">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
       </div>
       <div class="grp gold">
-        <div class="grp-head"><span>Year On Year Struktur Pendanaan</span><span class="grp-legend"><i style="background:rgba(201,162,39,.35);border:1px solid #C9A227"></i>s.d. 31-Okt-25<i style="background:#C9A227"></i>s.d. 31-Okt-26</span></div>
+        <div class="grp-head"><span>Year On Year Struktur Pendanaan</span>
+          <div class="chart-toolbar"><label for="grpDanaSort">Urutkan berdasarkan:</label>
+            <select id="grpDanaSort">
+              <option value="all" selected>Semua parameter</option>
+              <option value="c">Realisasi s.d. 31-Okt-26</option>
+              <option value="p">Realisasi s.d. 31-Okt-25</option>
+              <option value="v">Deviasi (Rp)</option>
+              <option value="pct">Deviasi (%)</option>
+            </select></div>
+        </div>
+        <div class="leg-left">
+          <div class="leg" id="grpDanaLeg"></div>
+          <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+        </div>
         <div id="grpDana"></div>
       </div>
       <div id="devDanaBox"></div>
@@ -295,9 +416,9 @@ tr.l2 td:first-child{padding-left:28px;color:#41526B}
     <h3 class="sub-title">Temuan Utama</h3>
     <div class="callout teal"><b>Pertumbuhan pendapatan jauh lebih cepat daripada beban.</b> Pendapatan Usaha tumbuh 15,22% YoY, sedangkan Beban Usaha hanya 3,29%. Rasio beban terhadap pendapatan membaik dari 98,23% menjadi 88,06%, dan Laba Usaha naik dari Rp849.369 juta menjadi Rp6.619.559 juta.</div>
     <div class="mini">
-      <div class="card"><div class="label">Margin Usaha</div><div class="value">11,94%</div><div class="small">Okt 2025: 1,77%</div></div>
-      <div class="card teal"><div class="label">Margin Bersih</div><div class="value">9,00%</div><div class="small">Okt 2025: 2,63%</div></div>
-      <div class="card gold"><div class="label">Beban / Pendapatan</div><div class="value">88,06%</div><div class="small">Okt 2025: 98,23%</div></div>
+      <div class="card" data-g="an-mgu"><div class="label">Margin Usaha</div><div class="value">11,94%</div><div class="small">Okt 2025: 1,77%</div></div>
+      <div class="card teal" data-g="an-mgb"><div class="label">Margin Bersih</div><div class="value">9,00%</div><div class="small">Okt 2025: 2,63%</div></div>
+      <div class="card gold" data-g="an-mbeban"><div class="label">Beban / Pendapatan</div><div class="value">88,06%</div><div class="small">Okt 2025: 98,23%</div></div>
     </div>
 
     <div class="insight-grid">
@@ -429,7 +550,6 @@ const nf=new Intl.NumberFormat('id-ID',{maximumFractionDigits:0});
 const pf=new Intl.NumberFormat('id-ID',{minimumFractionDigits:2,maximumFractionDigits:2});
 const fmtN=n=>n===0?'-':(n<0?'('+nf.format(-n)+')':nf.format(n));
 const fmtP=p=>p===null?'–':(p<0?'('+pf.format(-p)+')':pf.format(p));
-const fmt=v=>nf.format(Number(v));
 
 /* ---------- TABLE ---------- */
 function tbl(id,rows){
@@ -455,77 +575,404 @@ Chart.defaults.font.size=11;
 const C={pln:'#0B2E4F',gold:'#C9A227',blue:'#2877A8',teal:'#0E7C7B',green:'#1E7A4C',greenL:'#159A98',red:'#B23A2E',purple:'#7656A6',grey:'#6B7280',gridc:'#E7E9EC'};
 const cc=[C.pln,C.gold,C.teal,C.red,C.grey];
 const cc6=[C.pln,C.gold,C.teal,C.red,C.grey,C.blue];
-const legendOpts={position:'top',align:'end',labels:{boxWidth:10,boxHeight:10,font:{size:11}}};
-const base={responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:11}}}}};
-const tip={callbacks:{label:c=>' '+(c.label||c.dataset.label)+': Rp'+fmt(c.raw)+' Jt'}};
 const charts={};
 let uid=0;
 
-/* Format angka: Miliar (2 desimal) bila nilai maksimum ≥ 1.000.000 Juta, selain itu Juta */
+/* ---------- FORMAT ANGKA ---------- */
 const nfInt=new Intl.NumberFormat('id-ID',{maximumFractionDigits:0});
 const nfDec=new Intl.NumberFormat('id-ID',{maximumFractionDigits:2});
 const nfMil=new Intl.NumberFormat('id-ID',{minimumFractionDigits:2,maximumFractionDigits:2});
 const nf2=new Intl.NumberFormat('id-ID',{minimumFractionDigits:2,maximumFractionDigits:2});
-const nfT=new Intl.NumberFormat('id-ID',{minimumFractionDigits:2,maximumFractionDigits:2});
+const nf1=new Intl.NumberFormat('id-ID',{minimumFractionDigits:1,maximumFractionDigits:1});
+const pctFn=(a,b)=>b!==0?(a/Math.abs(b)*100):0;
+const fmtPct=(v,d=2)=>v.toLocaleString('id-ID',{minimumFractionDigits:d,maximumFractionDigits:d})+'%';
+const fmtN1=v=>nf1.format(v);
+/* Rp langsung diikuti angka (tanpa titik, tanpa spasi): T ≥ 1.000.000 juta, M ≥ 1.000 juta */
+function fmtRpV(v){
+  const a=Math.abs(v);
+  const s=a>=1000000?nf2.format(a/1000000)+' T':a>=1000?nf1.format(a/1000)+' M':nfInt.format(a)+' juta';
+  return v<0?'(Rp'+s+')':'Rp'+s;
+}
+/* Skala sumbu: Miliar (2 desimal) bila nilai maksimum ≥ 1.000.000 Juta, selain itu Juta */
 function scaleFor(vals){
   const m=Math.max(...vals.map(v=>Math.abs(v)));
-  return m>=1000000?{d:1000,u:'Miliar',nf:nfMil}:{d:1,u:'Juta',nf:nfInt};
+  return m>=1000000?{d:1000,u:'Miliar',ab:'M',nf:nfMil}:{d:1,u:'Juta',ab:'juta',nf:nfInt};
 }
-const sortDesc=arr=>[...arr].sort((a,b)=>b.v-a.v);
 const iv=(k,row)=>({k,p:row.p,c:row.c,v:row.c-row.p,pct:row.p===0?0:(row.c-row.p)/Math.abs(row.p)*100});
-function setTitle(id,baseTitle,s){document.getElementById(id).textContent=baseTitle+' (Rp '+s.u+')';}
 
-function doughnut(id,labels,data,colors=cc){
-  charts[id]=new Chart(document.getElementById(id),{type:'doughnut',
-    data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:2,borderColor:'#fff'}]},
-    options:{...base,cutout:'62%',plugins:{...base.plugins,tooltip:tip}}});
+/* ---------- LEGEND HTML UNTUK GRAFIK BATANG (klik = transparan/sembunyi) ---------- */
+const LEGDEF={};
+const LEGVIS={};
+function togArr(a,i){
+  if(a[i]&&a.filter(Boolean).length===1) return false;
+  a[i]=!a[i]; return true;
+}
+function defLegend(chartKey,el,series){
+  LEGDEF[chartKey]={el,series};
+  if(!LEGVIS[el]) LEGVIS[el]=series.map(()=>true);
+}
+function legParam(chartKey,map,val){
+  const d=LEGDEF[chartKey]; if(!d) return;
+  const only=map[val];
+  LEGVIS[d.el]=d.series.map((x,i)=>only===-1?true:i===only);
+}
+function legVis(chartKey){
+  const d=LEGDEF[chartKey];
+  return (d&&LEGVIS[d.el])||[];
+}
+function legSet(chartKey){
+  const d=LEGDEF[chartKey]; if(!d) return;
+  const c=charts[chartKey]; if(!c) return;
+  const el=document.getElementById(d.el);
+  const v=LEGVIS[d.el];
+  el.innerHTML=d.series.map((x,i)=>`<span data-i="${i}" class="${v[i]?'':'off'}"><i style="background:${x.color}"></i>${x.label}</span>`).join('');
+  el.onclick=e=>{
+    const t=e.target.closest('span[data-i]'); if(!t) return;
+    if(!togArr(v,+t.dataset.i)) return;
+    legSet(chartKey);
+  };
+  v.forEach((on,i)=>c.setDatasetVisibility(i,on));
+  c.update('none');
 }
 
-/* Batang mendatar deviasi: nilai rupiah + persentase deviasi di tooltip (sudah terurut dari terbesar) */
-function devChartFn(id,items,color,s){
-  charts[id]=new Chart(document.getElementById(id),{type:'bar',
-    data:{labels:items.map(x=>x.k),datasets:[{data:items.map(x=>x.v/s.d),backgroundColor:color,borderRadius:3,maxBarThickness:26}]},
-    options:{...base,indexAxis:'y',
-      plugins:{legend:{display:false},tooltip:{callbacks:{
-        label:c=>' Rp '+s.nf.format(c.raw)+' '+s.u+' ('+nf2.format(items[c.dataIndex].pct)+'%)'}}},
-      scales:{x:{grid:{color:C.gridc},ticks:{callback:v=>nfDec.format(v)}},y:{grid:{display:false}}}}});
+/* ---------- DROPDOWN URUTKAN ---------- */
+const GRP_OPTS=[['all','Semua parameter'],['c','Realisasi s.d. 31-Okt-26'],['p','Realisasi s.d. 31-Okt-25'],['v','Deviasi (Rp)'],['pct','Deviasi (%)']];
+const DEV_OPTS=[['all','Semua parameter'],['v','Kenaikan terbesar'],['n','Penurunan terbesar'],['a','Deviasi terbesar (absolut)'],['pct','Deviasi (%)']];
+function toolbar(selId,opts){
+  return `<div class="chart-toolbar"><label for="${selId}">Urutkan berdasarkan:</label>
+    <select id="${selId}">${opts.map(([v,t],i)=>`<option value="${v}"${i===0?' selected':''}>${t}</option>`).join('')}</select></div>`;
+}
+function bindSort(selId,fn){
+  const el=document.getElementById(selId); if(!el) return;
+  el.addEventListener('change',()=>fn(el.value));
+  fn(el.value);
 }
 
-/* Kotak deviasi di bagian bawah kolom neraca */
-function devBox(containerId,baseTitle,items,color){
-  const cid='dv'+(uid++);
-  const s=scaleFor(items.map(x=>x.v));
-  const h=Math.max(180,items.length*40+60);
-  document.getElementById(containerId).innerHTML=
-    `<div class="box"><h3>${baseTitle} (Rp ${s.u})</h3><div style="position:relative;height:${h}px"><canvas id="${cid}"></canvas></div></div>`;
-  devChartFn(cid,items,color,s);
+/* ---------- DONUT: format mengikuti "Komposisi Nilai AI Per Program" ---------- */
+const mod2=a=>{a=a%(2*Math.PI);return a<0?a+2*Math.PI:a};
+const alphaHex=a=>Math.round(Math.max(0,Math.min(1,a))*255).toString(16).padStart(2,'0');
+
+function pulseLoop(chart){
+  if(chart._pulseRaf) return;
+  const step=()=>{
+    chart._pulseRaf=null;
+    if(!chart._pulse){ try{chart.draw()}catch(e){} return; }
+    try{chart.draw()}catch(e){chart._pulse=null;return}
+    chart._pulseRaf=requestAnimationFrame(step);
+  };
+  chart._pulseRaf=requestAnimationFrame(step);
 }
 
-/* Satu grafik untuk seluruh item satu kolom, diurutkan dari nilai 31 Okt 2026 terbesar (paling atas).
-   Batang 31 Okt 2026 berada di atas batang 31 Okt 2025 pada setiap kategori.
-   mode 'navy' : 2026 navy solid, 2025 navy transparan + outline tipis
-   mode 'gold' : 2026 kuning kunyit solid, 2025 kuning kunyit transparan + outline tipis */
+function setDonutHover(chart,hit,p){
+  const st=chart._dfx;
+  const vis=hit>=0&&chart.getDataVisibility(hit);
+  const want=(vis&&st)?hit:-1;
+  chart.canvas.style.cursor=want>=0?'pointer':'default';
+  if(want===(chart._dhover??-1)){
+    if(want>=0){
+      chart.setActiveElements([{datasetIndex:0,index:want}]);
+      chart.tooltip.setActiveElements([{datasetIndex:0,index:want}],p||{x:0,y:0});
+      chart.draw();
+    }
+    return;
+  }
+  chart._dhover=want;
+  if(want>=0){
+    chart.setActiveElements([{datasetIndex:0,index:want}]);
+    chart.tooltip.setActiveElements([{datasetIndex:0,index:want}],p||{x:0,y:0});
+    const ds=chart.data.datasets[0];
+    chart._pulse={i:want,color:(ds.glowColors||ds.backgroundColor)[want]};
+    pulseLoop(chart);
+  } else {
+    chart.setActiveElements([]);
+    chart.tooltip.setActiveElements([],{x:0,y:0});
+    chart._pulse=null;
+    hideDonutPopup(chart);
+  }
+  chart.update('none');
+}
+
+function drawDonutGlow(chart,ctx,arcs){
+  const pl=chart._pulse;
+  if(!pl||pl.i===undefined||!arcs[pl.i]) return;
+  const ha=arcs[pl.i], now=performance.now();
+  for(let k=0;k<2;k++){
+    const ph=((now/1400)+k*0.5)%1, r=ha.outerRadius+3+ph*16, a=1-ph;
+    ctx.beginPath(); ctx.arc(ha.x,ha.y,r,ha.startAngle,ha.endAngle);
+    ctx.lineWidth=3; ctx.strokeStyle=pl.color+alphaHex(a*0.9); ctx.stroke();
+    ctx.beginPath(); ctx.arc(ha.x,ha.y,ha.outerRadius+1,ha.startAngle,ha.endAngle);
+    ctx.lineWidth=1; ctx.strokeStyle=pl.color+alphaHex(a*0.5); ctx.stroke();
+  }
+}
+
+const centerTextPlugin={
+  id:'centerText',
+  afterDraw(chart){
+    const cv=chart.canvas;
+    const val=cv.dataset.center;
+    if(!val) return;
+    const el=chart.getDatasetMeta(0).data[0];
+    if(!el) return;
+    const {x,y,innerRadius}=el;
+    const ctx=chart.ctx;
+    const maxW=innerRadius*1.8;
+    ctx.save();
+    let fs=Math.round(innerRadius*0.5);
+    ctx.font=`700 ${fs}px Arial, Helvetica, sans-serif`;
+    while(ctx.measureText(val).width>maxW&&fs>8){fs--;ctx.font=`700 ${fs}px Arial, Helvetica, sans-serif`;}
+    ctx.fillStyle=C.pln; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(val,x,y+fs*0.35);
+    const lab=cv.dataset.label;
+    if(lab){
+      let fl=Math.max(9,Math.round(fs*0.42));
+      ctx.font=`600 ${fl}px Arial, Helvetica, sans-serif`;
+      while(ctx.measureText(lab.toUpperCase()).width>maxW&&fl>7){fl--;ctx.font=`600 ${fl}px Arial, Helvetica, sans-serif`;}
+      ctx.fillStyle='#6B7280';
+      ctx.fillText(lab.toUpperCase(),x,y-fs*0.85);
+    }
+    ctx.restore();
+  }
+};
+
+const donutFx={
+  id:'donutFx',
+  beforeLayout(chart){
+    chart.options.layout.padding={left:8,right:8,top:8,bottom:8};
+    chart.options.radius=Math.min(chart.width*0.42,chart.height*0.44);
+  },
+  afterEvent(chart,args){
+    const st=chart._dfx; if(!st) return;
+    const e=args.event;
+    if(e.type==='mouseout'){ setDonutHover(chart,-1,null); return; }
+    if(e.x==null) return;
+    const p={x:e.x,y:e.y};
+    let hit=-1;
+    const dx=p.x-st.cx, dy=p.y-st.cy, d=Math.hypot(dx,dy);
+    if(d>=st.inner&&d<=st.R+8){
+      const a=Math.atan2(dy,dx);
+      for(const A of st.arcs){
+        if(!A.vis) continue;
+        if(mod2(a-A.s)<=A.e-A.s){ hit=A.i; break; }
+      }
+    }
+    if(e.type==='click'&&e.native&&e.native.pointerType==='touch'){ setDonutHover(chart,hit,p); return; }
+    if(e.type==='click'){
+      if(hit>=0){
+        hideDonutPopup(chart);
+        chart.setActiveElements([]);
+        chart.tooltip.setActiveElements([],{x:0,y:0});
+        chart._pulse=null; chart._dhover=-1;
+        chart.toggleDataVisibility(hit);
+        chart.update();
+      }
+      return;
+    }
+    setDonutHover(chart,hit,p);
+  },
+  afterDraw(chart){
+    const arcs=chart.getDatasetMeta(0).data;
+    if(!arcs.length) return;
+    const a0=arcs[0];
+    chart._dfx={
+      arcs:arcs.map((a,i)=>({i,s:a.startAngle,e:a.endAngle,vis:chart.getDataVisibility(i)&&a.endAngle>a.startAngle})),
+      cx:a0.x, cy:a0.y, R:a0.outerRadius, inner:a0.innerRadius
+    };
+    if(chart._donut){
+      document.querySelectorAll('#'+chart._donut.legend+' button').forEach(button=>{
+        const visible=chart.getDataVisibility(+button.dataset.i);
+        button.classList.toggle('off',!visible); button.setAttribute('aria-pressed',String(visible));
+      });
+    }
+    const ctx=chart.ctx; ctx.save(); drawDonutGlow(chart,ctx,arcs); ctx.restore();
+  }
+};
+
+/* warna pop-up & kontras teks */
+const ALPHA_POPUP=0.75;
+const hexRgb=h=>{h=String(h).replace('#','');
+  if(h.length===3) h=h.split('').map(c=>c+c).join('');
+  const n=parseInt(h.slice(0,6),16); return [(n>>16)&255,(n>>8)&255,n&255];};
+const rgbHex=a=>'#'+a.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');
+const mixHex=(a,b,t)=>{const A=hexRgb(a),B=hexRgb(b);return rgbHex(A.map((v,i)=>v+(B[i]-v)*t));};
+const rgbaStr=(h,a)=>{const c=hexRgb(h);return 'rgba('+c[0]+','+c[1]+','+c[2]+','+a+')';};
+const lumHex=h=>{const c=hexRgb(h).map(v=>{v/=255;return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4);});
+  return 0.2126*c[0]+0.7152*c[1]+0.0722*c[2];};
+const contrastHex=(a,b)=>{const l1=lumHex(a),l2=lumHex(b);return (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05);};
+const VEILS=[0,0.06,0.12,0.18,0.24,0.30,0.36,0.42];
+function popupSkin(color,palette){
+  const white='#FFFFFF', ink='#081E36';
+  const backs=['#FFFFFF','#E8EEF5','#000000','#20304A'].concat(palette||[]);
+  const wajah=(veil,veilHex,bg)=>{const dasar=mixHex(bg,color,ALPHA_POPUP);return veil?mixHex(dasar,veilHex,veil):dasar;};
+  let out=null;
+  [[ink,white],[white,ink]].forEach(pair=>{
+    const txt=pair[0], veilHex=pair[1];
+    for(const veil of VEILS){
+      const min=Math.min(...backs.map(bg=>contrastHex(wajah(veil,veilHex,bg),txt)));
+      if(min>=4.5){
+        if(!out||veil<out.veil||(veil===out.veil&&min>out.gain)) out={text:txt,veilHex,veil,gain:min};
+        break;
+      }
+    }
+  });
+  if(!out) out={text:white,veilHex:ink,veil:0.42,gain:0};
+  return {hue:rgbaStr(color,ALPHA_POPUP), text:out.text,
+    veil:out.veil?rgbaStr(out.veilHex,out.veil):null,
+    edge:mixHex(wajah(out.veil,out.veilHex,'#FFFFFF'),out.text,0.65),
+    swatch:mixHex(wajah(out.veil,out.veilHex,'#FFFFFF'),out.text,0.8)};
+}
+function hideDonutPopup(chart){
+  const box=document.getElementById('donutPopup-'+chart.canvas.id);
+  if(box){ box.style.display='none'; box.setAttribute('aria-hidden','true'); }
+}
+function externalDonutTooltip({chart,tooltip}){
+  const pid='donutPopup-'+chart.canvas.id;
+  let box=document.getElementById(pid);
+  if(!box){
+    box=document.createElement('div'); box.id=pid; box.className='ai-donut-popup';
+    box.setAttribute('role','tooltip'); document.body.appendChild(box);
+    const reposition=()=>{const active=box._chartRef; if(active) externalDonutTooltip({chart:active,tooltip:active.tooltip});};
+    window.addEventListener('scroll',reposition,true); window.addEventListener('resize',reposition);
+  }
+  box._chartRef=chart;
+  const cfg=chart._donut||{};
+  const point=tooltip.dataPoints&&tooltip.dataPoints[0];
+  if((chart._dhover??-1)<0||!point||chart.canvas.offsetParent===null){
+    box.style.display='none'; box.setAttribute('aria-hidden','true'); return;
+  }
+  const color=chart.data.datasets[0].backgroundColor[point.dataIndex]||C.pln;
+  const skin=popupSkin(color,cfg.colors);
+  const title=document.createElement('strong');
+  title.textContent=point.label;
+  const row=document.createElement('div'); row.className='popup-value';
+  const swatch=document.createElement('i'); swatch.className='popup-swatch';
+  const value=document.createElement('span');
+  value.textContent=(cfg.metric||'Nilai')+': '+fmtRpV(point.raw)+' ('+fmtN1(pctFn(point.raw,cfg.total))+'% '+cfg.basis+')';
+  swatch.style.background=skin.swatch;
+  swatch.style.boxShadow='inset 0 0 0 1px '+skin.edge;
+  row.append(swatch,value); box.replaceChildren(title,row);
+  box.style.backgroundColor=skin.hue;
+  box.style.backgroundImage=skin.veil?'linear-gradient('+skin.veil+','+skin.veil+')':'none';
+  box.style.color=skin.text;
+  box.style.borderColor=skin.edge;
+  box.style.display='block'; box.setAttribute('aria-hidden','false');
+  const r=chart.canvas.getBoundingClientRect(), vw=document.documentElement.clientWidth, vh=window.innerHeight;
+  box.style.maxWidth=Math.max(120,Math.min(250,vw-16))+'px';
+  const w=box.offsetWidth, h=box.offsetHeight, gap=12;
+  const clampN=n=>Math.max(8,Math.min(vw-w-8,n));
+  const cx=r.left+tooltip.caretX, cy=r.top+tooltip.caretY;
+  const choices=[
+    {side:'above',x:clampN(cx-w/2),y:Math.max(8,Math.min(vh-h-8,cy-h-gap))},
+    {side:'below',x:clampN(cx-w/2),y:Math.max(8,Math.min(vh-h-8,cy+gap))},
+    {side:'right',x:clampN(cx+gap),y:Math.max(8,Math.min(vh-h-8,cy-h/2))},
+    {side:'left',x:clampN(cx-w-gap),y:Math.max(8,Math.min(vh-h-8,cy-h/2))}
+  ];
+  const fits=q=>q.x>=8&&q.y>=8&&q.x+w<=vw-8&&q.y+h<=vh-8;
+  const position=choices.find(fits)||choices[0];
+  box.style.left=position.x+'px'; box.style.top=position.y+'px'; box.dataset.side=position.side;
+}
+
+/* Donut + legend HTML klik-able + teks total di tengah + pop-up nilai */
+function doughnut(canvasId,legendId,labels,data,cfg){
+  const pal=cfg.colors||cc;
+  const colors=labels.map((_,i)=>pal[i%pal.length]);
+  const total=data.reduce((a,b)=>a+b,0);
+  const el=document.getElementById(canvasId);
+  el.dataset.center=fmtRpV(total);
+  el.dataset.label=cfg.centerLabel;
+  const ch=new Chart(el,{type:'doughnut',
+    data:{labels,datasets:[{data,backgroundColor:colors,glowColors:colors,borderColor:'#FFFFFF',borderWidth:2,hoverOffset:10}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'62%',layout:{padding:8},animation:false,
+      plugins:{legend:{display:false},tooltip:{enabled:false,external:externalDonutTooltip}}},
+    plugins:[centerTextPlugin,donutFx]});
+  charts[canvasId]=ch;
+  ch._donut={legend:legendId,metric:cfg.metric,basis:cfg.basis,total,colors};
+  const legEl=document.getElementById(legendId);
+  legEl.innerHTML=labels.map((t,i)=>`<button type="button" data-i="${i}" aria-pressed="true"><i style="background:${colors[i]}"></i><span>${t}</span></button>`).join('');
+  legEl.onclick=e=>{
+    const button=e.target.closest('button[data-i]'); if(!button) return;
+    setDonutHover(ch,-1,null);
+    ch.toggleDataVisibility(+button.dataset.i);
+    ch.update('none');
+  };
+  const highlight=e=>{
+    const button=e.target.closest('button[data-i]'); if(!button) return;
+    const i=+button.dataset.i, a=ch.getDatasetMeta(0).data[i]; if(!a) return;
+    const mid=(a.startAngle+a.endAngle)/2;
+    setDonutHover(ch,i,{x:a.x+a.outerRadius*Math.cos(mid),y:a.y+a.outerRadius*Math.sin(mid)});
+  };
+  legEl.onmouseover=highlight;
+  legEl.onmouseleave=()=>setDonutHover(ch,-1,null);
+  legEl.addEventListener('focusin',highlight);
+  legEl.addEventListener('focusout',ev=>{ if(!legEl.contains(ev.relatedTarget)) setDonutHover(ch,-1,null); });
+}
+
+/* ---------- GRAFIK BATANG ---------- */
+const GRP_SORT={c:x=>x.c,p:x=>x.p,v:x=>x.v,pct:x=>x.pct};
+const GRP_LEG={all:-1,c:0,p:1,v:-1,pct:-1};
+
+/* Satu grafik YoY untuk seluruh item satu kelompok, legend HTML klik-able + dropdown Urutkan */
 function groupChart(containerId,name,items,mode){
-  const cid='gc'+(uid++);
-  const sorted=[...items].sort((a,b)=>b.c-a.c);
-  const s=scaleFor(sorted.flatMap(x=>[x.p,x.c]));
-  const h=Math.max(180,sorted.length*40+70);
+  const cid='gc'+containerId.slice(3), selId=containerId+'Sort', legendId=containerId+'Leg';
   const solid=mode==='gold'?C.gold:C.pln;
   const soft=mode==='gold'?'rgba(201,162,39,.35)':'rgba(11,46,79,.35)';
+  const h=Math.max(180,items.length*40+70);
   document.getElementById(containerId).innerHTML=
-    `<div class="mini-chart"><h4>${name}: 31 Okt 2025 vs 31 Okt 2026 (Rp ${s.u})</h4><div style="position:relative;height:${h}px"><canvas id="${cid}"></canvas></div></div>`;
-  charts[cid]=new Chart(document.getElementById(cid),{type:'bar',
-    data:{labels:sorted.map(x=>x.k),datasets:[
-      {label:'s.d. 31-Okt-26',data:sorted.map(x=>x.c/s.d),backgroundColor:solid,borderColor:solid,borderWidth:1,borderRadius:3,maxBarThickness:20},
-      {label:'s.d. 31-Okt-25',data:sorted.map(x=>x.p/s.d),backgroundColor:soft,borderColor:solid,borderWidth:1,borderRadius:3,maxBarThickness:20}
-    ]},
-    options:{...base,indexAxis:'y',
-      plugins:{legend:legendOpts,tooltip:{callbacks:{label:c=>' '+c.dataset.label+': Rp '+s.nf.format(c.raw)+' '+s.u}}},
-      scales:{x:{grid:{color:C.gridc},ticks:{callback:v=>nfDec.format(v)}},y:{grid:{display:false}}}}});
+    `<div class="mini-chart"><h4>${name}: 31 Okt 2025 vs 31 Okt 2026 <span id="${cid}Unit"></span></h4><div style="position:relative;height:${h}px"><canvas id="${cid}"></canvas></div></div>`;
+  defLegend(cid,legendId,[{label:'s.d. 31-Okt-26',color:solid},{label:'s.d. 31-Okt-25',color:soft}]);
+  bindSort(selId,val=>{
+    const sk=val==='all'?'c':val;
+    const list=[...items].sort((a,b)=>GRP_SORT[sk](b)-GRP_SORT[sk](a));
+    const s=scaleFor(list.flatMap(x=>[x.p,x.c]));
+    legParam(cid,GRP_LEG,val);
+    const v=legVis(cid);
+    if(charts[cid]) charts[cid].destroy();
+    charts[cid]=new Chart(document.getElementById(cid),{type:'bar',
+      data:{labels:list.map(x=>x.k),datasets:[
+        {label:'s.d. 31-Okt-26',data:list.map(x=>x.c/s.d),backgroundColor:solid,borderColor:solid,borderWidth:1,borderRadius:3,maxBarThickness:20,hidden:!v[0]},
+        {label:'s.d. 31-Okt-25',data:list.map(x=>x.p/s.d),backgroundColor:soft,borderColor:solid,borderWidth:1,borderRadius:3,maxBarThickness:20,hidden:!v[1]}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': Rp'+s.nf.format(c.raw)+' '+s.ab}}},
+        scales:{x:{grid:{color:C.gridc},ticks:{callback:x=>nfDec.format(x)}},y:{grid:{display:false}}}}});
+    legSet(cid);
+    document.getElementById(cid+'Unit').textContent='(Rp '+s.u+')';
+  });
 }
 
-/* Kartu skor dalam Triliun */
-function setT(id,val){document.getElementById(id).textContent=val;}
+function devOrder(items,key){
+  if(key==='v') return items.filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
+  if(key==='n') return items.filter(x=>x.v<0).sort((a,b)=>a.v-b.v);
+  if(key==='a') return [...items].sort((a,b)=>Math.abs(b.v)-Math.abs(a.v));
+  if(key==='pct') return [...items].sort((a,b)=>b.pct-a.pct);
+  return [...items].sort((a,b)=>b.v-a.v);
+}
+/* Batang mendatar deviasi: nilai rupiah + persentase deviasi di tooltip */
+function devChartRender(cid,items,color,s){
+  if(charts[cid]) charts[cid].destroy();
+  charts[cid]=new Chart(document.getElementById(cid),{type:'bar',
+    data:{labels:items.map(x=>x.k),datasets:[{data:items.map(x=>x.v/s.d),backgroundColor:color,borderRadius:3,maxBarThickness:26}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+      plugins:{legend:{display:false},tooltip:{callbacks:{
+        label:c=>'Rp'+s.nf.format(c.raw)+' '+s.ab+' ('+fmtPct(items[c.dataIndex].pct)+')'}}},
+      scales:{x:{grid:{color:C.gridc},ticks:{callback:v=>nfDec.format(v)}},y:{grid:{display:false}}}}});
+}
+function devChartInit(cid,selId,titleId,baseTitle,items,color){
+  bindSort(selId,val=>{
+    const list=devOrder(items,val);
+    const s=scaleFor(list.map(x=>x.v));
+    document.getElementById(titleId).textContent=baseTitle+' (Rp '+s.u+')';
+    devChartRender(cid,list,color,s);
+  });
+}
+/* Kotak deviasi di bagian bawah kolom neraca (dibuat dinamis lengkap dengan dropdown) */
+function devBox(containerId,baseTitle,items,color){
+  const cid='dv'+(uid++), selId=cid+'Sort', titleId=cid+'Title';
+  const h=Math.max(180,items.length*40+60);
+  document.getElementById(containerId).innerHTML=
+    `<div class="box"><div class="box-head"><h3 id="${titleId}">${baseTitle} (Rp Juta)</h3>${toolbar(selId,DEV_OPTS)}</div>
+     <div style="position:relative;height:${h}px"><canvas id="${cid}"></canvas></div></div>`;
+  devChartInit(cid,selId,titleId,baseTitle,items,color);
+}
 
 const init={
 lr(){
@@ -534,10 +981,12 @@ lr(){
   const others=[r['Pembelian Tenaga Listrik'],r['Pemeliharaan'],r['Kepegawaian'],r['Penyusutan'],r['Administrasi']];
   const lainnya=beban-others.reduce((a,b)=>a+b,0);
 
-  doughnut('revChart',['Penjualan Tenaga Listrik','Subsidi Pemerintah','Pendapatan Kompensasi','Penyambungan','Lain-lain'],
-    [r['Penjualan Tenaga Listrik (neto)'],r['Subsidi Listrik Pemerintah'],r['Pendapatan Kompensasi'],r['Penyambungan Pelanggan'],r['Lain-lain']]);
-  doughnut('expChart',['Pembelian Tenaga Listrik','Pemeliharaan','Kepegawaian','Penyusutan','Administrasi','Lainnya'],
-    [others[0],others[1],others[2],others[3],others[4],lainnya]);
+  doughnut('revChart','revLegend',['Penjualan Tenaga Listrik','Subsidi Pemerintah','Pendapatan Kompensasi','Penyambungan','Lain-lain'],
+    [r['Penjualan Tenaga Listrik (neto)'],r['Subsidi Listrik Pemerintah'],r['Pendapatan Kompensasi'],r['Penyambungan Pelanggan'],r['Lain-lain']],
+    {centerLabel:'Total Pendapatan',metric:'Pendapatan',basis:'dari total pendapatan'});
+  doughnut('expChart','expLegend',['Pembelian Tenaga Listrik','Pemeliharaan','Kepegawaian','Penyusutan','Administrasi','Lainnya'],
+    [others[0],others[1],others[2],others[3],others[4],lainnya],
+    {centerLabel:'Total Beban Usaha',metric:'Beban',basis:'dari total beban'});
 
   /* Kelompok Item Pendapatan Usaha — satu grafik, induk saja */
   const revItems=[
@@ -560,26 +1009,21 @@ lr(){
   ];
   groupChart('grpExp','Item Beban Usaha',begItems,'gold');
 
-  /* Deviasi YoY Pendapatan — terurut terbesar ke terkecil, navy */
-  const revDev=sortDesc(revItems);
-  const sRev=scaleFor(revDev.map(x=>x.v));
-  setTitle('devTitle','Deviasi YoY Pendapatan',sRev);
-  devChartFn('devChart',revDev,C.pln,sRev);
+  /* Deviasi YoY Pendapatan — navy, dengan dropdown Urutkan */
+  devChartInit('devChart','devSort','devTitle','Deviasi YoY Pendapatan',revItems,C.pln);
 
-  /* Deviasi YoY Beban Usaha — terurut terbesar ke terkecil, kuning kunyit */
-  const begDev=sortDesc(begItems);
-  const sBeb=scaleFor(begDev.map(x=>x.v));
-  setTitle('begTitle','Deviasi YoY Beban Usaha',sBeb);
-  devChartFn('begChart',begDev,C.gold,sBeb);
+  /* Deviasi YoY Beban Usaha — kuning kunyit, dengan dropdown Urutkan */
+  devChartInit('begChart','begSort','begTitle','Deviasi YoY Beban Usaha',begItems,C.gold);
 },
 neraca(){
   /* Donut Struktur Aset: Aset Hak Guna & Properti Investasi dipisah dari Aset Tidak Lancar Lainnya */
-  doughnut('assetChart',
+  doughnut('assetChart','assetLegend',
     ['Aset Tetap Neto','Aset Lancar','Pekerjaan Dalam Pelaksanaan','Aset Hak Guna (Neto)','Properti Investasi','Aset Tidak Lancar Lainnya'],
     [N['Aset Tetap (Neto)'].c,N['ASET LANCAR'].c,N['Pekerjaan Dalam Pelaksanaan'].c,N['Aset Hak Guna (Neto)'].c,N['Properti Investasi'].c,N['Aset Tidak Lancar Lainnya'].c],
-    cc6);
-  doughnut('liabChart',['Akun Antar Satuan Administrasi','Liabilitas Jangka Panjang','Ekuitas','Liabilitas Jangka Pendek'],
-    [14764569,4768974,4988973,3812667]);
+    {centerLabel:'Total Aset',metric:'Nilai',basis:'dari total aset',colors:cc6});
+  doughnut('liabChart','liabLegend',['Akun Antar Satuan Administrasi','Liabilitas Jangka Panjang','Ekuitas','Liabilitas Jangka Pendek'],
+    [14764569,4768974,4988973,3812667],
+    {centerLabel:'Total Pendanaan',metric:'Nilai',basis:'dari total pendanaan'});
 
   /* Kelompok Item Struktur Aset — satu grafik, induk saja */
   const asetItems=[
@@ -602,12 +1046,65 @@ neraca(){
   groupChart('grpDana','Item Struktur Pendanaan',danaItems,'gold');
 
   /* Deviasi YoY Aset — bawah kolom kiri, navy */
-  devBox('devAsetBox','Deviasi YoY Aset',sortDesc(asetItems),C.pln);
+  devBox('devAsetBox','Deviasi YoY Aset',asetItems,C.pln);
 
   /* Deviasi YoY Pendanaan (Ekuitas & Liabilitas) — bawah kolom kanan, kuning kunyit */
-  devBox('devDanaBox','Deviasi YoY Pendanaan (Ekuitas &amp; Liabilitas)',sortDesc(danaItems),C.gold);
+  devBox('devDanaBox','Deviasi YoY Pendanaan (Ekuitas & Liabilitas)',danaItems,C.gold);
 }
 };
+
+/* ---------- SPEEDOMETER KARTU SKOR ---------- */
+function speedometer(label, amount, reference, basis, cls){
+  const percent = pctFn(amount, reference);
+  const max = Math.max(100, Math.ceil(percent/25)*25);
+  const fraction = Math.max(0, Math.min(1, percent/max));
+  const angle = Math.PI + Math.PI*fraction;
+  const x = 80 + 52*Math.cos(angle), y = 78 + 52*Math.sin(angle);
+  const color = {teal:C.teal, gold:C.gold, green:C.green}[cls] || C.pln;
+  const ticks = [0,.25,.5,.75,1].map(t=>{
+    const a = Math.PI + Math.PI*t;
+    return `<line x1="${80+56*Math.cos(a)}" y1="${78+56*Math.sin(a)}" x2="${80+61*Math.cos(a)}" y2="${78+61*Math.sin(a)}" stroke="#8D9AAC" stroke-width="1"/>`;
+  }).join('');
+  return `<div class="card-gauge" data-amount="${amount}" data-reference="${reference}" data-percent="${percent}" data-max="${max}" data-angle="${angle*180/Math.PI}">
+    <svg viewBox="0 0 160 110" role="img" aria-label="Speedometer ${label}: ${fmtPct(percent)}, ${basis}">
+      <title>${label}: ${fmtPct(percent)}, ${basis}</title>
+      <path d="M16 78 A64 64 0 0 1 144 78" fill="none" stroke="#CED8E3" stroke-width="9" stroke-linecap="round"/>
+      <path d="M16 78 A64 64 0 0 1 144 78" fill="none" stroke="${color}" stroke-width="9" stroke-linecap="${fraction>0?'round':'butt'}" pathLength="100" stroke-dasharray="${fraction*100} 100"/>
+      ${ticks}<line class="gauge-needle" x1="80" y1="78" x2="${x}" y2="${y}" stroke="${C.pln}" stroke-width="2.8" stroke-linecap="round"/>
+      <circle cx="80" cy="78" r="4.5" fill="${C.pln}"/>
+      <text x="8" y="96" font-size="10" fill="#6B7280">0%</text>
+      <text x="153" y="96" text-anchor="end" font-size="10" fill="#6B7280">${max}%</text>
+      <text x="80" y="104" text-anchor="middle" font-size="14" font-weight="700" fill="${C.pln}">${fmtPct(percent)}</text>
+    </svg><div class="gauge-basis">${basis}</div></div>`;
+}
+
+const GAUGES = {
+  'lr-rev':    {amount:L['PENDAPATAN USAHA'].c,   reference:L['PENDAPATAN USAHA'].p,    basis:'dari Okt 2025'},
+  'lr-beban':  {amount:L['BEBAN USAHA'].c,        reference:L['BEBAN USAHA'].p,          basis:'dari Okt 2025'},
+  'lr-laba':   {amount:L['LABA (RUGI) USAHA'].c,  reference:L['LABA (RUGI) USAHA'].p,    basis:'dari Okt 2025'},
+  'lr-labab':  {amount:L['LABA (RUGI) BERSIH'].c, reference:L['LABA (RUGI) BERSIH'].p,   basis:'dari Okt 2025'},
+
+  'nr-aset':   {amount:N['TOTAL ASET'].c,         reference:N['TOTAL ASET'].p,           basis:'dari Okt 2025'},
+  'nr-atl':    {amount:N['ASET TIDAK LANCAR'].c,  reference:N['TOTAL ASET'].c,           basis:'dari total aset'},
+  'nr-al':     {amount:N['ASET LANCAR'].c,        reference:N['LIABILITAS JANGKA PENDEK'].c, basis:'dari liabilitas jk. pendek'},
+  'nr-ek':     {amount:N['EKUITAS'].c,            reference:N['EKUITAS'].p,              basis:'dari Okt 2025'},
+
+  'an-mgu':    {amount:L['LABA (RUGI) USAHA'].c,  reference:L['PENDAPATAN USAHA'].c,     basis:'dari pendapatan usaha'},
+  'an-mgb':    {amount:L['LABA (RUGI) BERSIH'].c,  reference:L['PENDAPATAN USAHA'].c,     basis:'dari pendapatan usaha'},
+  'an-mbeban': {amount:L['BEBAN USAHA'].c,         reference:L['PENDAPATAN USAHA'].c,     basis:'dari pendapatan usaha'}
+};
+
+document.querySelectorAll('.card[data-g]').forEach(card=>{
+  const g = GAUGES[card.dataset.g];
+  const val = card.querySelector('.value'), lab = card.querySelector('.label');
+  if(!g || !val || !lab) return;
+  const cls = ['teal','gold','green'].find(c=>card.classList.contains(c)) || '';
+  const score = document.createElement('div');
+  score.className = 'card-score';
+  card.insertBefore(score, val);
+  score.appendChild(val);
+  score.insertAdjacentHTML('beforeend', speedometer(lab.textContent, g.amount, g.reference, g.basis, cls));
+});
 
 const done={};
 function open(t){if(init[t]&&!done[t]){done[t]=1;init[t]()}}
