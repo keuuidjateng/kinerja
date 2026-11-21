@@ -66,6 +66,10 @@ button,select,input{font-family:inherit}
 .ao-donut-legend i{width:10px;height:10px;flex:0 0 10px;margin-top:1px;border-radius:2px}
 .ao-donut-legend button.off{opacity:.4;text-decoration:line-through}
 .ao-donut-legend button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.ao-donut-popup{position:fixed;z-index:10000;display:none;pointer-events:none;width:max-content;max-width:250px;border-radius:5px;padding:10px 12px;font:12px/1.45 Arial,Helvetica,sans-serif;color:var(--navy-d);background:rgba(255,255,255,.7);border:1px solid var(--line);box-shadow:0 3px 10px rgba(8,30,54,.22)}
+.ao-donut-popup strong{display:block;margin-bottom:4px;font-size:12px}
+.ao-donut-popup .popup-value{display:flex;align-items:center;gap:7px;font-weight:700}
+.ao-donut-popup .popup-swatch{width:10px;height:10px;flex:0 0 10px;border-radius:1px}
 .unit-donut-popup{position:fixed;z-index:10000;display:none;pointer-events:none;width:max-content;max-width:240px;background:#0B2E4F26;color:#0B2E4F;border:1px solid #0B2E4F99;border-radius:5px;padding:10px 12px;font:12px/1.45 Arial,sans-serif;box-shadow:0 3px 12px rgba(11,46,79,.10)}
 .unit-donut-popup strong{display:block;margin-bottom:4px;font-size:12px}
 .unit-donut-popup .popup-value{display:flex;align-items:center;gap:7px}
@@ -847,6 +851,7 @@ function setDonutHover(chart,hit,p){
     chart.setActiveElements([]);
     chart.tooltip.setActiveElements([],{x:0,y:0});
     chart._pulse=null;
+    if(chart.canvas.id==='donutChart') hideAoDonutPopup();
   }
   chart.update('none');
 }
@@ -895,8 +900,12 @@ const donutFx={
         }
       }
     }
+    if(e.type==='click' && chart.canvas.id==='donutChart' && e.native && e.native.pointerType==='touch'){
+      setDonutHover(chart,hit,p);return;
+    }
     if(e.type==='click'){
       if(hit>=0){
+        if(chart.canvas.id==='donutChart') hideAoDonutPopup();
         chart.setActiveElements([]);
         chart.tooltip.setActiveElements([],{x:0,y:0});
         chart._pulse=null; chart._dhover=-1;
@@ -1181,6 +1190,91 @@ function externalUnitTooltip({chart,tooltip}){
   if(!position){box.style.display='none';box.setAttribute('aria-hidden','true');return;}
   box.style.left=position.x+'px';box.style.top=position.y+'px';box.dataset.side=position.side;
 }
+const aoFmtM=v=>'Rp'+v.toLocaleString('id-ID',{minimumFractionDigits:1,maximumFractionDigits:1})+' M';
+const ALPHA_POPUP = 0.75;
+const hexRgb = h => { h = String(h).replace('#','');
+  if(h.length === 3) h = h.split('').map(c=>c+c).join('');
+  const n = parseInt(h.slice(0,6),16); return [(n>>16)&255,(n>>8)&255,n&255]; };
+const rgbHex = a => '#' + a.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');
+const mixHex = (a,b,t) => { const A = hexRgb(a), B = hexRgb(b); return rgbHex(A.map((v,i)=>v+(B[i]-v)*t)); };
+const rgbaStr = (h,a) => { const c = hexRgb(h); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; };
+const lumHex = h => { const c = hexRgb(h).map(v => { v /= 255; return v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4); });
+  return 0.2126*c[0] + 0.7152*c[1] + 0.0722*c[2]; };
+const contrastHex = (a,b) => { const l1 = lumHex(a), l2 = lumHex(b); return (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05); };
+
+
+const VEILS = [0,0.06,0.12,0.18,0.24,0.30,0.36,0.42];
+const BACKDROPS = ['#FFFFFF','#E8EEF5','#000000','#20304A'].concat(PROG.map(p=>p.color));
+function popupSkin(color){
+  const white = '#FFFFFF', ink = '#081E36';
+  const wajah = (veil, veilHex, bg) => { const dasar = mixHex(bg, color, ALPHA_POPUP); return veil ? mixHex(dasar, veilHex, veil) : dasar; };
+  let out = null;
+  [[ink, white], [white, ink]].forEach(pair => {
+    const txt = pair[0], veilHex = pair[1];
+    for(const v of VEILS){
+      const min = Math.min(...BACKDROPS.map(bg => contrastHex(wajah(v, veilHex, bg), txt)));
+      if(min >= 4.5){
+        if(!out || v < out.veil || (v === out.veil && min > out.gain)) out = { text:txt, veilHex, veil:v, gain:min };
+        break;
+      }
+    }
+  });
+  if(!out) out = { text:white, veilHex:ink, veil:0.42, gain:0 };
+  return { hue: rgbaStr(color, ALPHA_POPUP), text: out.text,
+           veil: out.veil ? rgbaStr(out.veilHex, out.veil) : null,
+           edge: mixHex(wajah(out.veil, out.veilHex, '#FFFFFF'), out.text, 0.65),
+           swatch: mixHex(wajah(out.veil, out.veilHex, '#FFFFFF'), out.text, 0.8) };
+}
+function hideAoDonutPopup(){
+  const box = document.getElementById('aoDonutPopup');
+  if(box){ box.style.display = 'none'; box.setAttribute('aria-hidden','true'); }
+}
+function externalAoDonutTooltip({chart, tooltip}){
+  let box = document.getElementById('aoDonutPopup');
+  if(!box){
+    box = document.createElement('div'); box.id = 'aoDonutPopup'; box.className = 'ao-donut-popup';
+    box.setAttribute('role','tooltip'); document.body.appendChild(box);
+    const reposition = ()=>{ const active = box._chartRef; if(active) externalAoDonutTooltip({chart:active, tooltip:active.tooltip}); };
+    window.addEventListener('scroll', reposition, true); window.addEventListener('resize', reposition);
+  }
+  box._chartRef = chart;
+  const point = tooltip.dataPoints && tooltip.dataPoints[0];
+
+  if((chart._dhover ?? -1) < 0 || !point || chart.canvas.offsetParent === null){
+    box.style.display = 'none'; box.setAttribute('aria-hidden','true'); return;
+  }
+  const color = chart.data.datasets[0].backgroundColor[point.dataIndex] || C.pln;
+  const skin = popupSkin(color);
+  const title = document.createElement('strong');
+  title.textContent = point.label + ' — ' + chart._aoPrograms[point.dataIndex].name;
+  const row = document.createElement('div'); row.className = 'popup-value';
+  const swatch = document.createElement('i'); swatch.className = 'popup-swatch';
+  const value = document.createElement('span');
+  value.textContent = 'Nilai AO: ' + aoFmtM(point.raw) + ' (' + nfM.format(pct(point.raw*1e9, T.ao)) + '% dari Nilai AO)';
+  swatch.style.background = skin.swatch;
+  swatch.style.boxShadow = 'inset 0 0 0 1px ' + skin.edge;
+  row.append(swatch, value); box.replaceChildren(title, row);
+  box.style.backgroundColor = skin.hue;
+  box.style.backgroundImage = skin.veil ? 'linear-gradient(' + skin.veil + ',' + skin.veil + ')' : 'none';
+  box.style.color = skin.text;
+  box.style.borderColor = skin.edge;
+  box.style.display = 'block'; box.setAttribute('aria-hidden','false');
+  const r = chart.canvas.getBoundingClientRect(), vw = document.documentElement.clientWidth, vh = window.innerHeight;
+  box.style.maxWidth = Math.max(120, Math.min(250, vw-16)) + 'px';
+  const w = box.offsetWidth, h = box.offsetHeight, gap = 12;
+  const clampN = (n,max)=>Math.max(8, Math.min(max, n));
+  const cx = r.left + tooltip.caretX, cy = r.top + tooltip.caretY;
+  const choices = [
+    {side:'above', x:clampN(cx-w/2, vw-w-8), y:clampN(cy-h-gap, vh-h-8)},
+    {side:'below', x:clampN(cx-w/2, vw-w-8), y:clampN(cy+gap, vh-h-8)},
+    {side:'right', x:clampN(cx+gap, vw-w-8), y:clampN(cy-h/2, vh-h-8)},
+    {side:'left',  x:clampN(cx-w-gap, vw-w-8), y:clampN(cy-h/2, vh-h-8)}
+  ];
+  const fits = q=>q.x>=8 && q.y>=8 && q.x+w<=vw-8 && q.y+h<=vh-8;
+  const position = choices.find(fits) || choices[0];
+  box.style.left = position.x + 'px'; box.style.top = position.y + 'px'; box.dataset.side = position.side;
+}
+
 function mkDonut(id,labels,values,colors,centerVal,centerLbl,cutout){
   const el=document.getElementById(id);
   el.dataset.center=centerVal;
@@ -1190,7 +1284,7 @@ function mkDonut(id,labels,values,colors,centerVal,centerLbl,cutout){
     data:{labels,datasets:[{data:values,backgroundColor:colors,glowColors:colors.map((c,i)=>id==='unitDonutChart'&&labels[i]==='UP2D Jateng & DIY'?'#000000':c),borderColor:'#FFFFFF',borderWidth:2,hoverOffset:10}]},
     options:{responsive:true,maintainAspectRatio:false,animation:false,cutout,
       layout:{padding:8},
-      plugins:{legend:{display:false},tooltip:{enabled:id!=='unitDonutChart',external:id==='unitDonutChart'?externalUnitTooltip:undefined,callbacks:{
+      plugins:{legend:{display:false},tooltip:{enabled:false,external:id==='unitDonutChart'?externalUnitTooltip:externalAoDonutTooltip,callbacks:{
         label:c=>c.label+': '+fmtMil(c.raw),
         labelColor:c=>id==='unitDonutChart'&&c.label==='UP2D Jateng & DIY'?{backgroundColor:'#000000',borderColor:'#000000',borderWidth:1}:{backgroundColor:colors[c.dataIndex],borderColor:'#FFFFFF',borderWidth:2}
       }}}},
@@ -1270,9 +1364,10 @@ function renderFunnel(){
 
 function renderOvDonut(){
   const dn=[...PROG].sort((a,b)=>b.ao-a.ao);
-  const chart=mkDonut('donutChart',dn.map(d=>d.name),dn.map(d=>M(d.ao)),dn.map(d=>d.color),rpT(T.ao),'Total Nilai AO','62%');
+  const chart=mkDonut('donutChart',dn.map(d=>d.code),dn.map(d=>M(d.ao)),dn.map(d=>d.color),aoFmtM(M(T.ao)),'Total Nilai AO','62%');
+  chart._aoPrograms=dn;
   const legend=document.getElementById('aoDonutLegend');
-  legend.innerHTML=dn.map((d,i)=>`<button type="button" data-i="${i}" aria-pressed="true"><i style="background:${d.color}"></i><span>${d.name}</span></button>`).join('');
+  legend.innerHTML=dn.map((d,i)=>`<button type="button" data-i="${i}" aria-pressed="true"><i style="background:${d.color}"></i><span>${d.code} — ${d.name}</span></button>`).join('');
   legend.onclick=e=>{
     const button=e.target.closest('button[data-i]');if(!button) return;
     setDonutHover(chart,-1,null);chart.toggleDataVisibility(+button.dataset.i);chart.update('none');
@@ -1282,9 +1377,9 @@ function renderOvDonut(){
     const i=+button.dataset.i,a=chart.getDatasetMeta(0).data[i],mid=(a.startAngle+a.endAngle)/2;
     setDonutHover(chart,i,{x:a.x+a.outerRadius*Math.cos(mid),y:a.y+a.outerRadius*Math.sin(mid)});
   };
-  legend.onmouseover=highlight;legend.onfocusin=highlight;
+  legend.onmouseover=highlight;legend.addEventListener('focusin',highlight);
   legend.onmouseleave=()=>setDonutHover(chart,-1,null);
-  legend.onfocusout=e=>{if(!legend.contains(e.relatedTarget)) setDonutHover(chart,-1,null);};
+  legend.addEventListener('focusout',e=>{if(!legend.contains(e.relatedTarget)) setDonutHover(chart,-1,null);});
 }
 
 function renderOvDisburse(){
