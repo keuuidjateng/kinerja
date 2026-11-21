@@ -191,6 +191,10 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
 .ai-donut-legend i{width:10px;height:10px;flex:0 0 10px;margin-top:1px;border-radius:2px}
 .ai-donut-legend button.off{opacity:.4;text-decoration:line-through}
 .ai-donut-legend button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.ai-donut-popup{position:fixed;z-index:10000;display:none;pointer-events:none;width:max-content;max-width:250px;border-radius:5px;padding:10px 12px;font:12px/1.45 Arial,Helvetica,sans-serif;color:var(--navy-d);background:rgba(255,255,255,.7);border:1px solid var(--line);box-shadow:0 4px 16px rgba(11,46,79,.16)}
+.ai-donut-popup strong{display:block;margin-bottom:4px;font-size:12px}
+.ai-donut-popup .popup-value{display:flex;align-items:center;gap:7px;font-weight:700}
+.ai-donut-popup .popup-swatch{width:10px;height:10px;flex:0 0 10px;border-radius:1px}
 .leg-hint{font-size:10.5px;font-style:italic;color:var(--grey)}
 
 /* FOOTER */
@@ -243,9 +247,9 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     <h1>Monitoring Realisasi Anggaran Investasi<br>PLN UID Jawa Tengah</h1>
     <p class="sub">AKI (eBudget) vs Realisasi Bayar &amp; Progres Komitmen per Program, Bidang, dan Unit. Rekap Bulanan Tahun 2026 (s.d. Oktober — Realisasi Berjalan).</p>
     <div class="metabar">
-      <div>Nilai AI<strong>Rp 2.563,5 M</strong></div>
-      <div>AKI (eBudget)<strong>Rp 1.138,7 M</strong></div>
-      <div>Realisasi Bayar<strong>Rp 1.124,9 M</strong></div>
+      <div>Nilai AI<strong>Rp2.563,5 M</strong></div>
+      <div>AKI (eBudget)<strong>Rp1.138,7 M</strong></div>
+      <div>Realisasi Bayar<strong>Rp1.124,9 M</strong></div>
       <div>Periode<strong>s.d. Oktober 2026</strong></div>
     </div>
   </div>
@@ -271,14 +275,14 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     <div class="rule"></div>
 
     <div class="cards">
-      <div class="card" data-g="ov-ai"><div class="label">Nilai AI</div><div class="value">Rp 2.563,5 M</div><div class="delta neutral">166 PRK</div><div class="small">Total anggaran investasi 7 program</div></div>
-      <div class="card teal" data-g="ov-aki"><div class="label">AKI (eBudget)</div><div class="value">Rp 1.138,7 M</div><div class="delta neutral">44,42% dari Nilai AI</div><div class="small">Terjadwal Jan–Okt</div></div>
-      <div class="card gold" data-g="ov-skki"><div class="label">SKKI</div><div class="value">Rp 2.563,5 M</div><div class="delta neutral">100,00% dari Nilai AI</div><div class="small">Basis kontrak</div></div>
-      <div class="card green" data-g="ov-kom"><div class="label">Total Komitmen</div><div class="value">Rp 2.354,7 M</div><div class="delta pos">153/166 PRK (92,17%)</div><div class="small">91,86% dari SKKI</div></div>
+      <div class="card" data-g="ov-ai"><div class="label">Nilai AI</div><div class="value">Rp2.563,5 M</div><div class="delta neutral">166 PRK</div><div class="small">Total anggaran investasi 7 program</div></div>
+      <div class="card teal" data-g="ov-aki"><div class="label">AKI (eBudget)</div><div class="value">Rp1.138,7 M</div><div class="delta neutral">44,42% dari Nilai AI</div><div class="small">Terjadwal Jan–Okt</div></div>
+      <div class="card gold" data-g="ov-skki"><div class="label">SKKI</div><div class="value">Rp2.563,5 M</div><div class="delta neutral">100,00% dari Nilai AI</div><div class="small">Basis kontrak</div></div>
+      <div class="card green" data-g="ov-kom"><div class="label">Total Komitmen</div><div class="value">Rp2.354,7 M</div><div class="delta pos">153/166 PRK (92,17%)</div><div class="small">91,86% dari SKKI</div></div>
     </div>
     <div class="cards">
-      <div class="card green" data-g="ov-rb"><div class="label">Realisasi Bayar</div><div class="value">Rp 1.124,9 M</div><div class="delta pos">98,78% dari AKI</div><div class="small">Selisih AKI Rp 13,9 M</div></div>
-      <div class="card gold" data-g="ov-sisa"><div class="label">Sisa SKKI Belum Kontrak</div><div class="value">Rp 208,8 M</div><div class="delta neg">8,14% dari total SKKI</div><div class="small">Didominasi SAR</div></div>
+      <div class="card green" data-g="ov-rb"><div class="label">Realisasi Bayar</div><div class="value">Rp1.124,9 M</div><div class="delta pos">98,78% dari AKI</div><div class="small">Selisih AKI Rp13,9 M</div></div>
+      <div class="card gold" data-g="ov-sisa"><div class="label">Sisa SKKI Belum Kontrak</div><div class="value">Rp208,8 M</div><div class="delta neg">8,14% dari total SKKI</div><div class="small">Didominasi SAR</div></div>
     </div>
 
     <div class="grid">
@@ -339,10 +343,10 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     <div class="rule"></div>
 
     <div class="cards">
-      <div class="card" data-g="bl-aki"><div class="label">Total AKI (eBudget)</div><div class="value">Rp 1.138,7 M</div><div class="small">Jan–Okt terjadwal (Nov–Des kosong)</div></div>
-      <div class="card teal" data-g="bl-rb"><div class="label">Total Realisasi Bayar</div><div class="value">Rp 1.124,9 M</div><div class="small">Realisasi s.d. Oktober</div></div>
+      <div class="card" data-g="bl-aki"><div class="label">Total AKI (eBudget)</div><div class="value">Rp1.138,7 M</div><div class="small">Jan–Okt terjadwal (Nov–Des kosong)</div></div>
+      <div class="card teal" data-g="bl-rb"><div class="label">Total Realisasi Bayar</div><div class="value">Rp1.124,9 M</div><div class="small">Realisasi s.d. Oktober</div></div>
       <div class="card green" data-g="bl-pct"><div class="label">% Realisasi thd AKI</div><div class="value">98,78%</div><div class="delta pos">Sehat</div><div class="small">Kumulatif s.d. Oktober</div></div>
-      <div class="card gold" data-g="bl-saldo"><div class="label">Saldo AKI Oktober</div><div class="value">Rp 62,9 M</div><div class="delta neg">Perlu monitoring</div><div class="small">AKI Okt Rp 133,2 M − realisasi Rp 70,4 M</div></div>
+      <div class="card gold" data-g="bl-saldo"><div class="label">Saldo AKI Oktober</div><div class="value">Rp62,9 M</div><div class="delta neg">Perlu monitoring</div><div class="small">AKI Okt Rp133,2 M − realisasi Rp70,4 M</div></div>
     </div>
 
     <div class="box">
@@ -373,9 +377,9 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
 
     <div class="cards">
       <div class="card" data-g="pg-prk"><div class="label">Total PRK Terkontrak</div><div class="value">153 / 166</div><div class="small">92,17% PRK terkontrak</div></div>
-      <div class="card teal" data-g="pg-kom"><div class="label">Total Komitmen</div><div class="value">Rp 2.354,7 M</div><div class="small">Nota Dinas + Terkontrak (SPK)</div></div>
-      <div class="card gold" data-g="pg-nd"><div class="label">Nota Dinas</div><div class="value">Rp 46,4 M</div><div class="small">1,97% dari total komitmen</div></div>
-      <div class="card green" data-g="pg-pb"><div class="label">Permintaan Bayar</div><div class="value">Rp 1.138,3 M</div><div class="delta pos">98,82% tertagih</div><div class="small">Realisasi Rp 1.124,9 M</div></div>
+      <div class="card teal" data-g="pg-kom"><div class="label">Total Komitmen</div><div class="value">Rp2.354,7 M</div><div class="small">Nota Dinas + Terkontrak (SPK)</div></div>
+      <div class="card gold" data-g="pg-nd"><div class="label">Nota Dinas</div><div class="value">Rp46,4 M</div><div class="small">1,97% dari total komitmen</div></div>
+      <div class="card green" data-g="pg-pb"><div class="label">Permintaan Bayar</div><div class="value">Rp1.138,3 M</div><div class="delta pos">98,82% tertagih</div><div class="small">Realisasi Rp1.124,9 M</div></div>
     </div>
 
     <div class="box">
@@ -433,10 +437,10 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     <div class="rule"></div>
 
     <div class="cards">
-      <div class="card" data-g="bd-skki"><div class="label">Total SKKI Terbit</div><div class="value">Rp 1.919,5 M</div><div class="small">4 bidang aktif (UP2K nihil)</div></div>
-      <div class="card teal" data-g="bd-kon"><div class="label">Total Terkontrak</div><div class="value">Rp 1.756,5 M</div><div class="delta neutral">91,51% dari SKKI terbit</div><div class="small">Rata-rata bidang</div></div>
-      <div class="card gold" data-g="bd-rb"><div class="label">Realisasi Bayar s.d M-4 Okt</div><div class="value">Rp 833,5 M</div><div class="delta neg">47,45% dari nilai terkontrak</div><div class="small">Perlu percepatan</div></div>
-      <div class="card green" data-g="bd-sisa"><div class="label">Sisa Belum Terbayar</div><div class="value">Rp 923,1 M</div><div class="delta neg">52,55% dari nilai terkontrak</div><div class="small">Perlu tindak lanjut</div></div>
+      <div class="card" data-g="bd-skki"><div class="label">Total SKKI Terbit</div><div class="value">Rp1.919,5 M</div><div class="small">4 bidang aktif (UP2K nihil)</div></div>
+      <div class="card teal" data-g="bd-kon"><div class="label">Total Terkontrak</div><div class="value">Rp1.756,5 M</div><div class="delta neutral">91,51% dari SKKI terbit</div><div class="small">Rata-rata bidang</div></div>
+      <div class="card gold" data-g="bd-rb"><div class="label">Realisasi Bayar s.d M-4 Okt</div><div class="value">Rp833,5 M</div><div class="delta neg">47,45% dari nilai terkontrak</div><div class="small">Perlu percepatan</div></div>
+      <div class="card green" data-g="bd-sisa"><div class="label">Sisa Belum Terbayar</div><div class="value">Rp923,1 M</div><div class="delta neg">52,55% dari nilai terkontrak</div><div class="small">Perlu tindak lanjut</div></div>
     </div>
 
     <div class="grid">
@@ -503,10 +507,10 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     <div class="rule"></div>
 
     <div class="cards">
-      <div class="card" data-g="un-skki"><div class="label">Total SKKI Terbit</div><div class="value">Rp 618,7 M</div><div class="small">14 unit (UP3 &amp; UP2D)</div></div>
-      <div class="card teal" data-g="un-kon"><div class="label">Total Terkontrak</div><div class="value">Rp 551,8 M</div><div class="delta neutral">89,18% dari SKKI terbit</div><div class="small">Rata-rata unit</div></div>
-      <div class="card gold" data-g="un-rb"><div class="label">Realisasi Bayar s.d M-4 Okt</div><div class="value">Rp 291,4 M</div><div class="delta neg">52,81% dari nilai terkontrak</div><div class="small">Perlu percepatan</div></div>
-      <div class="card green" data-g="un-sisa"><div class="label">Sisa Belum Terbayar</div><div class="value">Rp 260,4 M</div><div class="delta neg">47,19% dari nilai terkontrak</div><div class="small">Perlu tindak lanjut</div></div>
+      <div class="card" data-g="un-skki"><div class="label">Total SKKI Terbit</div><div class="value">Rp618,7 M</div><div class="small">14 unit (UP3 &amp; UP2D)</div></div>
+      <div class="card teal" data-g="un-kon"><div class="label">Total Terkontrak</div><div class="value">Rp551,8 M</div><div class="delta neutral">89,18% dari SKKI terbit</div><div class="small">Rata-rata unit</div></div>
+      <div class="card gold" data-g="un-rb"><div class="label">Realisasi Bayar s.d M-4 Okt</div><div class="value">Rp291,4 M</div><div class="delta neg">52,81% dari nilai terkontrak</div><div class="small">Perlu percepatan</div></div>
+      <div class="card green" data-g="un-sisa"><div class="label">Sisa Belum Terbayar</div><div class="value">Rp260,4 M</div><div class="delta neg">47,19% dari nilai terkontrak</div><div class="small">Perlu tindak lanjut</div></div>
     </div>
 
     <div class="grid">
@@ -574,43 +578,43 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     <div class="insight-grid">
       <div class="ins ok">
         <div class="ins-title">LUN — Program dengan Kinerja Terbaik</div>
-        <div class="ins-text">Luncuran mencatat PRK 41/41 terkontrak, 99,82% SKKI terkontrak, dan 98,78% realisasi bayar terhadap AKI. Sisa SKKI hanya Rp 0,9 M.</div>
+        <div class="ins-text">Luncuran mencatat PRK 41/41 terkontrak, 99,82% SKKI terkontrak, dan 98,78% realisasi bayar terhadap AKI. Sisa SKKI hanya Rp0,9 M.</div>
       </div>
       <div class="ins ok">
         <div class="ins-title">LOS — Realisasi Tertinggi di Antara Program</div>
-        <div class="ins-text">Penurunan Susut mencatat realisasi 99,51% dari AKI dan PRK 45/45 terkontrak, dengan sisa SKKI Rp 7,7 M.</div>
+        <div class="ins-text">Penurunan Susut mencatat realisasi 99,51% dari AKI dan PRK 45/45 terkontrak, dengan sisa SKKI Rp7,7 M.</div>
       </div>
       <div class="ins warn">
         <div class="ins-title">SAR — Penggerak Realisasi sekaligus Penyumbang Sisa SKKI</div>
-        <div class="ins-text">Realisasi SAR Rp 475,2 M (99,40% dari AKI), tetapi sisa SKKI Rp 118,5 M atau 56,75% dari total sisa. Kecepatan kontrak SAR menentukan capaian akhir tahun.</div>
+        <div class="ins-text">Realisasi SAR Rp475,2 M (99,40% dari AKI), tetapi sisa SKKI Rp118,5 M atau 56,75% dari total sisa. Kecepatan kontrak SAR menentukan capaian akhir tahun.</div>
       </div>
       <div class="ins danger">
         <div class="ins-title">SRN &amp; SPF — Kontrak Jauh Tertinggal</div>
-        <div class="ins-text">SRN baru terkontrak 14,98% dan SPF 6,22% dari SKKI. Sisa SKKI SRN Rp 25,3 M, sedangkan SPF hanya Rp 7,2 juta, sehingga SRN menjadi perhatian utama.</div>
+        <div class="ins-text">SRN baru terkontrak 14,98% dan SPF 6,22% dari SKKI. Sisa SKKI SRN Rp25,3 M, sedangkan SPF hanya Rp7,2 juta, sehingga SRN menjadi perhatian utama.</div>
       </div>
       <div class="ins warn">
         <div class="ins-title">DIS — Kontrak Tertinggal dari Realisasi</div>
-        <div class="ins-text">DIS terkontrak 78,28% dari SKKI dengan sisa Rp 55,6 M. Realisasi sudah 94,31% dari AKI, sehingga kontrak perlu dikejar agar tidak menjadi hambatan.</div>
+        <div class="ins-text">DIS terkontrak 78,28% dari SKKI dengan sisa Rp55,6 M. Realisasi sudah 94,31% dari AKI, sehingga kontrak perlu dikejar agar tidak menjadi hambatan.</div>
       </div>
       <div class="ins">
         <div class="ins-title">Pencairan September Mengimbangi Oktober</div>
-        <div class="ins-text">Realisasi September yang melampaui AKI (+Rp 49,0 M) menutup sebagian saldo Oktober (Rp 62,9 M), sehingga saldo kumulatif AKI tersisa Rp 13,9 M.</div>
+        <div class="ins-text">Realisasi September yang melampaui AKI (+Rp49,0 M) menutup sebagian saldo Oktober (Rp62,9 M), sehingga saldo kumulatif AKI tersisa Rp13,9 M.</div>
       </div>
       <div class="ins danger">
         <div class="ins-title">Baru 44,42% Nilai AI Terjadwal di AKI</div>
-        <div class="ins-text">AKI (eBudget) Jan–Okt Rp 1.138,7 M dari Nilai AI Rp 2.563,5 M. Artinya Rp 1.424,8 M (55,58%) nilai investasi belum memiliki jadwal pencairan, dan November–Desember masih kosong. Realisasi terhadap Nilai AI berhenti di 43,88%.</div>
+        <div class="ins-text">AKI (eBudget) Jan–Okt Rp1.138,7 M dari Nilai AI Rp2.563,5 M. Artinya Rp1.424,8 M (55,58%) nilai investasi belum memiliki jadwal pencairan, dan November–Desember masih kosong. Realisasi terhadap Nilai AI berhenti di 43,88%.</div>
       </div>
       <div class="ins warn">
         <div class="ins-title">Run-rate 2026 Tidak Cukup Menyerap SKKI</div>
-        <div class="ins-text">Rata-rata realisasi Januari–Oktober Rp 112,5 M per bulan. Untuk mengejar sisa Rp 1.438,7 M (SKKI − realisasi) dalam dua bulan, diperlukan sekitar Rp 719,3 M per bulan — enam kali lipat run-rate berjalan.</div>
+        <div class="ins-text">Rata-rata realisasi Januari–Oktober Rp112,5 M per bulan. Untuk mengejar sisa Rp1.438,7 M (SKKI − realisasi) dalam dua bulan, diperlukan sekitar Rp719,3 M per bulan — enam kali lipat run-rate berjalan.</div>
       </div>
       <div class="ins warn">
         <div class="ins-title">Komitmen Sudah Ada, Tagihan Belum Masuk</div>
-        <div class="ins-text">Total komitmen Rp 2.354,7 M tetapi permintaan bayar baru Rp 1.138,3 M (48,34%). Sebanyak Rp 1.229,9 M kontrak yang sudah berjalan belum ditagihkan — cadangan percepatan realisasi terbesar, di luar persoalan kontrak baru.</div>
+        <div class="ins-text">Total komitmen Rp2.354,7 M tetapi permintaan bayar baru Rp1.138,3 M (48,34%). Sebanyak Rp1.229,9 M kontrak yang sudah berjalan belum ditagihkan — cadangan percepatan realisasi terbesar, di luar persoalan kontrak baru.</div>
       </div>
       <div class="ins danger">
         <div class="ins-title">SPF: 93,75% Komitmennya Masih Nota Dinas</div>
-        <div class="ins-text">Komitmen SPF Rp 1,52 M didominasi Nota Dinas Rp 1,42 M, sedangkan SPK baru Rp 94,7 juta (6,22% dari SKKI). Komitmen jenis ini belum berbentuk kontrak kerja dan berisiko tidak terserap tahun berjalan.</div>
+        <div class="ins-text">Komitmen SPF Rp1,52 M didominasi Nota Dinas Rp1,42 M, sedangkan SPK baru Rp94,7 juta (6,22% dari SKKI). Komitmen jenis ini belum berbentuk kontrak kerja dan berisiko tidak terserap tahun berjalan.</div>
       </div>
       <div class="ins warn">
         <div class="ins-title">3 Program Menguasai 89,00% Nilai AI</div>
@@ -618,15 +622,15 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
       </div>
       <div class="ins">
         <div class="ins-title">Backlog Tagihan Kecil namun Terpusat</div>
-        <div class="ins-text">Permintaan bayar yang belum terealisasi hanya Rp 13,5 M, terbesar di LUN (Rp 5,7 M), DIS (Rp 4,1 M), dan SAR (Rp 2,8 M). Persoalan utama bukan pencairan, melainkan pengajuan tagihan atas kontrak yang sudah ada.</div>
+        <div class="ins-text">Permintaan bayar yang belum terealisasi hanya Rp13,5 M, terbesar di LUN (Rp5,7 M), DIS (Rp4,1 M), dan SAR (Rp2,8 M). Persoalan utama bukan pencairan, melainkan pengajuan tagihan atas kontrak yang sudah ada.</div>
       </div>
       <div class="ins ok">
         <div class="ins-title">Rekonsiliasi Kontrak &amp; Realisasi Lintas Basis Cocok</div>
-        <div class="ins-text">Total SPK program Rp 2.308,3 M sama persis dengan jumlah kontrak bidang (Rp 1.756,5 M) ditambah unit (Rp 551,8 M). Realisasi bayar juga cocok: Rp 1.124,9 M = Rp 833,5 M bidang + Rp 291,4 M unit (selisih nol).</div>
+        <div class="ins-text">Total SPK program Rp2.308,3 M sama persis dengan jumlah kontrak bidang (Rp1.756,5 M) ditambah unit (Rp551,8 M). Realisasi bayar juga cocok: Rp1.124,9 M = Rp833,5 M bidang + Rp291,4 M unit (selisih nol).</div>
       </div>
       <div class="ins warn">
-        <div class="ins-title">SKKI Lintas Basis Selisih Rp 25,3 M</div>
-        <div class="ins-text">SKKI program Rp 2.563,5 M dibandingkan bidang + unit Rp 2.538,2 M menyisakan selisih Rp 25,3 M — setingkat sisa SKKI SRN (Rp 25,3 M). Kemungkinan ada SKKI yang belum terdistribusi ke bidang/unit dan perlu diverifikasi.</div>
+        <div class="ins-title">SKKI Lintas Basis Selisih Rp25,3 M</div>
+        <div class="ins-text">SKKI program Rp2.563,5 M dibandingkan bidang + unit Rp2.538,2 M menyisakan selisih Rp25,3 M — setingkat sisa SKKI SRN (Rp25,3 M). Kemungkinan ada SKKI yang belum terdistribusi ke bidang/unit dan perlu diverifikasi.</div>
       </div>
       <div class="ins danger">
         <div class="ins-title">13 PRK Belum Terkontrak, 10 di Antaranya SAR</div>
@@ -638,7 +642,7 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
       </div>
       <div class="ins">
         <div class="ins-title">Nilai AI = SKKI, Tidak Ada Ruang Reallocasi</div>
-        <div class="ins-text">SKKI Rp 2.563,5 M sama dengan Nilai AI (100,00%, selisih pembulatan Rp 265). Seluruh pagu sudah menjadi dasar komitmen sehingga percepatan hanya bisa lewat jadwal pencairan dan penagihan, bukan lewat realokasi pagu.
+        <div class="ins-text">SKKI Rp2.563,5 M sama dengan Nilai AI (100,00%, selisih pembulatan Rp265). Seluruh pagu sudah menjadi dasar komitmen sehingga percepatan hanya bisa lewat jadwal pencairan dan penagihan, bukan lewat realokasi pagu.
         </div>
       </div>
     </div>
@@ -648,60 +652,60 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
 
     <h4 class="topic-h">Tab 01 · Ringkasan Eksekutif</h4>
     <div class="grid">
-      <div class="callout teal"><b>Realisasi Bayar Hampir Penuh terhadap AKI.</b> Realisasi Rp 1.124,9 M setara 98,78% dari AKI Rp 1.138,7 M. Selisihnya hanya Rp 13,9 M, sehingga hampir seluruh rencana pencairan tahun berjalan sudah tertagih.</div>
-      <div class="callout"><b>Nilai AI Terkonsentrasi di Pemasaran (SAR).</b> SAR memegang Rp 1.415,3 M atau 55,21% dari total Nilai AI. Kontrak SAR baru 90,55% dari SKKI, sehingga kecepatannya sangat menentukan capaian keseluruhan.</div>
-      <div class="callout red"><b>Kontrak Tertinggal di SRN dan SPF.</b> SRN baru terkontrak 14,98% dari SKKI dan SPF hanya 6,22%. Sisa SKKI SRN sebesar Rp 25,3 M belum berbentuk kontrak dan perlu dipantau sebelum akhir tahun anggaran.</div>
+      <div class="callout teal"><b>Realisasi Bayar Hampir Penuh terhadap AKI.</b> Realisasi Rp1.124,9 M setara 98,78% dari AKI Rp1.138,7 M. Selisihnya hanya Rp13,9 M, sehingga hampir seluruh rencana pencairan tahun berjalan sudah tertagih.</div>
+      <div class="callout"><b>Nilai AI Terkonsentrasi di Pemasaran (SAR).</b> SAR memegang Rp1.415,3 M atau 55,21% dari total Nilai AI. Kontrak SAR baru 90,55% dari SKKI, sehingga kecepatannya sangat menentukan capaian keseluruhan.</div>
+      <div class="callout red"><b>Kontrak Tertinggal di SRN dan SPF.</b> SRN baru terkontrak 14,98% dari SKKI dan SPF hanya 6,22%. Sisa SKKI SRN sebesar Rp25,3 M belum berbentuk kontrak dan perlu dipantau sebelum akhir tahun anggaran.</div>
     </div>
 
     <h4 class="topic-h">Tab 02 · Realisasi Bulanan</h4>
     <div class="grid">
-      <div class="callout"><b>September — Realisasi Melampaui AKI Bulan Berjalan.</b> Realisasi bayar September tercatat Rp 93,5 M, melampaui AKI terjadwal Rp 44,5 M sebesar +Rp 49,0 M (210%). Pola ini mengindikasikan pencairan tertunda dari periode sebelumnya, sehingga saldo September dan Oktober perlu dibaca bersama.</div>
-      <div class="callout red"><b>Oktober — Realisasi Baru 52,82% dari AKI.</b> AKI Oktober Rp 133,2 M dengan realisasi Rp 70,4 M, menyisakan saldo Rp 62,9 M. Perlu konfirmasi apakah data Oktober sudah final dan rencana pencairan sisanya.</div>
+      <div class="callout"><b>September — Realisasi Melampaui AKI Bulan Berjalan.</b> Realisasi bayar September tercatat Rp93,5 M, melampaui AKI terjadwal Rp44,5 M sebesar +Rp49,0 M (210%). Pola ini mengindikasikan pencairan tertunda dari periode sebelumnya, sehingga saldo September dan Oktober perlu dibaca bersama.</div>
+      <div class="callout red"><b>Oktober — Realisasi Baru 52,82% dari AKI.</b> AKI Oktober Rp133,2 M dengan realisasi Rp70,4 M, menyisakan saldo Rp62,9 M. Perlu konfirmasi apakah data Oktober sudah final dan rencana pencairan sisanya.</div>
       <div class="callout teal"><b>Januari–Agustus Realisasi Sesuai AKI.</b> Delapan bulan pertama tahun 2026 menunjukkan realisasi bayar tepat sama dengan AKI (100%) setiap bulannya, menandakan kesesuaian antara rencana pencairan dan realisasi.</div>
       <div class="callout blue"><b>November &amp; Desember Belum Ada Data.</b> AKI maupun realisasi untuk November dan Desember belum terisi. Perlu konfirmasi ke unit terkait apakah memang tidak ada rencana pencairan atau data belum diinput.</div>
     </div>
 
     <h4 class="topic-h">Tab 03 · Program &amp; Komitmen</h4>
     <div class="grid">
-      <div class="callout teal"><b>LUN — Kinerja Terbaik.</b> PRK 41/41 terkontrak, kontrak 99,82% dari SKKI, dan realisasi 98,78% dari AKI. Sisa SKKI hanya Rp 0,9 M.</div>
-      <div class="callout"><b>SAR Menyumbang 56,75% Sisa SKKI.</b> Sisa SKKI SAR Rp 118,5 M dari total Rp 208,8 M. Kontrak sudah 90,55% dari SKKI dan realisasi 99,40% dari AKI, sehingga percepatan kontrak menjadi prioritas utama.</div>
-      <div class="callout red"><b>SRN &amp; SPF — Kontrak Belum Berjalan.</b> SRN baru terkontrak 14,98% dengan sisa Rp 25,3 M. SPF baru 6,22%, dengan komitmen didominasi Nota Dinas Rp 1,42 M, sedangkan SPK baru Rp 94,7 juta.</div>
-      <div class="callout"><b>DIS — Kontrak Perlu Dipercepat.</b> Kontrak DIS 78,28% dari SKKI dengan sisa Rp 55,6 M (26,64% dari total sisa). Realisasi sudah 94,31% dari AKI, tetapi ruang kontrak masih besar.</div>
+      <div class="callout teal"><b>LUN — Kinerja Terbaik.</b> PRK 41/41 terkontrak, kontrak 99,82% dari SKKI, dan realisasi 98,78% dari AKI. Sisa SKKI hanya Rp0,9 M.</div>
+      <div class="callout"><b>SAR Menyumbang 56,75% Sisa SKKI.</b> Sisa SKKI SAR Rp118,5 M dari total Rp208,8 M. Kontrak sudah 90,55% dari SKKI dan realisasi 99,40% dari AKI, sehingga percepatan kontrak menjadi prioritas utama.</div>
+      <div class="callout red"><b>SRN &amp; SPF — Kontrak Belum Berjalan.</b> SRN baru terkontrak 14,98% dengan sisa Rp25,3 M. SPF baru 6,22%, dengan komitmen didominasi Nota Dinas Rp1,42 M, sedangkan SPK baru Rp94,7 juta.</div>
+      <div class="callout"><b>DIS — Kontrak Perlu Dipercepat.</b> Kontrak DIS 78,28% dari SKKI dengan sisa Rp55,6 M (26,64% dari total sisa). Realisasi sudah 94,31% dari AKI, tetapi ruang kontrak masih besar.</div>
     </div>
 
     <h4 class="topic-h">Tab 04 · AI Per Bidang</h4>
     <div class="grid">
-      <div class="callout red"><b>NIAGA — Penyumbang Sisa Terbesar.</b> Sisa belum terbayar NIAGA Rp 681,2 M, setara 73,80% dari total sisa Rp 923,1 M. Realisasi baru 48,14% dari nilai kontrak Rp 1.313,5 M.</div>
-      <div class="callout"><b>DIS — Kontrak Tinggi, Realisasi Baru 48%.</b> Kontrak DIS mencapai 85,79% dari SKKI (Rp 412,8 M dari Rp 481,2 M), dengan realisasi 48,42% dari kontrak. Sisa Rp 212,9 M atau 23,07% dari total sisa.</div>
-      <div class="callout red"><b>SARANA — Gap Kontrak vs Penagihan Terbesar.</b> SARANA sudah mengontrak 99,77% dari SKKI, tetapi realisasi bayar hanya Rp 1,2 M atau 4,07% dari kontrak. Sisa Rp 29,0 M menunjukkan penagihan yang sangat tertinggal.</div>
-      <div class="callout teal"><b>K3L — Tuntas 100%.</b> Kontrak dan realisasi bayar K3L tercatat 100% dari SKKI tanpa sisa belum terbayar. Nilainya kecil, yakni Rp 2,6 juta.</div>
+      <div class="callout red"><b>NIAGA — Penyumbang Sisa Terbesar.</b> Sisa belum terbayar NIAGA Rp681,2 M, setara 73,80% dari total sisa Rp923,1 M. Realisasi baru 48,14% dari nilai kontrak Rp1.313,5 M.</div>
+      <div class="callout"><b>DIS — Kontrak Tinggi, Realisasi Baru 48%.</b> Kontrak DIS mencapai 85,79% dari SKKI (Rp412,8 M dari Rp481,2 M), dengan realisasi 48,42% dari kontrak. Sisa Rp212,9 M atau 23,07% dari total sisa.</div>
+      <div class="callout red"><b>SARANA — Gap Kontrak vs Penagihan Terbesar.</b> SARANA sudah mengontrak 99,77% dari SKKI, tetapi realisasi bayar hanya Rp1,2 M atau 4,07% dari kontrak. Sisa Rp29,0 M menunjukkan penagihan yang sangat tertinggal.</div>
+      <div class="callout teal"><b>K3L — Tuntas 100%.</b> Kontrak dan realisasi bayar K3L tercatat 100% dari SKKI tanpa sisa belum terbayar. Nilainya kecil, yakni Rp2,6 juta.</div>
     </div>
 
     <h4 class="topic-h">Tab 05 · AI Per Unit</h4>
     <div class="grid">
-      <div class="callout red"><b>UP3 Semarang — Realisasi Terendah &amp; Sisa Terbesar.</b> SKKI terbesar Rp 97,2 M dengan kontrak 89,02%, tetapi realisasi baru 38,31% dari kontrak. Sisa Rp 53,4 M atau 20,51% dari total sisa unit.</div>
-      <div class="callout"><b>UP3 Kudus — Sisa Terbesar Kedua.</b> Sisa belum terbayar Rp 41,8 M (16,07% dari total sisa) dengan realisasi 48,09% dari kontrak. Kontrak sudah 93,39% dari SKKI, sehingga fokus utama ada pada penagihan.</div>
-      <div class="callout red"><b>UP2D Jateng &amp; DIY — Kontrak Terendah.</b> Kontrak baru 71,03% dari SKKI terbit, terendah di antara seluruh unit. Sisa belum terbayar Rp 28,9 M dengan realisasi 50,62% dari kontrak.</div>
+      <div class="callout red"><b>UP3 Semarang — Realisasi Terendah &amp; Sisa Terbesar.</b> SKKI terbesar Rp97,2 M dengan kontrak 89,02%, tetapi realisasi baru 38,31% dari kontrak. Sisa Rp53,4 M atau 20,51% dari total sisa unit.</div>
+      <div class="callout"><b>UP3 Kudus — Sisa Terbesar Kedua.</b> Sisa belum terbayar Rp41,8 M (16,07% dari total sisa) dengan realisasi 48,09% dari kontrak. Kontrak sudah 93,39% dari SKKI, sehingga fokus utama ada pada penagihan.</div>
+      <div class="callout red"><b>UP2D Jateng &amp; DIY — Kontrak Terendah.</b> Kontrak baru 71,03% dari SKKI terbit, terendah di antara seluruh unit. Sisa belum terbayar Rp28,9 M dengan realisasi 50,62% dari kontrak.</div>
       <div class="callout teal"><b>UP3 Surakarta — Realisasi Tertinggi di Luar Yogyakarta.</b> Realisasi 65,07% dari kontrak, tertinggi di antara unit selain UP3 Yogyakarta. Pola penagihannya layak dijadikan referensi.</div>
-      <div class="callout"><b>UP3 Cilacap — Kontrak Melampaui SKKI.</b> Total kontrak Rp 30.474,5 juta melampaui SKKI Rp 30.376,7 juta (100,32%), selisih Rp 97,8 juta. Perlu verifikasi kesesuaian nilai kontrak dengan SKKI.</div>
+      <div class="callout"><b>UP3 Cilacap — Kontrak Melampaui SKKI.</b> Total kontrak Rp30.474,5 juta melampaui SKKI Rp30.376,7 juta (100,32%), selisih Rp97,8 juta. Perlu verifikasi kesesuaian nilai kontrak dengan SKKI.</div>
       <div class="callout teal"><b>UP3 Yogyakarta — Tuntas 100%.</b> Kontrak dan realisasi bayar mencapai 100% dari SKKI dengan sisa nihil. Pola pengelolaannya layak direplikasi ke unit lain.</div>
-      <div class="callout"><b>UP3 Sukoharjo — Realisasi Rendah.</b> Kontrak sudah 97,27% dari SKKI, tetapi realisasi hanya 44,14% dari kontrak. Sisa Rp 12,3 M perlu didorong agar segera dicairkan.</div>
+      <div class="callout"><b>UP3 Sukoharjo — Realisasi Rendah.</b> Kontrak sudah 97,27% dari SKKI, tetapi realisasi hanya 44,14% dari kontrak. Sisa Rp12,3 M perlu didorong agar segera dicairkan.</div>
     </div>
 
     <h3 class="sub-title" style="margin-top:30px">Rekomendasi</h3>
     <div class="reco">
-      <div class="reco-card"><div class="k">Rekomendasi 1 · Kontrak SAR</div><p>Prioritaskan lelang dan kontrak untuk sisa SKKI SAR Rp 118,5 M (56,75% dari total sisa) agar tidak menumpuk menjelang akhir tahun anggaran.</p></div>
-      <div class="reco-card"><div class="k">Rekomendasi 2 · SRN &amp; SPF</div><p>Kontrak SRN baru 14,98% dengan sisa Rp 25,3 M, dan SPF baru 6,22%. Susun jadwal kontrak per program dan pastikan status SPK SPF sebagai pengganti Nota Dinas.</p></div>
-      <div class="reco-card"><div class="k">Rekomendasi 3 · Realisasi Okt–Des</div><p>Realisasi Oktober Rp 70,4 M dari AKI Rp 133,2 M menyisakan saldo Rp 62,9 M. AKI November dan Desember belum terisi, sehingga perlu konfirmasi jadwal pencairan.</p></div>
-      <div class="reco-card"><div class="k">Rekomendasi 4 · Penagihan NIAGA</div><p>NIAGA menyumbang Rp 681,2 M (73,80%) dari sisa belum terbayar. Telusuri apakah hambatannya ada di pekerjaan fisik, BAST, atau invoicing, lalu prioritaskan penagihan atas kontrak yang sudah berjalan.</p></div>
-      <div class="reco-card"><div class="k">Rekomendasi 5 · Penagihan SARANA</div><p>Kontrak SARANA hampir penuh (99,77%), tetapi realisasi baru 4,07%. Konfirmasi status BAST dan invoicing agar sisa Rp 29,0 M dapat segera dicairkan.</p></div>
-      <div class="reco-card"><div class="k">Rekomendasi 6 · UP3 Semarang &amp; Kudus</div><p>Kedua unit menyumbang Rp 95,2 M (36,58%) dari sisa belum terbayar unit. Berikan pendampingan khusus untuk mempercepat penagihan.</p></div>
-      <div class="reco-card"><div class="k">Rekomendasi 7 · Verifikasi Cilacap</div><p>Nilai kontrak Cilacap melampaui SKKI sebesar Rp 97,8 juta. Pastikan tidak ada kesalahan input atau kontrak tambahan yang belum memiliki dasar SKKI.</p></div>
-      <div class="reco-card"><div class="k">Rekomendasi 8 · Rekonsiliasi Data</div><p>Total SPK Program (Rp 2.308,3 M) sudah sama persis dengan kontrak Bidang (Rp 1.756,5 M) + Unit (Rp 551,8 M), dan realisasi juga cocok (Rp 1.124,9 M). Yang masih perlu direkonsiliasi adalah SKKI: program Rp 2.563,5 M versus bidang + unit Rp 2.538,2 M (selisih Rp 25,3 M, setingkat sisa SKKI SRN). Sisa SKKI Program (Rp 208,8 M) dan sisa terbayar Bidang/Unit tetap berbasis berbeda sehingga tidak boleh dijumlahkan.</p></div>
-      <div class="reco-card"><div class="k">Rekomendasi 9 · Jadwal AKI Nov–Des</div><p>AKI Rp 1.424,8 M (55,58% Nilai AI) belum memiliki profil pencairan. Minta setiap program mengisi rencana November–Desember beserta PRK dan kontrak pendampingnya, supaya eBudget kembali menjadi baseline yang bisa ditagih, bukan sekadar sisa pagu.</p></div>
-      <div class="reco-card"><div class="k">Rekomendasi 10 · Recovery Plan SKKI</div><p>Dengan run-rate Rp 112,5 M/bulan, penyerapan penuh SKKI tahun 2026 tidak tercapai. Susun skenario: (a) percepatan penagihan atas kontrak existing, (b) perpanjangan/renegosiasi jadwal, atau (c) usulan revisi AI–SKKI untuk paket yang dipastikan tidak berjalan, sebelum tahun anggaran tertutup.</p></div>
-      <div class="reco-card"><div class="k">Rekomendasi 11 · Kampanye Penagihan 90 Hari</div><p>Rp 1.229,9 M komitmen yang sudah berkontrak belum diajukan sebagai permintaan bayar. Tetapkan target bertingkat per program/bidang/unit (misal minimal 15% dari outstanding tiap bulan) dan pantau rasio permintaan bayar terhadap komitmen, bukan hanya realisasi terhadap AKI.</p></div>
-      <div class="reco-card"><div class="k">Rekomendasi 12 · Konversi Nota Dinas ke SPK</div><p>Nota Dinas Rp 46,4 M (1,97% komitmen), dari mana Rp 1,42 M ada di SPF. Cantumkan batas waktu konversi per Nota Dinas pada daftar monitoring, dan laporkan yang berusia lebih dari 60 hari sebagai risiko tidak terserap.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 1 · Kontrak SAR</div><p>Prioritaskan lelang dan kontrak untuk sisa SKKI SAR Rp118,5 M (56,75% dari total sisa) agar tidak menumpuk menjelang akhir tahun anggaran.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 2 · SRN &amp; SPF</div><p>Kontrak SRN baru 14,98% dengan sisa Rp25,3 M, dan SPF baru 6,22%. Susun jadwal kontrak per program dan pastikan status SPK SPF sebagai pengganti Nota Dinas.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 3 · Realisasi Okt–Des</div><p>Realisasi Oktober Rp70,4 M dari AKI Rp133,2 M menyisakan saldo Rp62,9 M. AKI November dan Desember belum terisi, sehingga perlu konfirmasi jadwal pencairan.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 4 · Penagihan NIAGA</div><p>NIAGA menyumbang Rp681,2 M (73,80%) dari sisa belum terbayar. Telusuri apakah hambatannya ada di pekerjaan fisik, BAST, atau invoicing, lalu prioritaskan penagihan atas kontrak yang sudah berjalan.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 5 · Penagihan SARANA</div><p>Kontrak SARANA hampir penuh (99,77%), tetapi realisasi baru 4,07%. Konfirmasi status BAST dan invoicing agar sisa Rp29,0 M dapat segera dicairkan.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 6 · UP3 Semarang &amp; Kudus</div><p>Kedua unit menyumbang Rp95,2 M (36,58%) dari sisa belum terbayar unit. Berikan pendampingan khusus untuk mempercepat penagihan.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 7 · Verifikasi Cilacap</div><p>Nilai kontrak Cilacap melampaui SKKI sebesar Rp97,8 juta. Pastikan tidak ada kesalahan input atau kontrak tambahan yang belum memiliki dasar SKKI.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 8 · Rekonsiliasi Data</div><p>Total SPK Program (Rp2.308,3 M) sudah sama persis dengan kontrak Bidang (Rp1.756,5 M) + Unit (Rp551,8 M), dan realisasi juga cocok (Rp1.124,9 M). Yang masih perlu direkonsiliasi adalah SKKI: program Rp2.563,5 M versus bidang + unit Rp2.538,2 M (selisih Rp25,3 M, setingkat sisa SKKI SRN). Sisa SKKI Program (Rp208,8 M) dan sisa terbayar Bidang/Unit tetap berbasis berbeda sehingga tidak boleh dijumlahkan.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 9 · Jadwal AKI Nov–Des</div><p>AKI Rp1.424,8 M (55,58% Nilai AI) belum memiliki profil pencairan. Minta setiap program mengisi rencana November–Desember beserta PRK dan kontrak pendampingnya, supaya eBudget kembali menjadi baseline yang bisa ditagih, bukan sekadar sisa pagu.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 10 · Recovery Plan SKKI</div><p>Dengan run-rate Rp112,5 M/bulan, penyerapan penuh SKKI tahun 2026 tidak tercapai. Susun skenario: (a) percepatan penagihan atas kontrak existing, (b) perpanjangan/renegosiasi jadwal, atau (c) usulan revisi AI–SKKI untuk paket yang dipastikan tidak berjalan, sebelum tahun anggaran tertutup.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 11 · Kampanye Penagihan 90 Hari</div><p>Rp1.229,9 M komitmen yang sudah berkontrak belum diajukan sebagai permintaan bayar. Tetapkan target bertingkat per program/bidang/unit (misal minimal 15% dari outstanding tiap bulan) dan pantau rasio permintaan bayar terhadap komitmen, bukan hanya realisasi terhadap AKI.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 12 · Konversi Nota Dinas ke SPK</div><p>Nota Dinas Rp46,4 M (1,97% komitmen), dari mana Rp1,42 M ada di SPF. Cantumkan batas waktu konversi per Nota Dinas pada daftar monitoring, dan laporkan yang berusia lebih dari 60 hari sebagai risiko tidak terserap.</p></div>
       <div class="reco-card"><div class="k">Rekomendasi 13 · Sanksi &amp; Review Nilai AI Tidak Bergerak</div><p>SKKI = 100% Nilai AI, sehingga tidak ada ruang realokasi. Tambahkan indikator “nilai AI/SKKI yang tidak berubah selama dua triwulan” per program; SRN (kontrak 14,98%) dan SPF (6,22%) adalah kandidat pertama untuk review pagu dan kelayakan paket.</p></div>
       <div class="reco-card"><div class="k">Rekomendasi 14 · Quality Gate Data Bulanan</div><p>Oktober baru terisi 52,82% sementara September melampaui AKI (210%). Terapkan pemeriksaan rutin: realisasi di luar rentang 80–120% AKI bulan berjalan wajib disertai catatan (pencairan periode sebelumnya, retensi, atau koreksi) agar saldo bulan tidak salah dibaca.</p></div>
       <div class="reco-card"><div class="k">Rekomendasi 15 · Penambahan Dimensi Monitoring</div><p>Tambahkan kolom umur sisa SKKI (bulan sejak SKKI terbit), status lelang, dan nama kontraktor/SPK pada tabel program–bidang–unit. Tanpa umur pagu, paket macet seperti sebagian SRN sulit dibedakan dari paket yang memang baru dimulai.</p></div>
@@ -735,7 +739,7 @@ Chart.defaults.font.size = 11;
 const M = v => v/1e9;
 const pct = (a,b) => b>0 ? (a/b*100) : 0;
 const sum = (arr,f) => arr.reduce((s,x)=>s+f(x),0);
-const fmtM = v => 'Rp ' + v.toLocaleString('id-ID',{minimumFractionDigits:1,maximumFractionDigits:1}) + ' M';
+const fmtM = v => 'Rp' + v.toLocaleString('id-ID',{minimumFractionDigits:1,maximumFractionDigits:1}) + ' M';
 const fmtIDR = v => v.toLocaleString('id-ID',{maximumFractionDigits:0});
 const fmtPct = (v,d=2) => v.toLocaleString('id-ID',{minimumFractionDigits:d,maximumFractionDigits:d}) + '%';
 const fmtN1 = v => v.toLocaleString('id-ID',{minimumFractionDigits:1,maximumFractionDigits:1});
@@ -1108,6 +1112,7 @@ function setDonutHover(chart,hit,p){
     chart.setActiveElements([]);
     chart.tooltip.setActiveElements([],{x:0,y:0});
     chart._pulse = null;
+    if(chart.canvas.id === 'donutChart') hideAiDonutPopup();
   }
   chart.update('none');
 }
@@ -1174,8 +1179,13 @@ const donutFx = {
         if(mod2(a-A.s) <= A.e-A.s){ hit = A.i; break; }
       }
     }
+    if(e.type === 'click' && e.native && e.native.pointerType === 'touch'){
+      setDonutHover(chart, hit, p);
+      return;
+    }
     if(e.type === 'click'){
       if(hit >= 0){
+        hideAiDonutPopup();
         chart.setActiveElements([]);
         chart.tooltip.setActiveElements([],{x:0,y:0});
         chart._pulse = null; chart._dhover = -1;
@@ -1206,6 +1216,52 @@ const donutEl = document.getElementById('donutChart');
 donutEl.dataset.center = fmtM(M(TOT.ai));
 donutEl.dataset.label = 'Total Nilai AI';
 
+/* Pop-up label donut: dasar warna legend program (transparan) dengan outline tipis */
+function hideAiDonutPopup(){
+  const box = document.getElementById('aiDonutPopup');
+  if(box){ box.style.display = 'none'; box.setAttribute('aria-hidden','true'); }
+}
+function externalAiDonutTooltip({chart, tooltip}){
+  let box = document.getElementById('aiDonutPopup');
+  if(!box){
+    box = document.createElement('div'); box.id = 'aiDonutPopup'; box.className = 'ai-donut-popup';
+    box.setAttribute('role','tooltip'); document.body.appendChild(box);
+    const reposition = ()=>{ const active = box._chartRef; if(active) externalAiDonutTooltip({chart:active, tooltip:active.tooltip}); };
+    window.addEventListener('scroll', reposition, true); window.addEventListener('resize', reposition);
+  }
+  box._chartRef = chart;
+  const point = tooltip.dataPoints && tooltip.dataPoints[0];
+  // tampil selama ada irisan yang sedang disorot (kursor di irisan, di legend-nya, atau sentuhan)
+  if((chart._dhover ?? -1) < 0 || !point || chart.canvas.offsetParent === null){
+    box.style.display = 'none'; box.setAttribute('aria-hidden','true'); return;
+  }
+  const color = chart.data.datasets[0].backgroundColor[point.dataIndex] || C.pln;
+  const title = document.createElement('strong');
+  title.textContent = point.label + ' — ' + programs[point.dataIndex].name;
+  const row = document.createElement('div'); row.className = 'popup-value';
+  const swatch = document.createElement('i'); swatch.className = 'popup-swatch'; swatch.style.background = color;
+  const value = document.createElement('span');
+  value.textContent = 'Nilai AI: ' + fmtM(point.raw) + ' (' + fmtN1(pct(point.raw*1e9, TOT.ai)) + '% dari Nilai AI)';
+  row.append(swatch, value); box.replaceChildren(title, row);
+  box.style.background = color + '2E';                 // warna legend, dibuat transparan
+  box.style.borderColor = color;                       // outline tipis
+  box.style.display = 'block'; box.setAttribute('aria-hidden','false');
+  const r = chart.canvas.getBoundingClientRect(), vw = document.documentElement.clientWidth, vh = window.innerHeight;
+  box.style.maxWidth = Math.max(120, Math.min(250, vw-16)) + 'px';
+  const w = box.offsetWidth, h = box.offsetHeight, gap = 12;
+  const clampN = (n,max)=>Math.max(8, Math.min(max, n));
+  const cx = r.left + tooltip.caretX, cy = r.top + tooltip.caretY;
+  const choices = [
+    {side:'above', x:clampN(cx-w/2, vw-w-8), y:clampN(cy-h-gap, vh-h-8)},
+    {side:'below', x:clampN(cx-w/2, vw-w-8), y:clampN(cy+gap, vh-h-8)},
+    {side:'right', x:clampN(cx+gap, vw-w-8), y:clampN(cy-h/2, vh-h-8)},
+    {side:'left',  x:clampN(cx-w-gap, vw-w-8), y:clampN(cy-h/2, vh-h-8)}
+  ];
+  const fits = q=>q.x>=8 && q.y>=8 && q.x+w<=vw-8 && q.y+h<=vh-8;
+  const position = choices.find(fits) || choices[0];
+  box.style.left = position.x + 'px'; box.style.top = position.y + 'px'; box.dataset.side = position.side;
+}
+
 charts.donut = new Chart(donutEl, {
   type:'doughnut',
   data:{
@@ -1216,10 +1272,7 @@ charts.donut = new Chart(donutEl, {
   options:{
     responsive:true, maintainAspectRatio:false, animation:false, cutout:'62%',
     layout:{padding:8},
-    plugins:{legend:{display:false}, tooltip:{callbacks:{
-      label:c=>c.label+': '+fmtM(c.raw)+' ('+fmtN1(pct(c.raw*1e9,TOT.ai))+'% dari Nilai AI)',
-      labelColor:c=>({backgroundColor:programs[c.dataIndex].color,borderColor:'#FFFFFF',borderWidth:2})
-    }}}
+    plugins:{legend:{display:false}, tooltip:{enabled:false, external:externalAiDonutTooltip}}
   },
   plugins:[centerTextPlugin, donutFx]
 });
