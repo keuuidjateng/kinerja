@@ -53,14 +53,19 @@ section{padding:34px 0 5px}
 .rule{height:3px;width:55px;background:var(--gold);margin:12px 0 0}
 .sub-title{font-size:17px;color:var(--navy-d);margin:0 0 14px}
 
-/* KPI CARDS */
+/* KPI CARDS / KARTU SKOR */
 .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0}
 .card{background:#E8EEF5;border:1px solid var(--line);border-top:3px solid var(--navy);border-radius:4px;padding:16px;min-height:132px;box-shadow:0 1px 4px rgba(11,46,79,.03)}
 .card.teal{background:#E3F1F0;border-top-color:var(--teal)}
 .card.gold{background:#F8F1DC;border-top-color:var(--gold)}
 .card.green{background:#E4F1EA;border-top-color:var(--green)}
+.card-score{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0}
+.card-score .value{margin:0;min-width:0;overflow-wrap:anywhere}
+.card-gauge{width:112px;flex:0 0 112px;text-align:center}
+.card-gauge svg{display:block;width:100%;height:auto}
+.gauge-basis{font-size:9px;color:var(--grey);line-height:1.3;margin-top:2px}
 .label{text-transform:uppercase;letter-spacing:.8px;font-size:10.5px;color:var(--grey);font-weight:700}
-.value{font-size:22px;font-weight:700;color:var(--navy-d);margin:7px 0}
+.value{font-family:Arial,serif;font-size:22px;font-weight:700;color:var(--navy-d);margin:7px 0}
 .small{font-size:11px;color:var(--grey)}
 
 /* GAUGES */
@@ -90,18 +95,44 @@ section{padding:34px 0 5px}
 .box-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
 .box-head h3{margin:0}
 .chart{height:320px;position:relative}
-.chart.small{height:260px}
+.chart.small-chart{height:320px}
+.chart.small-chart:has(#donutKategori){height:340px}
 .chart.tall{height:440px}
 .chart-card{background:#fff;border:1px solid var(--line);border-radius:4px;padding:17px;margin:16px 0;box-shadow:0 1px 4px rgba(11,46,79,.025);min-width:0}
-.donut-center-label{text-align:center;margin-top:8px}
-.dcl-val{font-size:19px;font-weight:700;color:var(--navy)}
-.dcl-sub{font-size:11px;color:var(--grey)}
 
-/* CHART TOOLBAR */
-.chart-toolbar{display:flex;align-items:center;gap:8px;margin:0 0 12px}
-.chart-toolbar label{font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:var(--grey);font-weight:700}
+/* LEGEND HTML (klik untuk tampil/sembunyi) */
+.leg-wrap{display:flex;flex-direction:column;align-items:flex-end;margin-left:auto;gap:2px}
+.leg{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:11.5px;color:var(--text2);justify-content:flex-end}
+.leg span{display:inline-flex;align-items:center;gap:5px;cursor:pointer;user-select:none;transition:opacity .2s}
+.leg span.off{text-decoration:line-through;opacity:.4}
+.leg i{width:11px;height:10px;border-radius:2px;display:inline-block}
+.leg-hint{font-size:10.5px;font-style:italic;color:var(--grey)}
+.ctrl-row{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;margin:2px 0 10px}
+.ctrl-row .chart-toolbar{margin:0}
+
+/* KUNCI WARNA STATIS */
+.dis-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11.5px;color:var(--grey);margin-top:10px}
+.dis-legend span{display:inline-flex;align-items:center;gap:6px}
+.lg-bar{width:12px;height:10px;border-radius:2px;background:#0B2E4F;display:inline-block}
+
+/* LEGEND & POP-UP DONUT */
+.ai-donut-legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px 12px;margin:12px 0 6px}
+.ai-donut-legend button{display:flex;align-items:flex-start;gap:7px;border:0;background:none;padding:3px;text-align:left;font:400 10px Arial,sans-serif;color:var(--text2);cursor:pointer}
+.ai-donut-legend button span{min-width:0;overflow-wrap:anywhere}
+.ai-donut-legend i{width:10px;height:10px;flex:0 0 10px;margin-top:1px;border-radius:2px}
+.ai-donut-legend button.off{opacity:.4;text-decoration:line-through}
+.ai-donut-legend button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.ai-donut-popup{position:fixed;z-index:10000;display:none;pointer-events:none;width:max-content;max-width:250px;border-radius:5px;padding:10px 12px;font:12px/1.45 Arial,Helvetica,sans-serif;color:var(--navy-d);background:rgba(255,255,255,.7);border:1px solid var(--line);box-shadow:0 3px 10px rgba(8,30,54,.22)}
+.ai-donut-popup strong{display:block;margin-bottom:4px;font-size:12px}
+.ai-donut-popup .popup-value{display:flex;align-items:center;gap:7px;font-weight:700}
+.ai-donut-popup .popup-swatch{width:10px;height:10px;flex:0 0 10px;border-radius:1px}
+
+/* CHART TOOLBAR (dropdown Urutkan) */
+.chart-toolbar{display:flex;align-items:center;gap:8px;margin:0 0 10px;justify-content:flex-start}
+.chart-toolbar label{font-size:12px;font-weight:700;color:var(--grey);white-space:nowrap}
 .chart-toolbar select{width:auto;min-width:200px;border:1px solid #CCD3DB;background:#fff;border-radius:4px;padding:7px 10px;font-size:12.5px;color:var(--navy-d);outline:none;cursor:pointer}
 .chart-toolbar select:focus{border-color:var(--teal);box-shadow:0 0 0 2px rgba(14,124,123,.10)}
+.box-head .chart-toolbar{margin:0}
 
 /* ACCOUNTING NOTE */
 .acct{background:#fff;border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:2px;padding:16px 20px 8px;margin-bottom:22px}
@@ -225,6 +256,7 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
   .item-bar-pct{min-width:0}
 }
 @media(max-width:600px){
+  .chart.small-chart:has(#donutKategori){height:300px}
   .wrap,.hero-inner,.tabbar{padding-left:15px;padding-right:15px}
   .cards{grid-template-columns:1fr}
   .hero{padding-top:32px}
@@ -251,10 +283,10 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
     <h1>Non Allowable Cost — UID Jawa Tengah</h1>
     <p class="sub">Analisis realisasi NAC s.d. Oktober 2026 berdasarkan 2 kategori biaya, 14 unit pelaksana, serta pencapaian KPI terhadap target revisi Tahun 2026.</p>
     <div class="metabar">
-      <div>Total Realisasi s.d Okt<strong>Rp 274,05 M</strong><small>realisasi 2026</small></div>
-      <div>Target Revisi 2026<strong>Rp 292,39 M</strong><small>realisasi 93,73% dari target revisi</small></div>
-      <div>Realisasi Tahun 2025<strong>Rp 303,63 M</strong><small>referensi tahun sebelumnya</small></div>
-      <div>Sisa thd Target Revisi<strong>Rp 18,35 M</strong><small>selisih target revisi dan realisasi s.d Okt</small></div>
+      <div>Total Realisasi s.d Okt<strong>Rp274,05 M</strong><small>realisasi 2026</small></div>
+      <div>Target Revisi 2026<strong>Rp292,39 M</strong><small>realisasi 93,73% dari target revisi</small></div>
+      <div>Realisasi Tahun 2025<strong>Rp303,63 M</strong><small>referensi tahun sebelumnya</small></div>
+      <div>Sisa thd Target Revisi<strong>Rp18,35 M</strong><small>selisih target revisi dan realisasi s.d Okt</small></div>
     </div>
   </div>
 </header>
@@ -293,25 +325,25 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
       </div>
 
       <div class="cards">
-        <div class="card">
+        <div class="card" data-g="ov-real">
           <div class="label">Total Realisasi NAC</div>
-          <div class="value">Rp 274,05 M</div>
-          <div class="small">Rp 274.045.995.566</div>
+          <div class="value">Rp274,05 M</div>
+          <div class="small">Rp274.045.995.566</div>
         </div>
-        <div class="card teal">
+        <div class="card teal" data-g="ov-pct">
           <div class="label">Realisasi thd Target s/d Okt</div>
           <div class="value">110,24%</div>
-          <div class="small">target maksimal Rp 248,59 M</div>
+          <div class="small">target maksimal Rp248,59 M</div>
         </div>
-        <div class="card gold">
+        <div class="card gold" data-g="ov-unit">
           <div class="label">Kontributor Unit Terbesar</div>
           <div class="value">UID</div>
-          <div class="small">Rp 74,80 M &middot; 27,30% dari total</div>
+          <div class="small">Rp74,80 M &middot; 27,30% dari total</div>
         </div>
-        <div class="card green">
+        <div class="card green" data-g="ov-biaya">
           <div class="label">Kontributor Jenis Biaya Terbesar</div>
           <div class="value">PPh 21</div>
-          <div class="small">Rp 164,00 M &middot; 59,85% dari total</div>
+          <div class="small">Rp164,00 M &middot; 59,85% dari total</div>
         </div>
       </div>
     </section>
@@ -335,15 +367,17 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
         <div class="chart-card">
           <h3>Komposisi Kategori NAC</h3>
           <div class="chart-sub">Kategori A dan B membentuk total realisasi s.d. Oktober</div>
-          <div class="chart small"><canvas id="donutKategori"></canvas></div>
-          <div class="donut-center-label">
-            <div class="dcl-val">Rp 274,05 M</div>
-            <div class="dcl-sub">Total NAC</div>
-          </div>
+          <div class="chart small-chart"><canvas id="donutKategori"></canvas></div>
+          <div id="nacDonutLegend" class="ai-donut-legend" aria-label="Legend komposisi kategori NAC"></div>
+          <div class="leg-hint" style="text-align:center">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
         </div>
         <div class="chart-card">
           <h3>Distribusi Realisasi per Unit</h3>
           <div class="chart-sub">14 unit, ditumpuk per kategori, diurutkan dari realisasi terbesar</div>
+          <div class="leg-wrap">
+            <div class="leg" id="unitLeg"></div>
+            <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+          </div>
           <div class="chart tall"><canvas id="unitChart"></canvas></div>
         </div>
       </div>
@@ -353,7 +387,7 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
       <div class="two-col">
         <div class="callout navy">
           <div class="callout-label">Target Revisi Tahun 2026</div>
-          <div class="callout-value">Rp 292,39 M</div>
+          <div class="callout-value">Rp292,39 M</div>
           <div class="callout-text">
             Target awal Rp378,11 Miliar telah direvisi. Realisasi s.d. Oktober mencapai
             93,73% dari target revisi tahunan, dengan sisa Rp18,35 Miliar.
@@ -361,7 +395,7 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
         </div>
         <div class="callout navy">
           <div class="callout-label">Realisasi Tahun 2025</div>
-          <div class="callout-value">Rp 303,63 M</div>
+          <div class="callout-value">Rp303,63 M</div>
           <div class="callout-text">
             Realisasi 2026 s.d. Oktober setara 90,26% dari realisasi 2025. Perbandingan langsung
             perlu mempertimbangkan perbedaan periode pengamatan.
@@ -382,7 +416,7 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
       </div>
       <div class="chart-card">
         <h3>Top Jenis Biaya</h3>
-        <div class="chart-sub">Kontribusi dihitung terhadap total NAC Rp 274,05 M</div>
+        <div class="chart-sub">Kontribusi dihitung terhadap total NAC Rp274,05 M</div>
         <div class="chart"><canvas id="topChart"></canvas></div>
       </div>
     </section>
@@ -452,22 +486,22 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
         <div class="rule"></div>
       </div>
       <div class="cards">
-        <div class="card">
+        <div class="card" data-g="kpi-rev">
           <div class="label">Target Revisi NAC 2026</div>
-          <div class="value">Rp 292,39 M</div>
+          <div class="value">Rp292,39 M</div>
           <div class="small">292.394,37 juta</div>
         </div>
-        <div class="card teal">
+        <div class="card teal" data-g="kpi-tsept">
           <div class="label">Target s/d Oktober</div>
-          <div class="value">Rp 248,59 M</div>
+          <div class="value">Rp248,59 M</div>
           <div class="small">248.592,68 juta</div>
         </div>
-        <div class="card gold">
+        <div class="card gold" data-g="kpi-real">
           <div class="label">Realisasi s/d Oktober</div>
-          <div class="value">Rp 274,05 M</div>
+          <div class="value">Rp274,05 M</div>
           <div class="small">274.046,00 juta &middot; pencapaian 110,24%</div>
         </div>
-        <div class="card green">
+        <div class="card green" data-g="kpi-unit">
           <div class="label">Unit Melampaui Target</div>
           <div class="value">13 / 14</div>
           <div class="small">Kantor Induk (UID) di bawah target (63,99%)</div>
@@ -483,20 +517,25 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
       </div>
       <div class="chart-card">
         <h3>Perbandingan Target dan Realisasi</h3>
-        <div class="chart-sub">
-          Satuan Miliar (Rp) &middot; Abu-abu = target &middot; Warna realisasi:
-          <span style="color:#1E7A4C">&#9632; &lt; 95% target</span>&nbsp;
-          <span style="color:#C9A227">&#9632; 95&ndash;99% target</span>&nbsp;
-          <span style="color:#B23A2E">&#9632; &ge; 100% target</span>
-        </div>
-        <div class="chart-toolbar">
-          <label for="kpiSort">Urutkan berdasarkan</label>
-          <select id="kpiSort">
-            <option value="real" selected>Realisasi terbesar</option>
-            <option value="tsept">Target terbesar</option>
-          </select>
+        <div class="chart-sub">Satuan Miliar (Rp) &middot; warna batang realisasi mengikuti pencapaian terhadap target</div>
+        <div class="ctrl-row">
+          <div class="chart-toolbar"><label for="kpiSort">Urutkan berdasarkan:</label>
+            <select id="kpiSort">
+              <option value="all" selected>Semua parameter</option>
+              <option value="real">Realisasi s/d Okt</option>
+              <option value="tsept">Target s/d Okt</option>
+            </select></div>
+          <div class="leg-wrap">
+            <div class="leg" id="kpiLeg"></div>
+            <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+          </div>
         </div>
         <div class="chart tall"><canvas id="kpiChart"></canvas></div>
+        <div class="dis-legend">
+          <span><i class="lg-bar" style="background:#1E7A4C"></i>&lt; 95% target</span>
+          <span><i class="lg-bar" style="background:#C9A227"></i>95&ndash;99% target</span>
+          <span><i class="lg-bar" style="background:#B23A2E"></i>&ge; 100% target</span>
+        </div>
       </div>
     </section>
 
@@ -508,13 +547,13 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
       </div>
       <div class="chart-card">
         <h3>Persentase Pencapaian s/d Oktober</h3>
-        <div class="chart-sub">
-          Rumus Pencapaian Polarisasi Negatif = target s/d Oktober &divide; realisasi s/d Oktober &times; 100% &middot; Warna:
-          <span style="color:#B23A2E">&#9632; &lt; 95%</span>&nbsp;
-          <span style="color:#C9A227">&#9632; 95&ndash;99%</span>&nbsp;
-          <span style="color:#1E7A4C">&#9632; &ge; 100%</span>
-        </div>
+        <div class="chart-sub">Rumus Pencapaian Polarisasi Negatif = target s/d Oktober &divide; realisasi s/d Oktober &times; 100% &middot; warna batang mengikuti pencapaian</div>
         <div class="chart tall"><canvas id="kpiPctChart"></canvas></div>
+        <div class="dis-legend">
+          <span><i class="lg-bar" style="background:#B23A2E"></i>&lt; 95%</span>
+          <span><i class="lg-bar" style="background:#C9A227"></i>95&ndash;99%</span>
+          <span><i class="lg-bar" style="background:#1E7A4C"></i>&ge; 100%</span>
+        </div>
       </div>
     </section>
 
@@ -820,10 +859,10 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
   function fmtRp(v){
     var neg = v < 0;
     var s = Math.round(Math.abs(v)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    return (neg ? '-' : '') + 'Rp ' + s;
+    return (neg ? '-' : '') + 'Rp' + s;
   }
   function fmtM(v, d){
-    return 'Rp ' + n2(v / 1e9, d === undefined ? 2 : d) + ' M';
+    return 'Rp' + n2(v / 1e9, d === undefined ? 2 : d) + ' M';
   }
   function fmtPct(v, d){
     return n2(v, d === undefined ? 2 : d) + '%';
@@ -862,6 +901,52 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
     Chart.defaults.color = TICK;
     Chart.defaults.font.size = 11;
   }
+
+  /* ============ LEGEND HTML UNTUK GRAFIK BATANG (klik = transparan/sembunyi) ============ */
+  var LEGDEF = {};   // kunci chart -> {el, series}
+  var LEGVIS = {};   // elemen legend -> status tampil per seri
+  function togArr(a, i){                       // minimal satu seri tetap tampil
+    if (a[i] && a.filter(Boolean).length === 1) return false;
+    a[i] = !a[i]; return true;
+  }
+  function defLegend(chartKey, el, series){
+    LEGDEF[chartKey] = {el:el, series:series};
+    if (!LEGVIS[el]) LEGVIS[el] = series.map(function(){ return true; });
+  }
+  function legParam(chartKey, map, val){       // dropdown = filter parameter pada legend
+    var d = LEGDEF[chartKey]; if (!d) return;
+    var only = map[val];
+    LEGVIS[d.el] = d.series.map(function(x, i){ return only === -1 ? true : i === only; });
+  }
+  function legVis(chartKey){
+    var d = LEGDEF[chartKey];
+    return (d && LEGVIS[d.el]) || [];
+  }
+  function legSet(chartKey){
+    var d = LEGDEF[chartKey]; if (!d) return;
+    var c = charts[chartKey]; if (!c) return;
+    var el = document.getElementById(d.el);
+    var v = LEGVIS[d.el];
+    el.innerHTML = d.series.map(function(x, i){
+      return '<span data-i="' + i + '" class="' + (v[i] ? '' : 'off') + '"><i style="background:' + x.color + '"></i>' + x.label + '</span>';
+    }).join('');
+    el.onclick = function(e){
+      var t = e.target.closest('span[data-i]'); if (!t) return;
+      if (!togArr(v, +t.getAttribute('data-i'))) return;
+      legSet(chartKey);
+    };
+    v.forEach(function(on, i){ c.setDatasetVisibility(i, on); });
+    c.update('none');
+  }
+
+  defLegend('unit', 'unitLeg', [
+    {label:'Kategori A', color:'#0B2E4F'},
+    {label:'Kategori B', color:'#C9A227'}
+  ]);
+  defLegend('kpi', 'kpiLeg', [
+    {label:'Target s/d Okt', color:'#C9CED8'},
+    {label:'Realisasi s/d Okt', color:'#0B2E4F'}
+  ]);
 
   /* ===================== OVERVIEW: GAUGES ===================== */
   function gauge(label, value, caption, tagCls, tagText, realText, targetText){
@@ -906,49 +991,327 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
   /* ===================== OVERVIEW: CHARTS ===================== */
   var axisRp = function(v){ return n2(v / 1e9, 0) + ' M'; };
 
+  /* ---------- DONUT: format mengikuti donut "Komposisi Nilai AI per Program" ---------- */
+  var DONUT = [
+    {label: CAT.A.name, val: CAT.A.real, color:'#0B2E4F'},
+    {label: CAT.B.name, val: CAT.B.real, color:'#C9A227'}
+  ];
+  var DLEG = 'nacDonutLegend';
+  var DPOP = 'nacDonutPopup';
+  var mod2 = function(a){ a = a % (2 * Math.PI); return a < 0 ? a + 2 * Math.PI : a; };
+  var alphaHex = function(a){ return Math.round(Math.max(0, Math.min(1, a)) * 255).toString(16).padStart(2, '0'); };
+
+  function pulseLoop(chart){
+    if (chart._pulseRaf) return;
+    var step = function(){
+      chart._pulseRaf = null;
+      if (!chart._pulse){ try { chart.draw(); } catch(e){} return; }
+      try { chart.draw(); } catch(e){ chart._pulse = null; return; }
+      chart._pulseRaf = requestAnimationFrame(step);
+    };
+    chart._pulseRaf = requestAnimationFrame(step);
+  }
+
+  function setDonutHover(chart, hit, p){
+    var st = chart._dfx;
+    var vis = hit >= 0 && chart.getDataVisibility(hit);
+    var want = (vis && st) ? hit : -1;
+    chart.canvas.style.cursor = want >= 0 ? 'pointer' : 'default';
+    if (want === (chart._dhover === undefined ? -1 : chart._dhover)){
+      if (want >= 0){
+        chart.setActiveElements([{datasetIndex:0, index:want}]);
+        chart.tooltip.setActiveElements([{datasetIndex:0, index:want}], p || {x:0, y:0});
+        chart.draw();
+      }
+      return;
+    }
+    chart._dhover = want;
+    if (want >= 0){
+      chart.setActiveElements([{datasetIndex:0, index:want}]);
+      chart.tooltip.setActiveElements([{datasetIndex:0, index:want}], p || {x:0, y:0});
+      var ds = chart.data.datasets[0];
+      chart._pulse = {i:want, color:(ds.glowColors || ds.backgroundColor)[want]};
+      pulseLoop(chart);
+    } else {
+      chart.setActiveElements([]);
+      chart.tooltip.setActiveElements([], {x:0, y:0});
+      chart._pulse = null;
+      if (chart.canvas.id === 'donutKategori') hideDonutPopup();
+    }
+    chart.update('none');
+  }
+
+  function drawDonutGlow(chart, ctx, arcs){
+    var pl = chart._pulse;
+    if (!pl || pl.i === undefined || !arcs[pl.i]) return;
+    var ha = arcs[pl.i], now = performance.now();
+    for (var k = 0; k < 2; k++){
+      var ph = ((now / 1400) + k * 0.5) % 1, r = ha.outerRadius + 3 + ph * 16, a = 1 - ph;
+      ctx.beginPath(); ctx.arc(ha.x, ha.y, r, ha.startAngle, ha.endAngle);
+      ctx.lineWidth = 3; ctx.strokeStyle = pl.color + alphaHex(a * 0.9); ctx.stroke();
+      ctx.beginPath(); ctx.arc(ha.x, ha.y, ha.outerRadius + 1, ha.startAngle, ha.endAngle);
+      ctx.lineWidth = 1; ctx.strokeStyle = pl.color + alphaHex(a * 0.5); ctx.stroke();
+    }
+  }
+
+  /* Teks di tengah donut: nilai total + label */
+  var centerTextPlugin = {
+    id: 'centerText',
+    afterDraw: function(chart){
+      var cv = chart.canvas;
+      var val = cv.dataset.center;
+      if (!val) return;
+      var el = chart.getDatasetMeta(0).data[0];
+      if (!el) return;
+      var x = el.x, y = el.y, innerRadius = el.innerRadius;
+      var ctx = chart.ctx;
+      var maxW = innerRadius * 1.8;
+      ctx.save();
+      var fs = Math.round(innerRadius * 0.5);
+      ctx.font = '700 ' + fs + 'px Arial, Helvetica, sans-serif';
+      while (ctx.measureText(val).width > maxW && fs > 8){ fs--; ctx.font = '700 ' + fs + 'px Arial, Helvetica, sans-serif'; }
+      ctx.fillStyle = '#0B2E4F'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(val, x, y + fs * 0.35);
+      var lab = cv.dataset.label;
+      if (lab){
+        var fl = Math.max(9, Math.round(fs * 0.42));
+        ctx.font = '600 ' + fl + 'px Arial, Helvetica, sans-serif';
+        ctx.fillStyle = '#6B7280';
+        ctx.fillText(lab.toUpperCase(), x, y - fs * 0.85);
+      }
+      ctx.restore();
+    }
+  };
+
+  /* Efek donut: radius, sorotan hover, klik irisan =sembunyi/tampil */
+  var donutFx = {
+    id: 'donutFx',
+    beforeLayout: function(chart){
+      chart.options.layout.padding = {left:8, right:8, top:8, bottom:8};
+      chart.options.radius = Math.min(chart.width * 0.42, chart.height * 0.44);
+    },
+    afterEvent: function(chart, args){
+      var st = chart._dfx; if (!st) return;
+      var e = args.event;
+      if (e.type === 'mouseout'){ setDonutHover(chart, -1, null); return; }
+      if (e.x == null) return;
+      var p = {x:e.x, y:e.y};
+      var hit = -1;
+      var dx = p.x - st.cx, dy = p.y - st.cy, d = Math.hypot(dx, dy);
+      if (d >= st.inner && d <= st.R + 8){
+        var a = Math.atan2(dy, dx);
+        for (var n = 0; n < st.arcs.length; n++){
+          var A = st.arcs[n];
+          if (!A.vis) continue;
+          if (mod2(a - A.s) <= A.e - A.s){ hit = A.i; break; }
+        }
+      }
+      if (e.type === 'click' && e.native && e.native.pointerType === 'touch'){
+        setDonutHover(chart, hit, p);
+        return;
+      }
+      if (e.type === 'click'){
+        if (hit >= 0){
+          hideDonutPopup();
+          chart.setActiveElements([]);
+          chart.tooltip.setActiveElements([], {x:0, y:0});
+          chart._pulse = null; chart._dhover = -1;
+          chart.toggleDataVisibility(hit);
+          chart.update();
+        }
+        return;
+      }
+      setDonutHover(chart, hit, p);
+    },
+    afterDraw: function(chart){
+      var arcs = chart.getDatasetMeta(0).data;
+      if (!arcs.length) return;
+      var a0 = arcs[0];
+      chart._dfx = {
+        arcs: arcs.map(function(a, i){
+          return {i:i, s:a.startAngle, e:a.endAngle, vis:chart.getDataVisibility(i) && a.endAngle > a.startAngle};
+        }),
+        cx:a0.x, cy:a0.y, R:a0.outerRadius, inner:a0.innerRadius
+      };
+      var legend = document.getElementById(DLEG);
+      if (legend) legend.querySelectorAll('button').forEach(function(button){
+        var visible = chart.getDataVisibility(+button.getAttribute('data-i'));
+        button.classList.toggle('off', !visible);
+        button.setAttribute('aria-pressed', String(visible));
+      });
+      var ctx = chart.ctx; ctx.save(); drawDonutGlow(chart, ctx, arcs); ctx.restore();
+    }
+  };
+
+  /* ---------- warna pop-up & kontras teks ---------- */
+  var ALPHA_POPUP = 0.75;                                  // latar pop-up: warna legend 75%, transparan 25%
+  var hexRgb = function(h){ h = String(h).replace('#', '');
+    if (h.length === 3) h = h.split('').map(function(c){ return c + c; }).join('');
+    var n = parseInt(h.slice(0, 6), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
+  var rgbHex = function(a){ return '#' + a.map(function(v){ return Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0'); }).join(''); };
+  var mixHex = function(a, b, t){ var A = hexRgb(a), B = hexRgb(b); return rgbHex(A.map(function(v, i){ return v + (B[i] - v) * t; })); };
+  var rgbaStr = function(h, a){ var c = hexRgb(h); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; };
+  var lumHex = function(h){ var c = hexRgb(h).map(function(v){ v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
+  var contrastHex = function(a, b){ var l1 = lumHex(a), l2 = lumHex(b); return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05); };
+
+  /* Latar pop-up: warna legend 75% (transparan 25%). Agar teks tetap terbaca di latar
+     mana pun yang sedang lewat di bawahnya (panel putih, kartu, atau irisan berwarna),
+     ditambahkan lapisan tipis sewarna teks. Pilih teks + ketebalan lapisan paling hemat
+     yang menghasilkan kontras >= 4.5:1 (WCAG AA). */
+  var VEILS = [0, 0.06, 0.12, 0.18, 0.24, 0.30, 0.36, 0.42];
+  var BACKDROPS = ['#FFFFFF', '#E8EEF5', '#000000', '#20304A'].concat(DONUT.map(function(d){ return d.color; }));
+  function popupSkin(color){
+    var white = '#FFFFFF', ink = '#081E36';
+    var wajah = function(veil, veilHex, bg){ var dasar = mixHex(bg, color, ALPHA_POPUP); return veil ? mixHex(dasar, veilHex, veil) : dasar; };
+    var out = null;
+    [[ink, white], [white, ink]].forEach(function(pair){                // teks gelap -> lapisan putih
+      var txt = pair[0], veilHex = pair[1];                             // teks terang -> lapisan gelap
+      for (var vi = 0; vi < VEILS.length; vi++){
+        var v = VEILS[vi];
+        var min = Math.min.apply(null, BACKDROPS.map(function(bg){ return contrastHex(wajah(v, veilHex, bg), txt); }));
+        if (min >= 4.5){
+          if (!out || v < out.veil || (v === out.veil && min > out.gain)) out = {text:txt, veilHex:veilHex, veil:v, gain:min};
+          break;
+        }
+      }
+    });
+    if (!out) out = {text:white, veilHex:ink, veil:0.42, gain:0};
+    return { hue: rgbaStr(color, ALPHA_POPUP), text: out.text,
+             veil: out.veil ? rgbaStr(out.veilHex, out.veil) : null,
+             edge: mixHex(wajah(out.veil, out.veilHex, '#FFFFFF'), out.text, 0.65),
+             swatch: mixHex(wajah(out.veil, out.veilHex, '#FFFFFF'), out.text, 0.8) };
+  }
+
+  /* Pop-up label donut: dasar warna legend irisan dengan outline tipis & teks kontras */
+  function hideDonutPopup(){
+    var box = document.getElementById(DPOP);
+    if (box){ box.style.display = 'none'; box.setAttribute('aria-hidden', 'true'); }
+  }
+  function externalDonutTooltip(o){
+    var chart = o.chart, tooltip = o.tooltip;
+    var box = document.getElementById(DPOP);
+    if (!box){
+      box = document.createElement('div'); box.id = DPOP; box.className = 'ai-donut-popup';
+      box.setAttribute('role', 'tooltip'); document.body.appendChild(box);
+      var reposition = function(){
+        var active = box._chartRef;
+        if (active) externalDonutTooltip({chart:active, tooltip:active.tooltip});
+      };
+      window.addEventListener('scroll', reposition, true);
+      window.addEventListener('resize', reposition);
+    }
+    box._chartRef = chart;
+    var point = tooltip.dataPoints && tooltip.dataPoints[0];
+    // tampil selama ada irisan yang sedang disorot (kursor di irisan, di legend-nya, atau sentuhan)
+    if ((chart._dhover === undefined ? -1 : chart._dhover) < 0 || !point || chart.canvas.offsetParent === null){
+      box.style.display = 'none'; box.setAttribute('aria-hidden', 'true'); return;
+    }
+    var color = chart.data.datasets[0].backgroundColor[point.dataIndex] || '#0B2E4F';
+    var skin = popupSkin(color);
+    var title = document.createElement('strong');
+    title.textContent = point.label;
+    var row = document.createElement('div'); row.className = 'popup-value';
+    var swatch = document.createElement('i'); swatch.className = 'popup-swatch';
+    var value = document.createElement('span');
+    value.textContent = 'Realisasi: ' + fmtM(point.raw) + ' (' + fmtPct(point.raw / TOT.real * 100) + ' dari total NAC)';
+    swatch.style.background = skin.swatch;
+    swatch.style.boxShadow = 'inset 0 0 0 1px ' + skin.edge;
+    row.append(swatch, value); box.replaceChildren(title, row);
+    box.style.backgroundColor = skin.hue;                // warna legend 75% = transparan 25%
+    box.style.backgroundImage = skin.veil ? 'linear-gradient(' + skin.veil + ',' + skin.veil + ')' : 'none';
+    box.style.color = skin.text;                         // teks kontras terhadap latar
+    box.style.borderColor = skin.edge;                   // outline tipis mengikuti warna teks
+    box.style.display = 'block'; box.setAttribute('aria-hidden', 'false');
+    var r = chart.canvas.getBoundingClientRect(), vw = document.documentElement.clientWidth, vh = window.innerHeight;
+    box.style.maxWidth = Math.max(120, Math.min(250, vw - 16)) + 'px';
+    var w = box.offsetWidth, h = box.offsetHeight, gap = 12;
+    var clampN = function(n, max){ return Math.max(8, Math.min(max, n)); };
+    var cx = r.left + tooltip.caretX, cy = r.top + tooltip.caretY;
+    var choices = [
+      {side:'above', x:clampN(cx - w / 2, vw - w - 8), y:clampN(cy - h - gap, vh - h - 8)},
+      {side:'below', x:clampN(cx - w / 2, vw - w - 8), y:clampN(cy + gap, vh - h - 8)},
+      {side:'right', x:clampN(cx + gap, vw - w - 8), y:clampN(cy - h / 2, vh - h - 8)},
+      {side:'left',  x:clampN(cx - w - gap, vw - w - 8), y:clampN(cy - h / 2, vh - h - 8)}
+    ];
+    var fits = function(q){ return q.x >= 8 && q.y >= 8 && q.x + w <= vw - 8 && q.y + h <= vh - 8; };
+    var position = choices.filter(fits)[0] || choices[0];
+    box.style.left = position.x + 'px'; box.style.top = position.y + 'px'; box.dataset.side = position.side;
+  }
+
+  /* Legend donut:Grid tombol warna, klik = tampil/sembunyi irisan */
+  function buildDonutLegend(chart){
+    var el = document.getElementById(DLEG);
+    el.innerHTML = DONUT.map(function(d, i){
+      return '<button type="button" data-i="' + i + '" aria-pressed="true"><i style="background:' + d.color + '"></i><span>' + d.label + '</span></button>';
+    }).join('');
+    el.onclick = function(e){
+      var button = e.target.closest('button[data-i]'); if (!button) return;
+      setDonutHover(chart, -1, null);
+      chart.toggleDataVisibility(+button.getAttribute('data-i'));
+      chart.update('none');
+    };
+    var highlight = function(e){
+      var button = e.target.closest('button[data-i]'); if (!button) return;
+      var i = +button.getAttribute('data-i'), a = chart.getDatasetMeta(0).data[i];
+      if (!a) return;
+      var mid = (a.startAngle + a.endAngle) / 2;
+      setDonutHover(chart, i, {x:a.x + a.outerRadius * Math.cos(mid), y:a.y + a.outerRadius * Math.sin(mid)});
+    };
+    el.onmouseover = highlight;
+    el.onmouseleave = function(){ setDonutHover(chart, -1, null); };
+    // focusin/focusout tidak punya atribut on* di semua peramban -> pakai addEventListener
+    el.addEventListener('focusin', highlight);
+    el.addEventListener('focusout', function(ev){ if (!el.contains(ev.relatedTarget)) setDonutHover(chart, -1, null); });
+  }
+
   function initOverview(){
     renderGauges();
     if (!window.Chart) return;
 
-    charts.donut = new Chart(document.getElementById('donutKategori').getContext('2d'), {
+    var donutEl = document.getElementById('donutKategori');
+    donutEl.dataset.center = fmtM(TOT.real);
+    donutEl.dataset.label = 'Total NAC';
+
+    charts.donut = new Chart(donutEl.getContext('2d'), {
       type: 'doughnut',
       data: {
-        labels: [CAT.A.name, CAT.B.name],
+        labels: DONUT.map(function(d){ return d.label; }),
         datasets: [{
-          data: [CAT.A.real, CAT.B.real],
-          backgroundColor: ['#0B2E4F', '#C9A227'],
+          data: DONUT.map(function(d){ return d.val; }),
+          backgroundColor: DONUT.map(function(d){ return d.color; }),
+          glowColors: DONUT.map(function(d){ return d.color; }),
           borderColor: '#FFFFFF',
-          borderWidth: 2
+          borderWidth: 2,
+          hoverOffset: 10
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        cutout: '68%',
+        animation: false,
+        cutout: '62%',
+        layout: {padding:8},
         plugins: {
-          legend: {
-            position: 'bottom',
-            labels: { font: {family: FONT_SANS, size: 12}, color: TICK, padding: 16, boxWidth: 10, boxHeight: 10 }
-          },
-          tooltip: {
-            callbacks: {
-              label: function(c){ return ' ' + c.label + ': ' + fmtRp(c.parsed) + ' (' + fmtPct(c.parsed / TOT.real * 100) + ')'; }
-            }
-          }
+          legend: {display:false},
+          tooltip: {enabled:false, external:externalDonutTooltip}
         }
-      }
+      },
+      plugins: [centerTextPlugin, donutFx]
     });
+    buildDonutLegend(charts.donut);
 
     var unitsSorted = UNITS.map(function(u){ return {code:u.code, name:u.name, a:u.a, b:u.b, t:u.a + u.b}; })
       .sort(function(x, y){ return y.t - x.t; });
 
+    var uv = legVis('unit');
     charts.unit = new Chart(document.getElementById('unitChart').getContext('2d'), {
       type: 'bar',
       data: {
         labels: unitsSorted.map(function(u){ return u.code; }),
         datasets: [
-          { label: 'Kategori A', data: unitsSorted.map(function(u){ return u.a; }), backgroundColor: '#0B2E4F', borderRadius: 3, maxBarThickness: 26 },
-          { label: 'Kategori B', data: unitsSorted.map(function(u){ return u.b; }), backgroundColor: '#C9A227', borderRadius: 3, maxBarThickness: 26 }
+          { label: 'Kategori A', data: unitsSorted.map(function(u){ return u.a; }), backgroundColor: '#0B2E4F', borderRadius: 3, maxBarThickness: 26, hidden: !uv[0] },
+          { label: 'Kategori B', data: unitsSorted.map(function(u){ return u.b; }), backgroundColor: '#C9A227', borderRadius: 3, maxBarThickness: 26, hidden: !uv[1] }
         ]
       },
       options: {
@@ -956,7 +1319,7 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: 'top', align: 'end', labels: { font: {family: FONT_SANS, size: 11}, color: TICK, boxWidth: 10, boxHeight: 10 } },
+          legend: {display:false},
           tooltip: {
             callbacks: {
               label: function(c){ return ' ' + c.dataset.label + ': ' + fmtRp(c.parsed.x) + ' (' + fmtPct(c.parsed.x / TOT.real * 100) + ')'; }
@@ -977,6 +1340,7 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
         }
       }
     });
+    legSet('unit');
   }
 
   /* ===================== RINCIAN NAC: TOP JENIS BIAYA & TABEL ===================== */
@@ -1232,37 +1596,43 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
 
     if (!window.Chart) return;
 
-    // Target vs realisasi per unit, dengan pengurutan dari drop menu
+    // Target vs realisasi per unit, dengan pengurutan & filter seri dari drop menu
+    var KPI_KEY = {all:'real', real:'real', tsept:'tsept'};
     var kpiSorted = byReal;
 
     function applyKpiSort(key){
-      kpiSorted = rows.slice().sort(function(x, y){ return y[key] - x[key]; });
+      var sortKey = KPI_KEY[key] || 'real';
+      kpiSorted = rows.slice().sort(function(x, y){ return y[sortKey] - x[sortKey]; });
+      legParam('kpi', {all:-1, real:1, tsept:0}, key);
       var d = charts.kpi.data;
       d.labels = kpiSorted.map(function(r){ return r.n; });
       d.datasets[0].data = kpiSorted.map(function(r){ return r.tsept; });
       d.datasets[1].data = kpiSorted.map(function(r){ return r.real; });
       d.datasets[1].backgroundColor = kpiSorted.map(function(r){ return pctHex(r.pct); });
-      charts.kpi.update();
+      legSet('kpi');
     }
 
+    var kv = legVis('kpi');
     charts.kpi = new Chart(document.getElementById('kpiChart').getContext('2d'), {
       type: 'bar',
       data: {
-        labels: kpiSorted.map(function(r){ return r.n; }),
+        labels: byReal.map(function(r){ return r.n; }),
         datasets: [
           {
             label: 'Target s/d Okt',
-            data: kpiSorted.map(function(r){ return r.tsept; }),
+            data: byReal.map(function(r){ return r.tsept; }),
             backgroundColor: '#C9CED8',
             borderRadius: 3,
-            maxBarThickness: 16
+            maxBarThickness: 16,
+            hidden: !kv[0]
           },
           {
             label: 'Realisasi s/d Okt',
-            data: kpiSorted.map(function(r){ return r.real; }),
-            backgroundColor: kpiSorted.map(function(r){ return pctHex(r.pct); }),
+            data: byReal.map(function(r){ return r.real; }),
+            backgroundColor: byReal.map(function(r){ return pctHex(r.pct); }),
             borderRadius: 3,
-            maxBarThickness: 16
+            maxBarThickness: 16,
+            hidden: !kv[1]
           }
         ]
       },
@@ -1277,9 +1647,9 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
               label: function(c){
                 if (c.datasetIndex === 1) {
                   var r = kpiSorted[c.dataIndex];
-                  return ' Realisasi: Rp ' + n2(c.parsed.x / 1000, 2) + ' M (% realisasi ' + fmtPct(r.pct) + ')';
+                  return ' Realisasi: Rp' + n2(c.parsed.x / 1000, 2) + ' M (% realisasi ' + fmtPct(r.pct) + ')';
                 }
-                return ' Target: Rp ' + n2(c.parsed.x / 1000, 2) + ' M';
+                return ' Target: Rp' + n2(c.parsed.x / 1000, 2) + ' M';
               }
             }
           }
@@ -1300,6 +1670,8 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
         }
       }
     });
+    kpiSorted = byReal;
+    legSet('kpi');
 
     document.getElementById('kpiSort').addEventListener('change', function(e){
       applyKpiSort(e.target.value);
@@ -1344,6 +1716,62 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
       }
     });
   }
+
+  /* ===================== SPEEDOMETER KARTU SKOR ===================== */
+  function speedometer(label, amount, reference, basis, cls){
+    var percent = ratio(amount, reference) || 0;
+    var max = Math.max(100, Math.ceil(percent / 25) * 25);
+    var fraction = Math.max(0, Math.min(1, percent / max));
+    var angle = Math.PI + Math.PI * fraction;
+    var x = 80 + 52 * Math.cos(angle), y = 78 + 52 * Math.sin(angle);
+    var color = {teal:'#0E7C7B', gold:'#C9A227', green:'#1E7A4C'}[cls] || '#0B2E4F';
+    var ticks = [0, .25, .5, .75, 1].map(function(t){
+      var a = Math.PI + Math.PI * t;
+      return '<line x1="' + (80 + 56 * Math.cos(a)) + '" y1="' + (78 + 56 * Math.sin(a)) + '" x2="' + (80 + 61 * Math.cos(a)) + '" y2="' + (78 + 61 * Math.sin(a)) + '" stroke="#8D9AAC" stroke-width="1"/>';
+    }).join('');
+    return '<div class="card-gauge" data-amount="' + amount + '" data-reference="' + reference + '" data-percent="' + percent + '" data-max="' + max + '" data-angle="' + (angle * 180 / Math.PI) + '">' +
+      '<svg viewBox="0 0 160 110" role="img" aria-label="Speedometer ' + label + ': ' + fmtPct(percent) + ', ' + basis + '">' +
+        '<title>' + label + ': ' + fmtPct(percent) + ', ' + basis + '</title>' +
+        '<path d="M16 78 A64 64 0 0 1 144 78" fill="none" stroke="#CED8E3" stroke-width="9" stroke-linecap="round"/>' +
+        '<path d="M16 78 A64 64 0 0 1 144 78" fill="none" stroke="' + color + '" stroke-width="9" stroke-linecap="' + (fraction > 0 ? 'round' : 'butt') + '" pathLength="100" stroke-dasharray="' + (fraction * 100) + ' 100"/>' +
+        ticks + '<line class="gauge-needle" x1="80" y1="78" x2="' + x + '" y2="' + y + '" stroke="#0B2E4F" stroke-width="2.8" stroke-linecap="round"/>' +
+        '<circle cx="80" cy="78" r="4.5" fill="#0B2E4F"/>' +
+        '<text x="8" y="96" font-size="10" fill="#6B7280">0%</text>' +
+        '<text x="153" y="96" text-anchor="end" font-size="10" fill="#6B7280">' + max + '%</text>' +
+        '<text x="80" y="104" text-anchor="middle" font-size="14" font-weight="700" fill="#0B2E4F">' + fmtPct(percent) + '</text>' +
+      '</svg><div class="gauge-basis">' + basis + '</div></div>';
+  }
+
+  // Unit & jenis biaya berkontribusi terbesar (dipakai kartu skor Overview)
+  var TOP_UNIT = UNITS.map(function(u){ return u.a + u.b; }).reduce(function(m, v){ return Math.max(m, v); }, 0);
+  var TOP_BIAYA = ITEMS.A.concat(ITEMS.B).reduce(function(m, x){ return Math.max(m, x.real); }, 0);
+
+  var GAUGES = {
+    'ov-real':  {amount:TOT.real,    reference:TOT.revisi,    basis:'dari target revisi 2026'},
+    'ov-pct':   {amount:TOT.real,    reference:TOT.tsept,     basis:'dari target s/d Okt'},
+    'ov-unit':  {amount:TOP_UNIT,    reference:TOT.real,      basis:'dari total realisasi NAC'},
+    'ov-biaya': {amount:TOP_BIAYA,   reference:TOT.real,      basis:'dari total realisasi NAC'},
+
+    'kpi-rev':  {amount:KPI_TOT.rev,  reference:TOT.y25 / 1e6, basis:'dari realisasi 2025'},
+    'kpi-tsept':{amount:KPI_TOT.tsept,reference:KPI_TOT.rev,  basis:'dari target revisi 2026'},
+    'kpi-real': {amount:KPI_TOT.real, reference:KPI_TOT.tsept, basis:'dari target s/d Okt'},
+    'kpi-unit': {amount:13,            reference:14,           basis:'dari 14 unit pelaksana'}
+  };
+
+  function initScoreGauges(){
+    document.querySelectorAll('.card[data-g]').forEach(function(card){
+      var g = GAUGES[card.getAttribute('data-g')];
+      var val = card.querySelector('.value'), lab = card.querySelector('.label');
+      if (!g || !val || !lab || val.closest('.card-score')) return;
+      var cls = ['teal', 'gold', 'green'].filter(function(c){ return card.classList.contains(c); })[0] || '';
+      var score = document.createElement('div');
+      score.className = 'card-score';
+      card.insertBefore(score, val);
+      score.appendChild(val);
+      score.insertAdjacentHTML('beforeend', speedometer(lab.textContent, g.amount, g.reference, g.basis, cls));
+    });
+  }
+  initScoreGauges();
 
   /* ===================== TAB SWITCHING ===================== */
   var TAB_KEY = 'nac.activeTab.v2';
