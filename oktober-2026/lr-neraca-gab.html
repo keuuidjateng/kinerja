@@ -296,13 +296,11 @@ tr.l2 td:first-child{padding-left:28px;color:#41526B}
   <div class="grid">
     <div class="box">
       <div class="box-head">
-        <h3 id="devTitle">Deviasi YoY Pendapatan (Rp Juta)</h3>
+        <h3 id="devTitle">Deviasi YoY Pendapatan Usaha</h3>
         <div class="chart-toolbar"><label for="devSort">Urutkan berdasarkan:</label>
           <select id="devSort">
             <option value="all" selected>Semua parameter</option>
-            <option value="v">Kenaikan terbesar</option>
-            <option value="n">Penurunan terbesar</option>
-            <option value="a">Deviasi terbesar (absolut)</option>
+            <option value="a">Deviasi (Rp Miliar)</option>
             <option value="pct">Deviasi (%)</option>
           </select></div>
       </div>
@@ -310,13 +308,11 @@ tr.l2 td:first-child{padding-left:28px;color:#41526B}
     </div>
     <div class="box">
       <div class="box-head">
-        <h3 id="begTitle">Deviasi YoY Beban Usaha (Rp Juta)</h3>
+        <h3 id="begTitle">Deviasi YoY Beban Usaha</h3>
         <div class="chart-toolbar"><label for="begSort">Urutkan berdasarkan:</label>
           <select id="begSort">
             <option value="all" selected>Semua parameter</option>
-            <option value="v">Kenaikan terbesar</option>
-            <option value="n">Penurunan terbesar</option>
-            <option value="a">Deviasi terbesar (absolut)</option>
+            <option value="a">Deviasi (Rp Miliar)</option>
             <option value="pct">Deviasi (%)</option>
           </select></div>
       </div>
@@ -600,43 +596,28 @@ function scaleFor(vals){
 }
 const iv=(k,row)=>({k,p:row.p,c:row.c,v:row.c-row.p,pct:row.p===0?0:(row.c-row.p)/Math.abs(row.p)*100});
 
-/* ---------- LEGEND HTML UNTUK GRAFIK BATANG (klik = transparan/sembunyi) ---------- */
-const LEGDEF={};
-const LEGVIS={};
-function togArr(a,i){
-  if(a[i]&&a.filter(Boolean).length===1) return false;
-  a[i]=!a[i]; return true;
+/* ---------- POLISI ARSIRAN TEBAL (batang gap selisih) ---------- */
+const PAT={};
+function hatch(bg,stripe){
+  const key=bg+'|'+stripe;
+  if(!PAT[key]){
+    const tile=document.createElement('canvas'); tile.width=tile.height=9;
+    const t=tile.getContext('2d');
+    t.fillStyle=bg; t.fillRect(0,0,9,9);
+    t.strokeStyle=stripe; t.lineWidth=3.4;
+    t.beginPath();
+    t.moveTo(-5,4);t.lineTo(4,-5); t.moveTo(-1,9);t.lineTo(9,-1); t.moveTo(5,13);t.lineTo(13,5);
+    t.stroke();
+    PAT[key]=document.createElement('canvas').getContext('2d').createPattern(tile,'repeat');
+  }
+  return PAT[key];
 }
-function defLegend(chartKey,el,series){
-  LEGDEF[chartKey]={el,series};
-  if(!LEGVIS[el]) LEGVIS[el]=series.map(()=>true);
-}
-function legParam(chartKey,map,val){
-  const d=LEGDEF[chartKey]; if(!d) return;
-  const only=map[val];
-  LEGVIS[d.el]=d.series.map((x,i)=>only===-1?true:i===only);
-}
-function legVis(chartKey){
-  const d=LEGDEF[chartKey];
-  return (d&&LEGVIS[d.el])||[];
-}
-function legSet(chartKey){
-  const d=LEGDEF[chartKey]; if(!d) return;
-  const c=charts[chartKey]; if(!c) return;
-  const el=document.getElementById(d.el);
-  const v=LEGVIS[d.el];
-  el.innerHTML=d.series.map((x,i)=>`<span data-i="${i}" class="${v[i]?'':'off'}"><i style="background:${x.color}"></i>${x.label}</span>`).join('');
-  el.onclick=e=>{
-    const t=e.target.closest('span[data-i]'); if(!t) return;
-    if(!togArr(v,+t.dataset.i)) return;
-    legSet(chartKey);
-  };
-  v.forEach((on,i)=>c.setDatasetVisibility(i,on));
-  c.update('none');
+/* swatch legend untuk batang arsiran */
+function hatchCss(hex){
+  return `repeating-linear-gradient(45deg,${hex} 0 3px,${rgbaStr(hex,.22)} 3px 7px)`;
 }
 
 /* ---------- DROPDOWN URUTKAN ---------- */
-const GRP_OPTS=[['all','Semua parameter'],['c','Realisasi s.d. 31-Okt-26'],['p','Realisasi s.d. 31-Okt-25'],['v','Deviasi (Rp)'],['pct','Deviasi (%)']];
 const DEV_OPTS=[['all','Semua parameter'],['v','Kenaikan terbesar'],['n','Penurunan terbesar'],['a','Deviasi terbesar (absolut)'],['pct','Deviasi (%)']];
 function toolbar(selId,opts){
   return `<div class="chart-toolbar"><label for="${selId}">Urutkan berdasarkan:</label>
@@ -908,35 +889,70 @@ function doughnut(canvasId,legendId,labels,data,cfg){
 
 /* ---------- GRAFIK BATANG ---------- */
 const GRP_SORT={c:x=>x.c,p:x=>x.p,v:x=>x.v,pct:x=>x.pct};
-const GRP_LEG={all:-1,c:0,p:1,v:-1,pct:-1};
 
-/* Satu grafik YoY untuk seluruh item satu kelompok, legend HTML klik-able + dropdown Urutkan */
-function groupChart(containerId,name,items,mode){
+/* Satu grafik YoY untuk seluruh item satu kelompok: legend HTML klik-able + dropdown Urutkan.
+   gap=true : di ujung batang yang lebih pendek ditambahkan batang selisih (arsiran tebal)
+              sampai ke ujung batang yang lebih panjang; batang selisih ini adalah
+              parameter "Deviasi (Rp)" pada dropdown. */
+function groupChart(containerId,name,items,mode,gap){
   const cid='gc'+containerId.slice(3), selId=containerId+'Sort', legendId=containerId+'Leg';
   const solid=mode==='gold'?C.gold:C.pln;
   const soft=mode==='gold'?'rgba(201,162,39,.35)':'rgba(11,46,79,.35)';
   const h=Math.max(180,items.length*40+70);
   document.getElementById(containerId).innerHTML=
     `<div class="mini-chart"><h4>${name}: 31 Okt 2025 vs 31 Okt 2026 <span id="${cid}Unit"></span></h4><div style="position:relative;height:${h}px"><canvas id="${cid}"></canvas></div></div>`;
-  defLegend(cid,legendId,[{label:'s.d. 31-Okt-26',color:solid},{label:'s.d. 31-Okt-25',color:soft}]);
-  bindSort(selId,val=>{
-    const sk=val==='all'?'c':val;
+  const selEl=document.getElementById(selId), legEl=document.getElementById(legendId);
+  const series=[{label:'s.d. 31-Okt-26',css:solid},{label:'s.d. 31-Okt-25',css:soft}];
+  if(gap) series.push({label:'Deviasi (Rp)',css:hatchCss(solid)});
+  let vis=series.map(()=>true);
+  const drawLegend=()=>{
+    legEl.innerHTML=series.map((x,i)=>`<span data-i="${i}" class="${vis[i]?'':'off'}"><i style="background:${x.css}"></i>${x.label}</span>`).join('');
+  };
+  /* batang selisih: warna mengikuti batang yang lebih pendek, dibedakan dengan arsiran tebal */
+  const gapFillSolid=hatch(solid,'rgba(255,255,255,.62)');   /* 2026 (pekat) yang lebih kecil */
+  const gapFillSoft=hatch(soft,solid);                        /* 2025 (transparan) yang lebih kecil */
+  const bar=(label,data,bg,stack,hidden)=>({label,data,backgroundColor:bg,borderColor:solid,borderWidth:1,borderRadius:3,maxBarThickness:20,stack,hidden});
+  function draw(){
+    const val=selEl.value, sk=val==='all'?'c':val;
     const list=[...items].sort((a,b)=>GRP_SORT[sk](b)-GRP_SORT[sk](a));
     const s=scaleFor(list.flatMap(x=>[x.p,x.c]));
-    legParam(cid,GRP_LEG,val);
-    const v=legVis(cid);
+    const onlyV=gap&&vis[2]&&!vis[0]&&!vis[1];
+    const ds=[];
+    if(onlyV){
+      /* hanya batang deviasi: tetap dari nol, arsiran mengikuti warna batang yang lebih pendek */
+      ds.push({label:'Deviasi (Rp)',data:list.map(x=>x.v/s.d),backgroundColor:list.map(x=>x.c<x.p?gapFillSolid:gapFillSoft),
+        borderColor:solid,borderWidth:1,borderRadius:3,maxBarThickness:26,stack:'g'});
+    } else {
+      ds.push(bar('s.d. 31-Okt-26',list.map(x=>x.c/s.d),solid,'y26',!vis[0]));
+      if(gap) ds.push(bar('Deviasi (Rp)',list.map(x=>x.c<x.p?(x.p-x.c)/s.d:null),gapFillSolid,'y26',!vis[2]));
+      ds.push(bar('s.d. 31-Okt-25',list.map(x=>x.p/s.d),soft,'y25',!vis[1]));
+      if(gap) ds.push(bar('Deviasi (Rp)',list.map(x=>x.p<=x.c?(x.c-x.p)/s.d:null),gapFillSoft,'y25',!vis[2]));
+    }
     if(charts[cid]) charts[cid].destroy();
     charts[cid]=new Chart(document.getElementById(cid),{type:'bar',
-      data:{labels:list.map(x=>x.k),datasets:[
-        {label:'s.d. 31-Okt-26',data:list.map(x=>x.c/s.d),backgroundColor:solid,borderColor:solid,borderWidth:1,borderRadius:3,maxBarThickness:20,hidden:!v[0]},
-        {label:'s.d. 31-Okt-25',data:list.map(x=>x.p/s.d),backgroundColor:soft,borderColor:solid,borderWidth:1,borderRadius:3,maxBarThickness:20,hidden:!v[1]}
-      ]},
+      data:{labels:list.map(x=>x.k),datasets:ds},
       options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
-        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': Rp'+s.nf.format(c.raw)+' '+s.ab}}},
-        scales:{x:{grid:{color:C.gridc},ticks:{callback:x=>nfDec.format(x)}},y:{grid:{display:false}}}}});
-    legSet(cid);
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{
+          const x=list[c.dataIndex];
+          if(c.dataset.label==='Deviasi (Rp)') return 'Deviasi (Rp): Rp'+s.nf.format(Math.abs(x.v)/s.d)+' '+s.ab+' ('+fmtPct(x.pct)+')';
+          return c.dataset.label+': Rp'+s.nf.format(c.raw)+' '+s.ab;
+        }}}},
+        scales:{x:{grid:{color:C.gridc},stacked:gap||onlyV,ticks:{callback:x=>nfDec.format(x)}},y:{grid:{display:false},stacked:gap||onlyV}}}});
     document.getElementById(cid+'Unit').textContent='(Rp '+s.u+')';
-  });
+  }
+  const sync=val=>{
+    const only=!gap?-1:(val==='c'?0:val==='p'?1:val==='v'?2:-1);
+    vis=series.map((x,i)=>only===-1?true:i===only);
+    drawLegend();
+  };
+  selEl.addEventListener('change',()=>{sync(selEl.value);draw();});
+  legEl.onclick=e=>{
+    const t=e.target.closest('span[data-i]'); if(!t) return;
+    const i=+t.dataset.i;
+    if(vis[i]&&vis.filter(Boolean).length===1) return;      /* minimal satu seri tetap tampil */
+    vis[i]=!vis[i]; drawLegend(); draw();
+  };
+  sync(selEl.value); draw();
 }
 
 function devOrder(items,key){
@@ -946,22 +962,24 @@ function devOrder(items,key){
   if(key==='pct') return [...items].sort((a,b)=>b.pct-a.pct);
   return [...items].sort((a,b)=>b.v-a.v);
 }
-/* Batang mendatar deviasi: nilai rupiah + persentase deviasi di tooltip */
-function devChartRender(cid,items,color,s){
+/* Batang mendatar deviasi: nilai rupiah (atau persen bila mode='pct') + persentase di tooltip */
+function devChartRender(cid,items,color,s,mode){
+  const pctMode=mode==='pct';
   if(charts[cid]) charts[cid].destroy();
   charts[cid]=new Chart(document.getElementById(cid),{type:'bar',
-    data:{labels:items.map(x=>x.k),datasets:[{data:items.map(x=>x.v/s.d),backgroundColor:color,borderRadius:3,maxBarThickness:26}]},
+    data:{labels:items.map(x=>x.k),datasets:[{data:items.map(x=>pctMode?x.pct:x.v/s.d),backgroundColor:color,borderRadius:3,maxBarThickness:26}]},
     options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
       plugins:{legend:{display:false},tooltip:{callbacks:{
-        label:c=>'Rp'+s.nf.format(c.raw)+' '+s.ab+' ('+fmtPct(items[c.dataIndex].pct)+')'}}},
-      scales:{x:{grid:{color:C.gridc},ticks:{callback:v=>nfDec.format(v)}},y:{grid:{display:false}}}}});
+        label:c=>pctMode?'Deviasi: '+fmtPct(c.raw)+' (Rp'+s.nf.format(items[c.dataIndex].v/s.d)+' '+s.ab+')'
+                        :'Rp'+s.nf.format(c.raw)+' '+s.ab+' ('+fmtPct(items[c.dataIndex].pct)+')'}}},
+      scales:{x:{grid:{color:C.gridc},ticks:{callback:v=>nfDec.format(v)+(pctMode?'%':'')}},y:{grid:{display:false}}}}});
 }
-function devChartInit(cid,selId,titleId,baseTitle,items,color){
+function devChartInit(cid,selId,titleId,baseTitle,items,color,showUnit){
   bindSort(selId,val=>{
     const list=devOrder(items,val);
     const s=scaleFor(list.map(x=>x.v));
-    document.getElementById(titleId).textContent=baseTitle+' (Rp '+s.u+')';
-    devChartRender(cid,list,color,s);
+    document.getElementById(titleId).textContent=baseTitle+(showUnit===false?'':' (Rp '+s.u+')');
+    devChartRender(cid,list,color,s,val==='pct'?'pct':'');
   });
 }
 /* Kotak deviasi di bagian bawah kolom neraca (dibuat dinamis lengkap dengan dropdown) */
@@ -996,7 +1014,7 @@ lr(){
     iv('Penyambungan',L['Penyambungan Pelanggan']),
     iv('Lain-lain',L['Lain-lain'])
   ];
-  groupChart('grpRev','Item Pendapatan Usaha',revItems,'navy');
+  groupChart('grpRev','Item Pendapatan Usaha',revItems,'navy',true);
 
   /* Kelompok Item Beban Usaha — satu grafik, induk saja */
   const begItems=[
@@ -1007,13 +1025,13 @@ lr(){
     iv('Administrasi',L['Administrasi']),
     iv('Lainnya',L['Lainnya (sewa, BBM, dll.)'])
   ];
-  groupChart('grpExp','Item Beban Usaha',begItems,'gold');
+  groupChart('grpExp','Item Beban Usaha',begItems,'gold',true);
 
   /* Deviasi YoY Pendapatan — navy, dengan dropdown Urutkan */
-  devChartInit('devChart','devSort','devTitle','Deviasi YoY Pendapatan',revItems,C.pln);
+  devChartInit('devChart','devSort','devTitle','Deviasi YoY Pendapatan Usaha',revItems,C.pln,false);
 
   /* Deviasi YoY Beban Usaha — kuning kunyit, dengan dropdown Urutkan */
-  devChartInit('begChart','begSort','begTitle','Deviasi YoY Beban Usaha',begItems,C.gold);
+  devChartInit('begChart','begSort','begTitle','Deviasi YoY Beban Usaha',begItems,C.gold,false);
 },
 neraca(){
   /* Donut Struktur Aset: Aset Hak Guna & Properti Investasi dipisah dari Aset Tidak Lancar Lainnya */
