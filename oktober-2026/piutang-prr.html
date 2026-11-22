@@ -13,11 +13,14 @@
   --gold:#C9A227;--teal:#0E7C7B;--teal2:#159A98;
   --grey:#6B7280;--lgrey:#E7E9EC;--bg:#FBFBFA;--card:#FFF;
   --red:#B23A2E;--green:#1E7A4C;--line:#D7DBE1;--blue:#2877A8;--purple:#7656A6;
+  --text2:#41526B;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{font-family:Arial,Helvetica,sans-serif;color:#20304A;background:var(--bg);line-height:1.5;font-size:14px}
 button,select,input{font-family:inherit}
+select{width:100%;border:1px solid #CCD3DB;background:#fff;border-radius:4px;padding:10px 11px;color:var(--navy-d);outline:none}
+select:focus{border-color:var(--teal);box-shadow:0 0 0 2px rgba(14,124,123,.10)}
 .wrap{max-width:1380px;margin:auto;padding:0 28px 70px}
 
 /* HEADER */
@@ -56,6 +59,11 @@ button,select,input{font-family:inherit}
 .card.gold{background:#F8F1DC;border-top-color:var(--gold)}
 .card.green{background:#E4F1EA;border-top-color:var(--green)}
 .card.red{background:#F9E9E7;border-top-color:var(--red)}
+.card-score{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0}
+.card-score .value{margin:0;min-width:0;overflow-wrap:anywhere}
+.card-gauge{width:112px;flex:0 0 112px;text-align:center}
+.card-gauge svg{display:block;width:100%;height:auto}
+.gauge-basis{font-size:9px;color:var(--grey);line-height:1.3;margin-top:2px}
 .label{text-transform:uppercase;letter-spacing:.8px;font-size:10.5px;color:var(--grey);font-weight:700}
 .value{font-family:Arial,serif;font-size:22px;font-weight:700;color:var(--navy-d);margin:7px 0}
 .delta{font-size:12px;font-weight:700}
@@ -63,7 +71,6 @@ button,select,input{font-family:inherit}
 .neg{color:var(--red)}
 .neutral{color:var(--grey)}
 .small{font-size:11px;color:var(--grey)}
-.badge{display:inline-block;font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:11px;margin-top:8px;background:rgba(201,162,39,.2);color:#8A6A12}
 
 /* GRID / BOX */
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
@@ -74,18 +81,37 @@ button,select,input{font-family:inherit}
 .box-head h3{margin:0}
 .chart{height:360px;position:relative}
 .chart.small-chart{height:320px}
-.chart.donut{height:220px}
+.chart.donut{height:340px}
 .chart.tall{height:460px}
 .chart-caption{font-size:11.5px;color:var(--grey);margin:-6px 0 10px}
 
-/* LEGEND */
-.legend-row{font-size:11.5px;color:var(--grey);margin-top:10px}
-.dn-legend{width:100%;margin-top:6px}
-.dn-row{display:grid;grid-template-columns:12px 1fr auto;gap:9px;align-items:center;padding:7px 0;border-bottom:1px solid var(--lgrey);font-size:12px}
-.dn-row:last-child{border-bottom:0}
-.dn-dot{width:10px;height:10px;border-radius:2px}
-.dn-name{font-weight:700;color:var(--navy-d)}
-.dn-val{font-weight:700;color:var(--navy)}
+/* CHART TOOLBAR (dropdown Urutkan) */
+.chart-toolbar{display:flex;align-items:center;gap:8px;margin:0 0 10px;justify-content:flex-start}
+.chart-toolbar label{font-size:12px;font-weight:700;color:var(--grey);white-space:nowrap}
+.chart-toolbar select{width:auto;min-width:200px;padding:7px 10px;font-size:12.5px}
+.box-head .chart-toolbar{margin:0}
+.ctrl-row{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;margin:2px 0 10px}
+.ctrl-row .chart-toolbar{margin:0}
+
+/* LEGEND (klik untuk tampil/sembunyi) */
+.leg-wrap{display:flex;flex-direction:column;align-items:flex-end;margin-left:auto;gap:2px}
+.leg{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:11.5px;color:var(--text2);justify-content:flex-end}
+.leg span{display:inline-flex;align-items:center;gap:5px;cursor:pointer;user-select:none;transition:opacity .2s}
+.leg span.off{text-decoration:line-through;opacity:.4}
+.leg i{width:11px;height:10px;border-radius:2px;display:inline-block}
+.leg-hint{font-size:10.5px;font-style:italic;color:var(--grey)}
+
+/* LEGEND DONUT (format "Komposisi Nilai AI Per Program") */
+.ai-donut-legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px 12px;margin:12px 0 6px}
+.ai-donut-legend button{display:flex;align-items:flex-start;gap:7px;border:0;background:none;padding:3px;text-align:left;font:400 10px Arial,sans-serif;color:var(--text2);cursor:pointer}
+.ai-donut-legend button span{min-width:0;overflow-wrap:anywhere}
+.ai-donut-legend i{width:10px;height:10px;flex:0 0 10px;margin-top:1px;border-radius:2px}
+.ai-donut-legend button.off{opacity:.4;text-decoration:line-through}
+.ai-donut-legend button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.ai-donut-popup{position:fixed;z-index:10000;display:none;pointer-events:none;width:max-content;max-width:250px;border-radius:5px;padding:10px 12px;font:12px/1.45 Arial,Helvetica,sans-serif;color:var(--navy-d);background:rgba(255,255,255,.7);border:1px solid var(--line);box-shadow:0 3px 10px rgba(8,30,54,.22)}
+.ai-donut-popup strong{display:block;margin-bottom:4px;font-size:12px}
+.ai-donut-popup .popup-value{display:flex;align-items:center;gap:7px;font-weight:700}
+.ai-donut-popup .popup-swatch{width:10px;height:10px;flex:0 0 10px;border-radius:1px}
 
 /* TABLE */
 .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:4px}
@@ -166,13 +192,13 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
 <header class="hero">
   <div class="hero-inner">
     <div class="eyebrow">Dashboard Analisis Piutang — UID Jawa Tengah</div>
-    <h1 id="heroTitle">Piutang Tercatat Rp 2.704,35 Miliar — Konsentrasi Terbesar Berada pada 5 UP3</h1>
+    <h1 id="heroTitle">Piutang Tercatat Rp2.704,35 Miliar — Konsentrasi Terbesar Berada pada 5 UP3</h1>
     <p class="sub">Dashboard interaktif untuk melihat sebaran Piutang, Piutang Ragu-Ragu, konsentrasi per UP3, serta perbedaan pencatatan SAP dan AP2T.</p>
     <div class="metabar">
-      <div>Total Piutang SAP<strong>Rp 2.704,35 M</strong></div>
-      <div>Total Piutang AP2T<strong>Rp 2.704,35 M</strong></div>
-      <div>PRR SAP<strong>Rp 21,87 M</strong></div>
-      <div>Selisih PRR SAP–AP2T<strong>Rp 2,30 M</strong></div>
+      <div>Total Piutang SAP<strong>Rp2.704,35 M</strong></div>
+      <div>Total Piutang AP2T<strong>Rp2.704,35 M</strong></div>
+      <div>PRR SAP<strong>Rp21,87 M</strong></div>
+      <div>Selisih PRR SAP–AP2T<strong>Rp2,30 M</strong></div>
       <div>Jumlah UP3<strong>12</strong></div>
     </div>
   </div>
@@ -195,31 +221,40 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     <div class="rule"></div>
 
     <div class="cards">
-      <div class="card"><div class="label">Total Piutang SAP</div><div class="value">Rp 2.704,35 Miliar</div><div class="small">Total saldo piutang seluruh 12 UP3.</div></div>
-      <div class="card teal"><div class="label">Total Piutang AP2T</div><div class="value">Rp 2.704,35 Miliar</div><div class="small">Nilai identik dengan total pencatatan SAP.</div></div>
-      <div class="card gold"><div class="label">Konsentrasi Top 5</div><div class="value">60,55%</div><span class="badge">Rp 1.637,51 M</span></div>
-      <div class="card green"><div class="label">UP3 Tertinggi</div><div class="value">Semarang</div><div class="small">Rp 547,23 M atau 20,24% dari total.</div></div>
+      <div class="card" data-g="pi-sap"><div class="label">Total Piutang SAP</div><div class="value">Rp2.704,35 Miliar</div><div class="delta neutral">12 UP3</div><div class="small">Total saldo piutang seluruh 12 UP3.</div></div>
+      <div class="card teal" data-g="pi-ap2t"><div class="label">Total Piutang AP2T</div><div class="value">Rp2.704,35 Miliar</div><div class="delta neutral">Selisih Rp0,00</div><div class="small">Nilai identik dengan total pencatatan SAP.</div></div>
+      <div class="card gold" data-g="pi-top5"><div class="label">Konsentrasi Top 5</div><div class="value">60,55%</div><div class="delta neutral">Rp1.637,51 M</div><div class="small">Lima UP3 terbesar.</div></div>
+      <div class="card green" data-g="pi-tertinggi"><div class="label">UP3 Tertinggi</div><div class="value">Semarang</div><div class="delta neutral">Rp547,23 M</div><div class="small">Setara 20,24% dari total piutang.</div></div>
     </div>
 
     <div class="grid-wide">
       <div class="box">
-        <div class="box-head"><h3>Sebaran Piutang — 12 UP3</h3></div>
+        <div class="box-head"><h3>Sebaran Piutang — 12 UP3</h3>
+          <div class="chart-toolbar"><label for="piBarSort">Urutkan berdasarkan:</label>
+            <select id="piBarSort">
+              <option value="all" selected>Semua parameter</option>
+              <option value="sap">Piutang SAP</option>
+              <option value="ap2t">Piutang AP2T</option>
+              <option value="selisih">Selisih SAP–AP2T</option>
+            </select></div>
+        </div>
         <div class="chart-caption">Nilai dalam Miliar Rupiah, diurutkan dari nominal terbesar ke terkecil.</div>
         <div class="chart"><canvas id="piutangBarChart"></canvas></div>
       </div>
 
       <div>
         <div class="callout">
-          <b>Konsentrasi Top 5: 60,55%.</b> Lima UP3 terbesar memiliki total piutang sebesar Rp 1.637,51 Miliar dari total Rp 2.704,35 Miliar.
+          <b>Konsentrasi Top 5: 60,55%.</b> Lima UP3 terbesar memiliki total piutang sebesar Rp1.637,51 Miliar dari total Rp2.704,35 Miliar.
         </div>
         <div class="box">
           <h3>Komposisi Top 5 vs Lainnya</h3>
           <div class="chart donut"><canvas id="piutangDonut"></canvas></div>
-          <div id="piutangLegend" class="dn-legend"></div>
+          <div id="piutangLegend" class="ai-donut-legend" aria-label="Legend komposisi piutang per UP3"></div>
+          <div class="leg-hint" style="text-align:center">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
         </div>
         <div class="cards cards-2" style="margin:16px 0 0">
-          <div class="card"><div class="label">Top 1 — Semarang</div><div class="value">Rp 547,23 M</div><div class="small">20,24% dari total piutang.</div></div>
-          <div class="card"><div class="label">Top 2 — Kudus</div><div class="value">Rp 349,01 M</div><div class="small">12,90% dari total piutang.</div></div>
+          <div class="card" data-g="pi-t1"><div class="label">Top 1 — Semarang</div><div class="value">Rp547,23 M</div><div class="small">20,24% dari total piutang.</div></div>
+          <div class="card" data-g="pi-t2"><div class="label">Top 2 — Kudus</div><div class="value">Rp349,01 M</div><div class="small">12,91% dari total piutang.</div></div>
         </div>
       </div>
     </div>
@@ -246,31 +281,45 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     <div class="rule"></div>
 
     <div class="cards">
-      <div class="card"><div class="label">PRR SAP</div><div class="value">Rp 21,87 Miliar</div><div class="small">Total Piutang Ragu-Ragu berdasarkan SAP.</div></div>
-      <div class="card teal"><div class="label">PRR AP2T</div><div class="value">Rp 19,58 Miliar</div><div class="small">Total Piutang Ragu-Ragu berdasarkan AP2T.</div></div>
-      <div class="card red"><div class="label">Selisih SAP – AP2T</div><div class="value">Rp 2,30 Miliar</div><span class="badge">10,50% dari PRR SAP</span></div>
-      <div class="card gold"><div class="label">Sumber Selisih</div><div class="value">Tegal</div><div class="small">Seluruh selisih Rp 2,30 M berasal dari UP3 Tegal.</div></div>
+      <div class="card" data-g="prr-sap"><div class="label">PRR SAP</div><div class="value">Rp21,87 Miliar</div><div class="delta neutral">12 UP3</div><div class="small">Total Piutang Ragu-Ragu berdasarkan SAP.</div></div>
+      <div class="card teal" data-g="prr-ap2t"><div class="label">PRR AP2T</div><div class="value">Rp19,58 Miliar</div><div class="delta neutral">Selisih Rp2,30 M</div><div class="small">Total Piutang Ragu-Ragu berdasarkan AP2T.</div></div>
+      <div class="card red" data-g="prr-selisih"><div class="label">Selisih SAP – AP2T</div><div class="value">Rp2,30 Miliar</div><div class="delta neg">10,50% dari PRR SAP</div><div class="small">Seluruhnya berasal dari UP3 Tegal.</div></div>
+      <div class="card gold" data-g="prr-sumber"><div class="label">Sumber Selisih</div><div class="value">Tegal</div><div class="delta neg">Rp2,30 M</div><div class="small">Seluruh selisih Rp2,30 M berasal dari UP3 Tegal.</div></div>
     </div>
 
     <div class="grid-wide">
       <div class="box">
-        <div class="box-head"><h3>Sebaran PRR SAP — 12 UP3</h3></div>
+        <div class="box-head"><h3>Sebaran PRR SAP — 12 UP3</h3>
+          <div class="chart-toolbar"><label for="prrBarSort">Urutkan berdasarkan:</label>
+            <select id="prrBarSort">
+              <option value="all" selected>Semua parameter</option>
+              <option value="ap2t">PRR AP2T</option>
+              <option value="selisih">Selisih SAP–AP2T</option>
+            </select></div>
+        </div>
+        <div class="ctrl-row">
+          <div class="leg-wrap">
+            <div class="leg" id="prrBarLeg"></div>
+            <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+          </div>
+        </div>
         <div class="chart-caption">Nilai dalam Miliar Rupiah. Bagian merah pada bar menunjukkan selisih SAP–AP2T.</div>
         <div class="chart"><canvas id="prrBarChart"></canvas></div>
       </div>
 
       <div>
         <div class="callout">
-          <b>Konsentrasi Top 5: 79,65%.</b> Lima UP3 terbesar memiliki PRR SAP sebesar Rp 17,42 Miliar dari total Rp 21,87 Miliar.
+          <b>Konsentrasi Top 5: 79,65%.</b> Lima UP3 terbesar memiliki PRR SAP sebesar Rp17,42 Miliar dari total Rp21,87 Miliar.
         </div>
         <div class="box">
           <h3>Komposisi Top 5 vs Lainnya</h3>
           <div class="chart donut"><canvas id="prrDonut"></canvas></div>
-          <div id="prrLegend" class="dn-legend"></div>
+          <div id="prrLegend" class="ai-donut-legend" aria-label="Legend komposisi PRR per UP3"></div>
+          <div class="leg-hint" style="text-align:center">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
         </div>
         <div class="cards cards-2" style="margin:16px 0 0">
-          <div class="card"><div class="label">Top 1 — Semarang</div><div class="value">Rp 6,15 M</div><div class="small">28,10% dari total PRR SAP.</div></div>
-          <div class="card gold"><div class="label">Top 2 — Tegal</div><div class="value">Rp 3,55 M</div><div class="small">16,22% dari total PRR SAP, dengan selisih Rp 2,30 M.</div></div>
+          <div class="card" data-g="prr-t1"><div class="label">Top 1 — Semarang</div><div class="value">Rp6,15 M</div><div class="small">28,10% dari total PRR SAP.</div></div>
+          <div class="card gold" data-g="prr-t2"><div class="label">Top 2 — Tegal</div><div class="value">Rp3,55 M</div><div class="small">16,22% dari total PRR SAP, dengan selisih Rp2,30 M.</div></div>
         </div>
       </div>
     </div>
@@ -303,7 +352,20 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
         <div class="chart small-chart"><canvas id="ratioChart"></canvas></div>
       </div>
       <div class="box">
-        <div class="box-head"><h3>Kontribusi Piutang vs Kontribusi PRR per UP3 (%)</h3></div>
+        <div class="box-head"><h3>Kontribusi Piutang vs Kontribusi PRR per UP3 (%)</h3>
+          <div class="chart-toolbar"><label for="shareSort">Urutkan berdasarkan:</label>
+            <select id="shareSort">
+              <option value="all" selected>Semua parameter</option>
+              <option value="pi">% Kontribusi Piutang</option>
+              <option value="prr">% Kontribusi PRR</option>
+            </select></div>
+        </div>
+        <div class="ctrl-row">
+          <div class="leg-wrap">
+            <div class="leg" id="shareLeg"></div>
+            <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+          </div>
+        </div>
         <div class="chart-caption">Diurutkan dari kontribusi piutang terbesar. Selisih kedua bar menunjukkan konsentrasi risiko.</div>
         <div class="chart small-chart"><canvas id="shareChart"></canvas></div>
       </div>
@@ -313,27 +375,27 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     <div class="insight-grid">
       <div class="ins ok">
         <div class="ins-title">01 — Pencatatan Piutang Konsisten, Namun Perlu Verifikasi Sumber</div>
-        <div class="ins-text">Total piutang Rp 2.704,35 M tercatat identik pada SAP dan AP2T di seluruh 12 UP3. Kesamaan ini baik, tetapi juga berarti AP2T belum tentu menjadi pembanding yang independen. Sumber data AP2T perlu dipastikan.</div>
+        <div class="ins-text">Total piutang Rp2.704,35 M tercatat identik pada SAP dan AP2T di seluruh 12 UP3. Kesamaan ini baik, tetapi juga berarti AP2T belum tentu menjadi pembanding yang independen. Sumber data AP2T perlu dipastikan.</div>
       </div>
       <div class="ins warn">
         <div class="ins-title">02 — Konsentrasi Top 5 Piutang Tinggi</div>
-        <div class="ins-text">Semarang, Kudus, Surakarta, Tegal, dan Pekalongan menguasai 60,55% piutang (Rp 1.637,51 M). Risiko penagihan terpusat pada lima unit ini.</div>
+        <div class="ins-text">Semarang, Kudus, Surakarta, Tegal, dan Pekalongan menguasai 60,55% piutang (Rp1.637,51 M). Risiko penagihan terpusat pada lima unit ini.</div>
       </div>
       <div class="ins warn">
         <div class="ins-title">03 — Semarang Dominan</div>
-        <div class="ins-text">Piutang Semarang Rp 547,23 M (20,24%) atau sekitar 1,57 kali Kudus, UP3 terbesar kedua. Satu UP3 ini setara lebih dari seperlima total piutang.</div>
+        <div class="ins-text">Piutang Semarang Rp547,23 M (20,24%) atau sekitar 1,57 kali Kudus, UP3 terbesar kedua. Satu UP3 ini setara lebih dari seperlima total piutang.</div>
       </div>
       <div class="ins">
         <div class="ins-title">04 — Sebaran Tujuh UP3 Lainnya</div>
-        <div class="ins-text">Tujuh UP3 lainnya menyumbang 39,45% piutang, dengan kisaran Rp 119,63 M (Magelang) hingga Rp 174,57 M (Grobogan). Tidak ada satu pun yang mendominasi, sehingga akumulasinya perlu dipantau bersama.</div>
+        <div class="ins-text">Tujuh UP3 lainnya menyumbang 39,45% piutang, dengan kisaran Rp119,63 M (Magelang) hingga Rp174,57 M (Grobogan). Tidak ada satu pun yang mendominasi, sehingga akumulasinya perlu dipantau bersama.</div>
       </div>
       <div class="ins">
         <div class="ins-title">05 — PRR Kecil Terhadap Piutang</div>
-        <div class="ins-text">PRR SAP Rp 21,87 M setara 0,81% dari total piutang. Nilainya relatif kecil, tetapi rasio ini menjadi pembanding wajar antar UP3 dan indikator kualitas penagihan.</div>
+        <div class="ins-text">PRR SAP Rp21,87 M setara 0,81% dari total piutang. Nilainya relatif kecil, tetapi rasio ini menjadi pembanding wajar antar UP3 dan indikator kualitas penagihan.</div>
       </div>
       <div class="ins danger">
         <div class="ins-title">06 — Selisih PRR Hanya di Tegal</div>
-        <div class="ins-text">Selisih SAP–AP2T Rp 2,30 M (10,50% dari PRR SAP) seluruhnya berasal dari Tegal. AP2T mencatat 35,27% dari nilai SAP Tegal, atau selisih 64,73% dari PRR SAP Tegal.</div>
+        <div class="ins-text">Selisih SAP–AP2T Rp2,30 M (10,50% dari PRR SAP) seluruhnya berasal dari Tegal. AP2T mencatat 35,27% dari nilai SAP Tegal, atau selisih 64,73% dari PRR SAP Tegal.</div>
       </div>
       <div class="ins warn">
         <div class="ins-title">07 — PRR Lebih Terkonsentrasi daripada Piutang</div>
@@ -351,10 +413,10 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     <div class="rule"></div>
 
     <div class="reco">
-      <div class="reco-card"><div class="k">Rekomendasi 1 · Rekonsiliasi Tegal</div><p>Telusuri selisih Rp 2,30 M per pelanggan dan per dokumen. Periksa cut-off dan pemetaan akun AP2T, lalu tetapkan batas waktu penyelesaian sebelum penutupan periode.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 1 · Rekonsiliasi Tegal</div><p>Telusuri selisih Rp2,30 M per pelanggan dan per dokumen. Periksa cut-off dan pemetaan akun AP2T, lalu tetapkan batas waktu penyelesaian sebelum penutupan periode.</p></div>
       <div class="reco-card"><div class="k">Rekomendasi 2 · Validasi Sumber AP2T</div><p>Pastikan AP2T merupakan sub-ledger independen dan bukan salinan SAP. Lakukan sampling per UP3 untuk membuktikan kesesuaian nilai secara transaksi.</p></div>
       <div class="reco-card"><div class="k">Rekomendasi 3 · Uji Kecukupan PRR</div><p>Bandingkan PRR dengan umur piutang di Pekalongan, Tegal, dan Semarang. Pastikan cadangan ragu-ragu sudah mencerminkan risiko, mengingat rasio mereka di atas rata-rata.</p></div>
-      <div class="reco-card"><div class="k">Rekomendasi 4 · Kaji Rasio PRR Rendah</div><p>Tinjau Surakarta (piutang Rp 326,68 M, PRR Rp 1,48 M) serta Klaten, Cilacap, dan Purwokerto. Pastikan tidak terjadi under-provision pada unit dengan piutang besar.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 4 · Kaji Rasio PRR Rendah</div><p>Tinjau Surakarta (piutang Rp326,68 M, PRR Rp1,48 M) serta Klaten, Cilacap, dan Purwokerto. Pastikan tidak terjadi under-provision pada unit dengan piutang besar.</p></div>
       <div class="reco-card"><div class="k">Rekomendasi 5 · Fokus Penagihan Top 5</div><p>Prioritaskan monitoring aging, status penagihan, dan komitmen pembayaran pada lima UP3 yang menguasai 60,55% piutang, dimulai dari Semarang.</p></div>
       <div class="reco-card"><div class="k">Rekomendasi 6 · Pantau Tujuh UP3 Lainnya</div><p>Tujuh UP3 menyumbang 39,45% piutang. Lakukan review berkala agar akumulasi saldo di kelompok ini tidak membesar tanpa terdeteksi.</p></div>
       <div class="reco-card"><div class="k">Rekomendasi 7 · Tambah Dimensi Aging</div><p>Dataset belum memuat umur piutang dan tren periodik. Tambahkan aging bucket dan tren bulanan agar analisis PRR berbasis kualitas, bukan hanya nominal.</p></div>
@@ -427,13 +489,47 @@ const M = v => v/1e9;
 const pct = (a,b) => b>0 ? (a/b*100) : 0;
 const sum = (arr,f) => arr.reduce((s,x)=>s+f(x),0);
 const fmtID = (n,d=0) => Number(n).toLocaleString('id-ID',{minimumFractionDigits:d,maximumFractionDigits:d});
-const fmtMiliar = v => 'Rp ' + fmtID(M(v),2) + ' M';
+const fmtMiliar = v => 'Rp' + fmtID(M(v),2) + ' M';
 const fmtPct = (v,d=2) => fmtID(v,d) + '%';
 const nameCase = s => s.charAt(0) + s.slice(1).toLowerCase();
-const legendOpts = {position:'top',align:'end',labels:{boxWidth:10,boxHeight:10,font:{size:11}}};
 const gridX = {grid:{color:C.grid},ticks:{callback:v=>v.toLocaleString('id-ID')}};
 
 const charts = {};
+
+/* ---------- LEGEND HTML UNTUK GRAFIK BATANG (klik = transparan/sembunyi) ---------- */
+const LEGDEF = {};                                   // kunci chart -> {el, series}
+function togArr(a,i){                                 // minimal satu seri tetap tampil
+  if(a[i] && a.filter(Boolean).length===1) return false;
+  a[i] = !a[i]; return true;
+}
+const LEGVIS = {};                                   // elemen legend -> status tampil per seri
+function defLegend(chartKey, el, series){
+  LEGDEF[chartKey] = {el, series};
+  if(!LEGVIS[el]) LEGVIS[el] = series.map(()=>true);
+}
+function legParam(chartKey, map, val){                // dropdown = filter parameter pada legend
+  const d = LEGDEF[chartKey]; if(!d) return;
+  const only = map[val];
+  LEGVIS[d.el] = d.series.map((x,i)=> only === -1 ? true : i === only);
+}
+function legVis(chartKey){
+  const d = LEGDEF[chartKey];
+  return (d && LEGVIS[d.el]) || [];
+}
+function legSet(chartKey){
+  const d = LEGDEF[chartKey]; if(!d) return;
+  const c = charts[chartKey]; if(!c) return;
+  const el = document.getElementById(d.el);
+  const v = LEGVIS[d.el];
+  el.innerHTML = d.series.map((x,i)=>`<span data-i="${i}" class="${v[i]?'':'off'}"><i style="background:${x.color}"></i>${x.label}</span>`).join('');
+  el.onclick = e=>{
+    const t = e.target.closest('span[data-i]'); if(!t) return;
+    if(!togArr(v, +t.dataset.i)) return;
+    legSet(chartKey);
+  };
+  v.forEach((on,i)=>c.setDatasetVisibility(i,on));
+  c.update('none');
+}
 
 /* ---------- DATA TURUNAN (diurutkan terbesar ke terkecil) ---------- */
 const piSorted = PIUTANG.map(x=>({...x, name:nameCase(x.up3)})).sort((a,b)=>b.sap-a.sap);
@@ -445,8 +541,8 @@ const prrTotalAP2T = sum(prrSorted,x=>x.ap2t);
 
 /* ---------- TAB SWITCHING ---------- */
 const HERO_TITLES = {
-  piutang: 'Piutang Tercatat Rp 2.704,35 Miliar — Konsentrasi Terbesar Berada pada 5 UP3',
-  ragu: 'Piutang Ragu-Ragu Rp 21,87 Miliar — Selisih Rp 2,30 Miliar Seluruhnya di UP3 Tegal',
+  piutang: 'Piutang Tercatat Rp2.704,35 Miliar — Konsentrasi Terbesar Berada pada 5 UP3',
+  ragu: 'Piutang Ragu-Ragu Rp21,87 Miliar — Selisih Rp2,30 Miliar Seluruhnya di UP3 Tegal',
   analisis: 'Analisis & Rekomendasi Piutang dan Piutang Ragu-Ragu'
 };
 const TAB_KEY = 'piutangPRR.activeTab';
@@ -519,64 +615,332 @@ function makeTableSortable(table){
   });
 }
 
-/* ---------- DONUT LEGEND HELPER ---------- */
-function buildDonutData(sorted, key){
-  const total = sum(sorted,x=>x[key]);
-  const top5 = sorted.slice(0,5);
-  const top5Pct = sum(top5,x=>pct(x[key],total));
-  return {
-    labels:[...top5.map(x=>x.name), '7 UP3 lainnya'],
-    values:[...top5.map(x=>+pct(x[key],total).toFixed(2)), +(100-top5Pct).toFixed(2)],
-    top5Pct
+/* ---------- DONUT KOMPOSISI (format mengikuti "Komposisi Nilai AI Per Program") ---------- */
+const mod2 = a => { a = a % (2*Math.PI); return a < 0 ? a + 2*Math.PI : a; };
+const alphaHex = a => Math.round(Math.max(0,Math.min(1,a))*255).toString(16).padStart(2,'0');
+
+function pulseLoop(chart){
+  if(chart._pulseRaf) return;
+  const step = () => {
+    chart._pulseRaf = null;
+    if(!chart._pulse){ try{ chart.draw(); }catch(e){} return; }
+    try{ chart.draw(); }catch(e){ chart._pulse = null; return; }
+    chart._pulseRaf = requestAnimationFrame(step);
   };
+  chart._pulseRaf = requestAnimationFrame(step);
 }
-function renderDonutLegend(legendId, d){
-  const el = document.getElementById(legendId);
-  el.innerHTML = d.labels.map((l,i)=>`
-    <div class="dn-row">
-      <span class="dn-dot" style="background:${PALETTE[i]}"></span>
-      <span class="dn-name">${l}</span>
-      <span class="dn-val">${fmtPct(d.values[i])}</span>
-    </div>`).join('');
+
+/* Registri donut: canvasId -> {legend, popup, info} */
+const DMAP = {
+  piutangDonut:{legend:'piutangLegend', popup:'piutangDonutPopup', info:null},
+  prrDonut:{legend:'prrLegend', popup:'prrDonutPopup', info:null}
+};
+
+function hideDonutPopup(chart){
+  const m = DMAP[chart.canvas.id]; if(!m) return;
+  const box = document.getElementById(m.popup);
+  if(box){ box.style.display = 'none'; box.setAttribute('aria-hidden','true'); }
 }
-function buildDonut(canvasId, legendId, sorted, key){
-  const d = buildDonutData(sorted,key);
-  charts[canvasId] = new Chart(document.getElementById(canvasId), {
-    type:'doughnut',
-    data:{
-      labels:d.labels,
-      datasets:[{data:d.values, backgroundColor:[...PALETTE,OTHER_COLOR], borderWidth:2, borderColor:'#FFFFFF'}]
-    },
-    options:{
-      responsive:true, maintainAspectRatio:false, cutout:'66%',
-      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>c.label+': '+fmtPct(c.raw)}}}
+
+function setDonutHover(chart,hit,p){
+  const st = chart._dfx;
+  const vis = hit >= 0 && chart.getDataVisibility(hit);
+  const want = (vis && st) ? hit : -1;
+  chart.canvas.style.cursor = want >= 0 ? 'pointer' : 'default';
+  if(want === (chart._dhover ?? -1)){
+    if(want >= 0){
+      chart.setActiveElements([{datasetIndex:0,index:want}]);
+      chart.tooltip.setActiveElements([{datasetIndex:0,index:want}],p || {x:0,y:0});
+      chart.draw();
+    }
+    return;
+  }
+  chart._dhover = want;
+  if(want >= 0){
+    chart.setActiveElements([{datasetIndex:0,index:want}]);
+    chart.tooltip.setActiveElements([{datasetIndex:0,index:want}],p || {x:0,y:0});
+    const ds = chart.data.datasets[0];
+    chart._pulse = {i:want, color:(ds.glowColors || ds.backgroundColor)[want]};
+    pulseLoop(chart);
+  } else {
+    chart.setActiveElements([]);
+    chart.tooltip.setActiveElements([],{x:0,y:0});
+    chart._pulse = null;
+    hideDonutPopup(chart);
+  }
+  chart.update('none');
+}
+
+function drawDonutGlow(chart,ctx,arcs){
+  const pl = chart._pulse;
+  if(!pl || pl.i === undefined || !arcs[pl.i]) return;
+  const ha = arcs[pl.i], now = performance.now();
+  for(let k = 0; k < 2; k++){
+    const ph = ((now/1400)+k*0.5) % 1, r = ha.outerRadius+3+ph*16, a = 1-ph;
+    ctx.beginPath(); ctx.arc(ha.x,ha.y,r,ha.startAngle,ha.endAngle);
+    ctx.lineWidth = 3; ctx.strokeStyle = pl.color+alphaHex(a*0.9); ctx.stroke();
+    ctx.beginPath(); ctx.arc(ha.x,ha.y,ha.outerRadius+1,ha.startAngle,ha.endAngle);
+    ctx.lineWidth = 1; ctx.strokeStyle = pl.color+alphaHex(a*0.5); ctx.stroke();
+  }
+}
+
+const centerTextPlugin = {
+  id:'centerText',
+  afterDraw(chart){
+    const cv = chart.canvas;
+    const val = cv.dataset.center;
+    if(!val) return;
+    const el = chart.getDatasetMeta(0).data[0];
+    if(!el) return;
+    const {x, y, innerRadius} = el;
+    const ctx = chart.ctx;
+    const maxW = innerRadius*1.8;
+    ctx.save();
+    let fs = Math.round(innerRadius*0.5);
+    ctx.font = `700 ${fs}px Arial, Helvetica, sans-serif`;
+    while(ctx.measureText(val).width > maxW && fs > 8){ fs--; ctx.font = `700 ${fs}px Arial, Helvetica, sans-serif`; }
+    ctx.fillStyle = C.navy; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(val,x,y+fs*0.35);
+    const lab = cv.dataset.label;
+    if(lab){
+      const fl = Math.max(9,Math.round(fs*0.42));
+      ctx.font = `600 ${fl}px Arial, Helvetica, sans-serif`;
+      ctx.fillStyle = '#6B7280';
+      ctx.fillText(lab.toUpperCase(),x,y-fs*0.85);
+    }
+    ctx.restore();
+  }
+};
+
+const donutFx = {
+  id:'donutFx',
+  beforeLayout(chart){
+    chart.options.layout.padding = {left:8,right:8,top:8,bottom:8};
+    chart.options.radius = Math.min(chart.width*0.42, chart.height*0.44);
+  },
+  afterEvent(chart,args){
+    const st = chart._dfx; if(!st) return;
+    const e = args.event;
+    if(e.type === 'mouseout'){ setDonutHover(chart,-1,null); return; }
+    if(e.x == null) return;
+    const p = {x:e.x, y:e.y};
+    let hit = -1;
+    const dx = p.x-st.cx, dy = p.y-st.cy, d = Math.hypot(dx,dy);
+    if(d >= st.inner && d <= st.R+8){
+      const a = Math.atan2(dy,dx);
+      for(const A of st.arcs){
+        if(!A.vis) continue;
+        if(mod2(a-A.s) <= A.e-A.s){ hit = A.i; break; }
+      }
+    }
+    if(e.type === 'click' && e.native && e.native.pointerType === 'touch'){
+      setDonutHover(chart, hit, p);
+      return;
+    }
+    if(e.type === 'click'){
+      if(hit >= 0){
+        hideDonutPopup(chart);
+        chart.setActiveElements([]);
+        chart.tooltip.setActiveElements([],{x:0,y:0});
+        chart._pulse = null; chart._dhover = -1;
+        chart.toggleDataVisibility(hit);
+        chart.update();
+      }
+      return;
+    }
+    setDonutHover(chart,hit,p);
+  },
+  afterDraw(chart){
+    const arcs = chart.getDatasetMeta(0).data;
+    if(!arcs.length) return;
+    const a0 = arcs[0];
+    chart._dfx = {
+      arcs:arcs.map((a,i)=>({i, s:a.startAngle, e:a.endAngle, vis:chart.getDataVisibility(i) && a.endAngle > a.startAngle})),
+      cx:a0.x, cy:a0.y, R:a0.outerRadius, inner:a0.innerRadius
+    };
+    const m = DMAP[chart.canvas.id];
+    if(m) document.querySelectorAll('#'+m.legend+' button[data-i]').forEach(button=>{
+      const visible = chart.getDataVisibility(+button.dataset.i);
+      button.classList.toggle('off',!visible); button.setAttribute('aria-pressed',String(visible));
+    });
+    const ctx = chart.ctx; ctx.save(); drawDonutGlow(chart,ctx,arcs); ctx.restore();
+  }
+};
+
+/* ---------- warna pop-up & kontras teks ---------- */
+const ALPHA_POPUP = 0.75;                                  // latar pop-up: warna legend 75%, transparan 25%
+const hexRgb = h => { h = String(h).replace('#','');
+  if(h.length === 3) h = h.split('').map(c=>c+c).join('');
+  const n = parseInt(h.slice(0,6),16); return [(n>>16)&255,(n>>8)&255,n&255]; };
+const rgbHex = a => '#' + a.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');
+const mixHex = (a,b,t) => { const A = hexRgb(a), B = hexRgb(b); return rgbHex(A.map((v,i)=>v+(B[i]-v)*t)); };
+const rgbaStr = (h,a) => { const c = hexRgb(h); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; };
+const lumHex = h => { const c = hexRgb(h).map(v => { v /= 255; return v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4); });
+  return 0.2126*c[0] + 0.7152*c[1] + 0.0722*c[2]; };
+const contrastHex = (a,b) => { const l1 = lumHex(a), l2 = lumHex(b); return (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05); };
+
+/* Latar pop-up: warna legend 75% (transparan 25%). Agar teks tetap terbaca di latar
+   mana pun yang sedang lewat di bawahnya (panel putih, kartu, atau irisan berwarna),
+   ditambahkan lapisan tipis sewarna teks. Pilih teks + ketebalan lapisan paling hemat
+   yang menghasilkan kontras >= 4.5:1 (WCAG AA). */
+const VEILS = [0,0.06,0.12,0.18,0.24,0.30,0.36,0.42];
+const BACKDROPS = ['#FFFFFF','#E8EEF5','#000000','#20304A'].concat(PALETTE,[OTHER_COLOR]);
+function popupSkin(color){
+  const white = '#FFFFFF', ink = '#081E36';
+  const wajah = (veil, veilHex, bg) => { const dasar = mixHex(bg, color, ALPHA_POPUP); return veil ? mixHex(dasar, veilHex, veil) : dasar; };
+  let out = null;
+  [[ink, white], [white, ink]].forEach(pair => {              // teks gelap -> lapisan putih
+    const txt = pair[0], veilHex = pair[1];                   // teks terang -> lapisan gelap
+    for(const v of VEILS){
+      const min = Math.min(...BACKDROPS.map(bg => contrastHex(wajah(v, veilHex, bg), txt)));
+      if(min >= 4.5){
+        if(!out || v < out.veil || (v === out.veil && min > out.gain)) out = { text:txt, veilHex, veil:v, gain:min };
+        break;
+      }
     }
   });
-  renderDonutLegend(legendId, d);
+  if(!out) out = { text:white, veilHex:ink, veil:0.42, gain:0 };
+  return { hue: rgbaStr(color, ALPHA_POPUP), text: out.text,
+           veil: out.veil ? rgbaStr(out.veilHex, out.veil) : null,
+           edge: mixHex(wajah(out.veil, out.veilHex, '#FFFFFF'), out.text, 0.65),
+           swatch: mixHex(wajah(out.veil, out.veilHex, '#FFFFFF'), out.text, 0.8) };
+}
+
+function externalDonutTooltip({chart, tooltip}){
+  const m = DMAP[chart.canvas.id]; if(!m) return;
+  let box = document.getElementById(m.popup);
+  if(!box){
+    box = document.createElement('div'); box.id = m.popup; box.className = 'ai-donut-popup';
+    box.setAttribute('role','tooltip'); document.body.appendChild(box);
+    const reposition = ()=>{ const active = box._chartRef; if(active) externalDonutTooltip({chart:active, tooltip:active.tooltip}); };
+    window.addEventListener('scroll', reposition, true); window.addEventListener('resize', reposition);
+  }
+  box._chartRef = chart;
+  const point = tooltip.dataPoints && tooltip.dataPoints[0];
+  // tampil selama ada irisan yang sedang disorot (kursor di irisan, di legend-nya, atau sentuhan)
+  if((chart._dhover ?? -1) < 0 || !point || chart.canvas.offsetParent === null){
+    box.style.display = 'none'; box.setAttribute('aria-hidden','true'); return;
+  }
+  const color = chart.data.datasets[0].backgroundColor[point.dataIndex] || C.navy;
+  const skin = popupSkin(color);
+  const info = m.info[point.dataIndex];
+  const title = document.createElement('strong');
+  title.textContent = info.label;
+  const row = document.createElement('div'); row.className = 'popup-value';
+  const swatch = document.createElement('i'); swatch.className = 'popup-swatch';
+  const value = document.createElement('span');
+  value.textContent = info.text;
+  swatch.style.background = skin.swatch;               // tetap terlihat di atas latar sewarna
+  swatch.style.boxShadow = 'inset 0 0 0 1px ' + skin.edge;
+  row.append(swatch, value); box.replaceChildren(title, row);
+  box.style.backgroundColor = skin.hue;                // warna legend 75% = transparan 25%
+  box.style.backgroundImage = skin.veil ? 'linear-gradient(' + skin.veil + ',' + skin.veil + ')' : 'none';
+  box.style.color = skin.text;                         // teks kontras terhadap latar
+  box.style.borderColor = skin.edge;                   // outline tipis mengikuti warna teks
+  box.style.display = 'block'; box.setAttribute('aria-hidden','false');
+  const r = chart.canvas.getBoundingClientRect(), vw = document.documentElement.clientWidth, vh = window.innerHeight;
+  box.style.maxWidth = Math.max(120, Math.min(250, vw-16)) + 'px';
+  const w = box.offsetWidth, h = box.offsetHeight, gap = 12;
+  const clampN = (n,max)=>Math.max(8, Math.min(max, n));
+  const cx = r.left + tooltip.caretX, cy = r.top + tooltip.caretY;
+  const choices = [
+    {side:'above', x:clampN(cx-w/2, vw-w-8), y:clampN(cy-h-gap, vh-h-8)},
+    {side:'below', x:clampN(cx-w/2, vw-w-8), y:clampN(cy+gap, vh-h-8)},
+    {side:'right', x:clampN(cx+gap, vw-w-8), y:clampN(cy-h/2, vh-h-8)},
+    {side:'left',  x:clampN(cx-w-gap, vw-w-8), y:clampN(cy-h/2, vh-h-8)}
+  ];
+  const fits = q=>q.x>=8 && q.y>=8 && q.x+w<=vw-8 && q.y+h<=vh-8;
+  const position = choices.find(fits) || choices[0];
+  box.style.left = position.x + 'px'; box.style.top = position.y + 'px'; box.dataset.side = position.side;
+}
+
+function makeDonut(canvasId, sorted, key, cfg){
+  const total = sum(sorted,x=>x[key]);
+  const top5 = sorted.slice(0,5);
+  const others = sorted.slice(5);
+  const othersVal = sum(others,x=>x[key]);
+  const items = [
+    ...top5.map(x=>({label:x.name, rp:x[key], pctv:pct(x[key],total)})),
+    {label: others.length + ' UP3 lainnya', rp:othersVal, pctv:pct(othersVal,total)}
+  ];
+  const colors = [...PALETTE, OTHER_COLOR];
+  DMAP[canvasId].info = items.map(it=>({label:it.label, text: cfg.prefix+': '+fmtMiliar(it.rp)+' ('+fmtPct(it.pctv)+' dari '+cfg.basis+')'}));
+  const cv = document.getElementById(canvasId);
+  cv.dataset.center = fmtMiliar(total);
+  cv.dataset.label = cfg.center;
+  const chart = new Chart(cv, {
+    type:'doughnut',
+    data:{
+      labels: items.map(x=>x.label),
+      datasets:[{data:items.map(x=>+M(x.rp).toFixed(2)), backgroundColor:colors, glowColors:colors, borderColor:'#FFFFFF', borderWidth:2, hoverOffset:10}]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false, animation:false, cutout:'62%',
+      layout:{padding:8},
+      plugins:{legend:{display:false}, tooltip:{enabled:false, external:externalDonutTooltip}}
+    },
+    plugins:[centerTextPlugin, donutFx]
+  });
+  charts[canvasId] = chart;
+  const legendEl = document.getElementById(DMAP[canvasId].legend);
+  legendEl.innerHTML = items.map((it,i)=>`<button type="button" data-i="${i}" aria-pressed="true"><i style="background:${colors[i]}"></i><span>${it.label} — ${fmtPct(it.pctv)}</span></button>`).join('');
+  legendEl.onclick = e=>{
+    const button = e.target.closest('button[data-i]'); if(!button) return;
+    setDonutHover(chart,-1,null);
+    chart.toggleDataVisibility(+button.dataset.i);
+    chart.update('none');
+  };
+  const highlight = e=>{
+    const button = e.target.closest('button[data-i]'); if(!button) return;
+    const i = +button.dataset.i, a = chart.getDatasetMeta(0).data[i];
+    if(!a) return;
+    const mid = (a.startAngle+a.endAngle)/2;
+    setDonutHover(chart,i,{x:a.x+a.outerRadius*Math.cos(mid),y:a.y+a.outerRadius*Math.sin(mid)});
+  };
+  legendEl.onmouseover = highlight;
+  legendEl.onmouseleave = ()=>setDonutHover(chart,-1,null);
+  // focusin/focusout tidak punya atribut on* di semua peramban -> pakai addEventListener
+  legendEl.addEventListener('focusin', highlight);
+  legendEl.addEventListener('focusout', ev=>{ if(!legendEl.contains(ev.relatedTarget)) setDonutHover(chart,-1,null); });
 }
 
 /* ---------- PIUTANG: BAR, DONUT, TABLE ---------- */
-charts.piBar = new Chart(document.getElementById('piutangBarChart'), {
-  type:'bar',
-  data:{
-    labels: piSorted.map(x=>x.name),
-    datasets:[{
-      label:'Piutang SAP',
-      data: piSorted.map(x=>+M(x.sap).toFixed(2)),
-      backgroundColor: piSorted.map((x,i)=> i<5 ? C.navy : C.light),
-      borderRadius:3, maxBarThickness:26
-    }]
-  },
-  options:{
-    indexAxis:'y', responsive:true, maintainAspectRatio:false,
-    plugins:{
-      legend:{display:false},
-      tooltip:{callbacks:{label:c=>fmtMiliar(c.raw*1e9)+' ('+fmtPct(pct(piSorted[c.dataIndex].sap,piTotal))+')'}}
+const PI_TOP5 = new Set(piSorted.slice(0,5).map(x=>x.up3));
+const PI_SORT = {
+  sap: x=>x.sap,
+  ap2t: x=>x.ap2t,
+  selisih: x=>x.sap-x.ap2t
+};
+function renderPiBar(key){
+  const f = PI_SORT[key==='all' ? 'sap' : key];
+  const list = [...piSorted].sort((a,b)=>f(b)-f(a));
+  if(charts.piBar) charts.piBar.destroy();
+  charts.piBar = new Chart(document.getElementById('piutangBarChart'), {
+    type:'bar',
+    data:{
+      labels: list.map(x=>x.name),
+      datasets:[{
+        label:'Piutang SAP',
+        data: list.map(x=>+M(x.sap).toFixed(2)),
+        backgroundColor: list.map(x=> PI_TOP5.has(x.up3) ? C.navy : C.light),
+        borderRadius:3, maxBarThickness:26
+      }]
     },
-    scales:{x:gridX, y:{grid:{display:false}}}
-  }
-});
-buildDonut('piutangDonut','piutangLegend', piSorted, 'sap');
+    options:{
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:c=>fmtMiliar(list[c.dataIndex].sap)+' ('+fmtPct(pct(list[c.dataIndex].sap,piTotal))+')'}}
+      },
+      scales:{x:gridX, y:{grid:{display:false}}}
+    }
+  });
+}
+const piBarSortEl = document.getElementById('piBarSort');
+piBarSortEl.addEventListener('change',()=>renderPiBar(piBarSortEl.value));
+renderPiBar(piBarSortEl.value);
+
+makeDonut('piutangDonut', piSorted, 'sap', {prefix:'Piutang SAP', basis:'total piutang', center:'Total Piutang SAP'});
 
 (function buildPiutangTable(){
   const tb = document.querySelector('#piutangTable tbody');
@@ -602,33 +966,50 @@ buildDonut('piutangDonut','piutangLegend', piSorted, 'sap');
 })();
 
 /* ---------- PRR: STACKED BAR, DONUT, TABLE ---------- */
-charts.prrBar = new Chart(document.getElementById('prrBarChart'), {
-  type:'bar',
-  data:{
-    labels: prrSorted.map(x=>x.name),
-    datasets:[
-      {label:'PRR AP2T', data:prrSorted.map(x=>+M(x.ap2t).toFixed(2)), backgroundColor:prrSorted.map((x,i)=>i===0?C.navy:C.blue), borderRadius:3, maxBarThickness:26, stack:'s'},
-      {label:'Selisih SAP–AP2T', data:prrSorted.map(x=>+M(x.sap-x.ap2t).toFixed(2)), backgroundColor:C.red, borderRadius:3, maxBarThickness:26, stack:'s'}
-    ]
-  },
-  options:{
-    indexAxis:'y', responsive:true, maintainAspectRatio:false,
-    plugins:{
-      legend:legendOpts,
-      tooltip:{callbacks:{label:c=>{
-        const x = prrSorted[c.dataIndex];
-        return c.dataset.label==='PRR AP2T'
-          ? 'PRR AP2T: '+fmtMiliar(x.ap2t)
-          : (x.sap-x.ap2t)>0 ? 'Selisih: '+fmtMiliar(x.sap-x.ap2t) : null;
-      }}}
+defLegend('prrBar','prrBarLeg',[{label:'PRR AP2T',color:C.navy},{label:'Selisih SAP–AP2T',color:C.red}]);
+const PRR_SORT = {
+  sap: x=>x.sap,
+  ap2t: x=>x.ap2t,
+  selisih: x=>x.sap-x.ap2t
+};
+function renderPrrBar(key){
+  legParam('prrBar', {all:-1, ap2t:0, selisih:1}, key);
+  const v = legVis('prrBar');
+  const list = [...prrSorted].sort((a,b)=>PRR_SORT[key==='all' ? 'sap' : key](b)-PRR_SORT[key==='all' ? 'sap' : key](a));
+  if(charts.prrBar) charts.prrBar.destroy();
+  charts.prrBar = new Chart(document.getElementById('prrBarChart'), {
+    type:'bar',
+    data:{
+      labels: list.map(x=>x.name),
+      datasets:[
+        {label:'PRR AP2T', data:list.map(x=>+M(x.ap2t).toFixed(2)), backgroundColor:list.map(x=>x.up3===prrSorted[0].up3?C.navy:C.blue), borderRadius:3, maxBarThickness:26, stack:'s', hidden:!v[0]},
+        {label:'Selisih SAP–AP2T', data:list.map(x=>+M(x.sap-x.ap2t).toFixed(2)), backgroundColor:C.red, borderRadius:3, maxBarThickness:26, stack:'s', hidden:!v[1]}
+      ]
     },
-    scales:{
-      x:{stacked:true, grid:{color:C.grid}, ticks:{callback:v=>v.toLocaleString('id-ID')}},
-      y:{stacked:true, grid:{display:false}}
+    options:{
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:c=>{
+          const x = list[c.dataIndex];
+          return c.dataset.label==='PRR AP2T'
+            ? 'PRR AP2T: '+fmtMiliar(x.ap2t)
+            : (x.sap-x.ap2t)>0 ? 'Selisih: '+fmtMiliar(x.sap-x.ap2t) : null;
+        }}}
+      },
+      scales:{
+        x:{stacked:true, grid:{color:C.grid}, ticks:{callback:v=>v.toLocaleString('id-ID')}},
+        y:{stacked:true, grid:{display:false}}
+      }
     }
-  }
-});
-buildDonut('prrDonut','prrLegend', prrSorted, 'sap');
+  });
+  legSet('prrBar');
+}
+const prrBarSortEl = document.getElementById('prrBarSort');
+prrBarSortEl.addEventListener('change',()=>renderPrrBar(prrBarSortEl.value));
+renderPrrBar(prrBarSortEl.value);
+
+makeDonut('prrDonut', prrSorted, 'sap', {prefix:'PRR SAP', basis:'total PRR SAP', center:'Total PRR SAP'});
 
 (function buildPrrTable(){
   const tb = document.querySelector('#prrTable tbody');
@@ -732,20 +1113,95 @@ const shareRows = piSorted.map(x=>{
   const r = PRR.find(p=>p.up3===x.up3);
   return {name:x.name, piShare: pct(x.sap,piTotal), prrShare: pct(r.sap,prrTotal)};
 });
-charts.share = new Chart(document.getElementById('shareChart'), {
-  type:'bar',
-  data:{
-    labels: shareRows.map(r=>r.name),
-    datasets:[
-      {label:'% Kontribusi Piutang', data:shareRows.map(r=>+r.piShare.toFixed(2)), backgroundColor:C.navy, borderRadius:3, maxBarThickness:14},
-      {label:'% Kontribusi PRR', data:shareRows.map(r=>+r.prrShare.toFixed(2)), backgroundColor:C.gold, borderRadius:3, maxBarThickness:14}
-    ]
-  },
-  options:{
-    indexAxis:'y', responsive:true, maintainAspectRatio:false,
-    plugins:{legend:legendOpts, tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtPct(c.raw)}}},
-    scales:{x:{min:0, grid:{color:C.grid}, ticks:{callback:v=>v+'%'}}, y:{grid:{display:false}}}
-  }
+defLegend('share','shareLeg',[{label:'% Kontribusi Piutang',color:C.navy},{label:'% Kontribusi PRR',color:C.gold}]);
+const SH_SORT = {
+  pi: r=>r.piShare,
+  prr: r=>r.prrShare
+};
+function renderShare(key){
+  legParam('share', {all:-1, pi:0, prr:1}, key);
+  const v = legVis('share');
+  const list = [...shareRows].sort((a,b)=>SH_SORT[key==='all' ? 'pi' : key](b)-SH_SORT[key==='all' ? 'pi' : key](a));
+  if(charts.share) charts.share.destroy();
+  charts.share = new Chart(document.getElementById('shareChart'), {
+    type:'bar',
+    data:{
+      labels: list.map(r=>r.name),
+      datasets:[
+        {label:'% Kontribusi Piutang', data:list.map(r=>+r.piShare.toFixed(2)), backgroundColor:C.navy, borderRadius:3, maxBarThickness:14, hidden:!v[0]},
+        {label:'% Kontribusi PRR', data:list.map(r=>+r.prrShare.toFixed(2)), backgroundColor:C.gold, borderRadius:3, maxBarThickness:14, hidden:!v[1]}
+      ]
+    },
+    options:{
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtPct(c.raw)}}},
+      scales:{x:{min:0, grid:{color:C.grid}, ticks:{callback:v=>v+'%'}}, y:{grid:{display:false}}}
+    }
+  });
+  legSet('share');
+}
+const shareSortEl = document.getElementById('shareSort');
+shareSortEl.addEventListener('change',()=>renderShare(shareSortEl.value));
+renderShare(shareSortEl.value);
+
+/* ---------- SPEEDOMETER KARTU SKOR ---------- */
+function speedometer(label, amount, reference, basis, cls){
+  const percent = pct(amount, reference);
+  const max = Math.max(100, Math.ceil(percent/25)*25);
+  const fraction = Math.max(0, Math.min(1, percent/max));
+  const angle = Math.PI + Math.PI*fraction;
+  const x = 80 + 52*Math.cos(angle), y = 78 + 52*Math.sin(angle);
+  const color = {teal:C.teal, gold:C.gold, green:C.green}[cls] || C.navy;
+  const ticks = [0,.25,.5,.75,1].map(t=>{
+    const a = Math.PI + Math.PI*t;
+    return `<line x1="${80+56*Math.cos(a)}" y1="${78+56*Math.sin(a)}" x2="${80+61*Math.cos(a)}" y2="${78+61*Math.sin(a)}" stroke="#8D9AAC" stroke-width="1"/>`;
+  }).join('');
+  return `<div class="card-gauge" data-amount="${amount}" data-reference="${reference}" data-percent="${percent}" data-max="${max}" data-angle="${angle*180/Math.PI}">
+    <svg viewBox="0 0 160 110" role="img" aria-label="Speedometer ${label}: ${fmtPct(percent)}, ${basis}">
+      <title>${label}: ${fmtPct(percent)}, ${basis}</title>
+      <path d="M16 78 A64 64 0 0 1 144 78" fill="none" stroke="#CED8E3" stroke-width="9" stroke-linecap="round"/>
+      <path d="M16 78 A64 64 0 0 1 144 78" fill="none" stroke="${color}" stroke-width="9" stroke-linecap="${fraction>0?'round':'butt'}" pathLength="100" stroke-dasharray="${fraction*100} 100"/>
+      ${ticks}<line class="gauge-needle" x1="80" y1="78" x2="${x}" y2="${y}" stroke="${C.navy}" stroke-width="2.8" stroke-linecap="round"/>
+      <circle cx="80" cy="78" r="4.5" fill="${C.navy}"/>
+      <text x="8" y="96" font-size="10" fill="#6B7280">0%</text>
+      <text x="153" y="96" text-anchor="end" font-size="10" fill="#6B7280">${max}%</text>
+      <text x="80" y="104" text-anchor="middle" font-size="14" font-weight="700" fill="${C.navy}">${fmtPct(percent)}</text>
+    </svg><div class="gauge-basis">${basis}</div></div>`;
+}
+
+/* ---------- DEFINISI GAUGE KARTU SKOR ---------- */
+const byUp3 = (arr,u) => arr.find(x=>x.up3===u);
+const piTop5 = sum(piSorted.slice(0,5),x=>x.sap);
+const piSemarang = byUp3(piSorted,'SEMARANG').sap;
+const piKudus = byUp3(piSorted,'KUDUS').sap;
+const prrSemarang = byUp3(prrSorted,'SEMARANG').sap;
+const prrTegal = byUp3(prrSorted,'TEGAL');
+
+const GAUGES = {
+  'pi-sap':       {amount:piTotal,          reference:piTotal,                 basis:'Dari total piutang'},
+  'pi-ap2t':      {amount:piTotalAP2T,      reference:piTotal,                 basis:'Dari Piutang SAP'},
+  'pi-top5':      {amount:piTop5,           reference:piTotal,                 basis:'Dari total piutang'},
+  'pi-tertinggi': {amount:piSemarang,       reference:piTotal,                 basis:'Dari total piutang'},
+  'pi-t1':        {amount:piSemarang,       reference:piTotal,                 basis:'Dari total piutang'},
+  'pi-t2':        {amount:piKudus,          reference:piTotal,                 basis:'Dari total piutang'},
+  'prr-sap':      {amount:prrTotal,         reference:prrTotal,                basis:'Dari total PRR SAP'},
+  'prr-ap2t':     {amount:prrTotalAP2T,     reference:prrTotal,                basis:'Dari PRR SAP'},
+  'prr-selisih':  {amount:prrTotal-prrTotalAP2T, reference:prrTotal,           basis:'Dari PRR SAP'},
+  'prr-sumber':   {amount:prrTegal.sap-prrTegal.ap2t, reference:prrTegal.sap,  basis:'Dari PRR SAP Tegal'},
+  'prr-t1':       {amount:prrSemarang,      reference:prrTotal,                basis:'Dari PRR SAP'},
+  'prr-t2':       {amount:prrTegal.sap,     reference:prrTotal,                basis:'Dari PRR SAP'}
+};
+
+document.querySelectorAll('.card[data-g]').forEach(card=>{
+  const g = GAUGES[card.dataset.g];
+  const val = card.querySelector('.value'), lab = card.querySelector('.label');
+  if(!g || !val || !lab) return;
+  const cls = ['teal','gold','green'].find(c=>card.classList.contains(c)) || '';
+  const score = document.createElement('div');
+  score.className = 'card-score';
+  card.insertBefore(score, val);
+  score.appendChild(val);
+  score.insertAdjacentHTML('beforeend', speedometer(lab.textContent, g.amount, g.reference, g.basis, cls));
 });
 
 /* ---------- INIT SORTABLE TABLES ---------- */
