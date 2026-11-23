@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PLN UID Jawa Tengah — Pembayaran Pajak 2026</title>
+<!-- Kode Favicon -->
+<link rel="icon" type="image/png" href="../gambar/Logo PLN Favicon.png">
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
@@ -42,6 +44,27 @@
 .sort-icon{font-size:12px;color:#B9C6D6}
 th[aria-sort="ascending"] .sort-icon,th[aria-sort="descending"] .sort-icon{color:var(--gold)}
 .sort-button:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
+.leg-wrap{display:flex;flex-direction:column;align-items:flex-end;margin-left:auto;gap:2px}
+.leg{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:11.5px;color:var(--text2);justify-content:flex-end}
+.leg span{display:inline-flex;align-items:center;gap:5px;cursor:pointer;user-select:none;transition:opacity .2s}
+.leg span.off{text-decoration:line-through;opacity:.4}
+.leg i{width:11px;height:10px;border-radius:2px;display:inline-block}
+.box-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.box-head .chart-toolbar{margin:0;margin-left:auto}
+.chart.tall{height:460px}
+.chart.xtall{height:560px}
+#pph-chart-legend{grid-template-columns:repeat(4,max-content);justify-content:center}
+#trend-legend-row{display:flex;align-items:center;justify-content:center;gap:12px 20px;margin:12px 0 6px}
+#trend-legend{display:flex;gap:12px;margin:0;flex:0 0 auto}
+#trend-average{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--text2)}
+.average-dash{width:18px;border-top:2px dashed var(--teal);flex-shrink:0}
+#ppn-donut-legend{display:flex;justify-content:center;flex-wrap:wrap;gap:10px 24px}
+#ppn-donut-legend button{justify-content:center}
+.stack-popup{max-width:310px}
+.stack-popup .stack-popup-row{display:flex;align-items:center;gap:7px;margin:4px 0}
+.stack-popup .stack-popup-row b{margin-left:auto}
+.stack-popup .stack-popup-total{border-top:1px solid currentColor;margin-top:7px;padding-top:6px;font-weight:700}
+@media(max-width:420px){#trend-legend-row{gap:8px}#trend-legend{gap:7px}#trend-average{font-size:9px;gap:3px}}
 </style>
 </head>
 <body>
@@ -74,20 +97,22 @@ th[aria-sort="ascending"] .sort-icon,th[aria-sort="descending"] .sort-icon{color
     <h2 class="section-title"><span class="num">02</span> Komposisi &amp; Kontribusi YTD</h2><div class="rule"></div>
     <p class="intro">Basis tetap Januari–Oktober 2026. Komposisi berikut tidak berubah mengikuti filter bulanan.</p>
     <div class="grid">
-      <div class="box"><h3>PPN Operasi vs Investasi</h3><div class="small">Basis total PPN · Rp200,75 Miliar</div><div class="chart short" id="ppn-split" role="img" aria-label="Donat PPN operasi dan investasi."><canvas id="ppnDonut"></canvas></div><div id="ppn-donut-legend" class="ai-donut-legend" aria-label="Legenda donat PPN"></div><div class="leg-hint" style="text-align:center">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div><div id="ppn-legend" hidden></div></div>
-      <div class="box"><h3>Komposisi PPh per Pasal</h3><div class="small">Basis total PPh · Rp37,98 Miliar</div><div class="chart short" id="pph-split" role="img" aria-label="Grafik PPh per pasal."></div><div class="chart-note">Label “Pasal 42” dipertahankan sesuai sumber. Konfirmasi apakah yang dimaksud adalah PPh Pasal 4 ayat (2); jangan gunakan label ini sebagai kesimpulan hukum.</div></div>
+      <div class="box"><h3>Komposisi PPN</h3><div class="small">Basis total PPN · Rp200,75 Miliar</div><div class="chart short" id="ppn-split" role="img" aria-label="Donat PPN operasi dan investasi."><canvas id="ppnDonut"></canvas></div><div id="ppn-donut-legend" class="ai-donut-legend" aria-label="Legenda donat PPN"></div><div class="leg-hint" style="text-align:center">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div><div id="ppn-legend" hidden></div></div>
+      <div class="box"><h3>Perbandingan PPh per Pasal</h3><div class="small">Basis total PPh · Rp37,98 Miliar</div><div class="chart short" id="pph-split" role="img" aria-label="Grafik PPh per pasal."></div></div>
     </div>
     <div class="grid" style="margin-top:16px">
       <div class="box"><h3>Kontribusi Unit Terbesar</h3><div class="small">Lima unit terbesar · persentase terhadap total pajak YTD</div><div class="rank-list" id="ranking"></div></div>
-      <div class="box"><h3>Rekonsiliasi Angka</h3><div id="audit" aria-live="polite"></div><p class="small">Kecocokan aritmetika bukan bukti kepatuhan pajak. Validasi kewajiban, tanggal setor, bukti potong, dan NTPN memerlukan dokumen pendukung.</p></div>
+      <div class="box"><h3>Rekonsiliasi Angka</h3><div id="audit" aria-live="polite"></div><p class="small">Kecocokan aritmetika bukan bukti kepatuhan pajak. Validasi kewajiban, tanggal setor, bukti potong, dan NTPN (Nomor Transaksi Penerimaan Negara) memerlukan dokumen pendukung.</p></div>
     </div>
-    <div class="table-head"><h3>Rekap Unit · Januari–Oktober 2026</h3><button class="btn" id="export-unit">Unduh CSV unit</button></div>
+    <div class="table-head"><h3>Rekap Unit · Januari–Oktober 2026</h3></div>
 
-    <div class="table-wrap" tabindex="0" aria-label="Rekap unit dapat digeser horizontal"><table id="unit-table"><thead><tr><th>Unit</th><th>PPN operasi</th><th>PPN investasi</th><th>Total PPN</th><th>PPh 22</th><th>PPh 23</th><th>PPh 15</th><th>PPh 42*</th><th>Total PPh</th><th>Total pajak</th><th>Porsi YTD</th></tr></thead><tbody id="unit-body"></tbody><tfoot id="unit-foot"></tfoot></table></div>
-    <p class="small" id="unit-note" aria-live="polite"></p>
+    <div class="box"><div class="box-head"><div class="chart-toolbar"><label for="unitStackSort">Urutkan berdasarkan:</label><select id="unitStackSort"></select></div></div>
+      <div class="leg-wrap"><div class="leg" id="unitStackLeg"></div><div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div></div>
+      <div class="chart xtall"><canvas id="unitStackChart"></canvas></div></div>
     <div class="table-head"><h3>Rincian Agregat Bulanan · Operasi, Investasi &amp; Pasal</h3></div>
-    <div class="table-wrap" tabindex="0" aria-label="Rincian agregat bulanan"><table id="detail-table"><thead><tr><th>Masa</th><th>PPN operasi</th><th>PPN investasi</th><th>PPh 22</th><th>PPh 23</th><th>PPh 15</th><th>PPh 42*</th><th>Total pajak</th></tr></thead><tbody id="detail-body"></tbody><tfoot id="detail-foot"></tfoot></table></div>
-    <p class="small">Seluruh nilai tabel dalam rupiah. Rincian agregat ini menggunakan baris TOTAL rekap rinci sumber dan tetap menampilkan seluruh periode. *Label sesuai sumber.</p>
+    <div class="box"><div class="box-head"><div class="chart-toolbar"><label for="monthStackSort">Urutkan berdasarkan:</label><select id="monthStackSort"></select></div></div>
+      <div class="leg-wrap"><div class="leg" id="monthStackLeg"></div><div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div></div>
+      <div class="chart tall"><canvas id="monthStackChart"></canvas></div></div>
   </section>
 </div>
 <div id="analysis" role="tabpanel" aria-labelledby="tab-analysis" hidden>
@@ -151,28 +176,26 @@ function renderMonthly(){
  const selected=months.slice(opts.from,opts.to+1),valid=selected.filter(x=>x.total!==null),total=sum(valid,'total'),ppn=sum(valid,'ppn'),pph=sum(valid,'pph'),peak=valid.reduce((p,x)=>!p||x.total>p.total?x:p,null);
  $('monthly-kpis').innerHTML=card('Total periode',valid.length?bn(total):'Belum tersedia',`Rata-rata ${valid.length?bn(total/valid.length):'—'} / bulan tersedia`)+card('Pembayaran PPN',valid.length?bn(ppn):'—',`Porsi ${total?pct(ppn/total*100):'—'} dari total periode`,'teal')+card('Pembayaran PPh',valid.length?bn(pph):'—',`Porsi ${total?pct(pph/total*100):'—'} dari total periode`,'gold')+card('Bulan tertinggi',peak?peak.name:'—',peak?bn(peak.total):'Tidak ada angka tersedia','green');
  const keys=opts.metric==='all'?['ppn','pph']:[opts.metric],avg=valid.length?valid.reduce((s,x)=>s+keys.reduce((t,k)=>t+x[k],0),0)/valid.length:0;
- draw('trend',{tooltip:tip,legend:{top:8,textStyle:{color:'#41526B'}},grid:{left:52,right:20,top:55,bottom:45},xAxis:{type:'category',data:selected.map(x=>x.name.slice(0,3)),axisTick:{show:false},axisLabel:{color:'#6B7280'}},yAxis:axis(),series:keys.map((k,i)=>({name:k==='ppn'?'PPN':'PPh',type:'bar',stack:'pajak',barMaxWidth:38,itemStyle:{color:k==='ppn'?C.navy:C.gold},data:selected.map(x=>x[k]),...(i===0&&valid.length?{markLine:{silent:true,symbol:'none',lineStyle:{color:C.teal,type:'dashed'},label:{position:'insideEndTop',formatter:()=>`Rata-rata Rp${fmt(avg/1e9,2)} M`},data:[{yAxis:avg}]}}:{})}))});
- draw('cumulative',{tooltip:tip,grid:{left:52,right:18,top:30,bottom:45},xAxis:{type:'category',data:selected.map(x=>x.name.slice(0,3)),axisTick:{show:false},axisLabel:{color:'#6B7280'}},yAxis:axis(),series:[{name:'Kumulatif YTD',type:'line',smooth:false,connectNulls:false,data:selected.map(x=>x.cum),symbolSize:7,itemStyle:{color:C.teal},lineStyle:{width:3,color:C.teal},areaStyle:{color:'#159A9818'}}]});
+ draw('trend',{tooltip:tip,legend:{top:8,textStyle:{color:'#41526B'}},grid:{left:52,right:20,top:55,bottom:45},xAxis:{type:'category',data:selected.map(x=>x.name.slice(0,3)),axisTick:{show:false},axisLabel:{color:'#6B7280'}},yAxis:axis(),series:keys.map((k,i)=>({name:k==='ppn'?'PPN':'PPh',type:'bar',stack:'pajak',barMaxWidth:38,itemStyle:{color:k==='ppn'?C.navy:C.gold},data:selected.map(x=>x[k]),...(i===0&&valid.length?{markLine:{silent:true,symbol:'none',lineStyle:{color:C.teal,type:'dashed'},label:{show:false},data:[{yAxis:avg}]}}:{})}))});
+ draw('cumulative',{tooltip:tip,grid:{left:52,right:18,top:30,bottom:45},xAxis:{type:'category',data:selected.map(x=>x.name.slice(0,3)),axisTick:{show:false},axisLabel:{color:'#6B7280'}},yAxis:axis(),series:[{name:'Kumulatif YTD',type:'line',smooth:false,connectNulls:false,data:selected.map(x=>x.cum),symbol:'circle',symbolSize:7,emphasis:{scale:2,itemStyle:{borderColor:'#fff',borderWidth:2,shadowBlur:10,shadowColor:'#159A9866'}},itemStyle:{color:C.teal},lineStyle:{width:3,color:C.teal},areaStyle:{color:'#159A9818'}}]});
  $('monthly-body').innerHTML=selected.map(x=>{const prev=months[x.i-1],mom=x.total!==null&&prev&&prev.total?((x.total/prev.total)-1)*100:null;return`<tr><td data-sort="${x.i}">${x.name}</td><td data-sort="${x.ppn??''}">${x.ppn===null?'—':rp(x.ppn)}</td><td data-sort="${x.pph??''}">${x.pph===null?'—':rp(x.pph)}</td><td data-sort="${x.total??''}"><b>${x.total===null?'—':rp(x.total)}</b></td><td data-sort="${mom??''}">${mom===null?'—':(mom>0?'+':'')+pct(mom)}</td><td data-sort="${x.cum??''}">${x.cum===null?'—':rp(x.cum)}</td><td data-sort="${x.total===null?'':1}"><span class="status ${x.total===null?'missing':''}">${x.total===null?'Belum tersedia':'Tersedia'}</span></td></tr>`;}).join('');
  $('monthly-foot').innerHTML=`<tr><td>TOTAL PERIODE TERSEDIA</td><td>${valid.length?rp(ppn):'—'}</td><td>${valid.length?rp(pph):'—'}</td><td>${valid.length?rp(total):'—'}</td><td>—</td><td>—</td><td>${valid.length} bulan</td></tr>`;
 }
-function filteredUnits(){return [...units].sort((a,b)=>b.total-a.total);}
 function renderUnits(){
- const list=filteredUnits(),keys=['op','inv','ppn','p22','p23','p15','p42','pph','total'];
- $('unit-body').innerHTML=list.map(u=>`<tr><td class="unit-name" data-sort="${u.name}">${u.name}</td>${keys.map(k=>`<td data-sort="${u[k]}">${rp(u[k])}</td>`).join('')}<td data-sort="${u.total/T.total*100}">${pct(u.total/T.total*100)}</td></tr>`).join('');
- $('unit-foot').innerHTML=`<tr><td>TOTAL</td>${keys.map(k=>`<td>${rp(sum(list,k))}</td>`).join('')}<td>100,00%</td></tr>`;
- $('unit-note').textContent='15 unit ditampilkan. Klik judul kolom untuk mengurutkan naik/turun. Porsi dihitung terhadap total pajak YTD; baris TOTAL tetap di bawah. CSV mengikuti urutan tabel.';
+ stackedChart({canvasId:'unitStackChart',legId:'unitStackLeg',selId:'unitStackSort',sortAll:'total',
+  items:units.map(u=>({label:u.name,total:u.total,vals:[u.op,u.inv,u.p22,u.p23,u.p15,u.p42]}))});
 }
 function renderComposition(){
  const op=sum(units,'op'),inv=sum(units,'inv'),parts=[['Operasi',op,C.teal],['Investasi',inv,C.navy]];
  $('ppn-legend').innerHTML=parts.map(([n,v,c])=>`<span><i class="dot" style="background:${c}"></i>${n}: <b>${bn(v)}</b> (${pct(v/T.ppn*100)})</span>`).join('<br>');
- const pasals=[['Pasal 23',expected.p23,C.navy],['Pasal 22',expected.p22,C.gold],['Pasal 42*',expected.p42,C.teal],['Pasal 15',expected.p15,C.purple]];
+ const pasals=[['Pasal 23',expected.p23,C.navy],['Pasal 22',expected.p22,C.gold],['Pasal 4(2)',expected.p42,C.teal],['Pasal 15',expected.p15,C.purple]];
  draw('pph-split',{tooltip:{...tip,formatter:ps=>`<div class="tip"><strong>${ps[0].name}</strong>${rp(ps[0].value)}<br>${pct(ps[0].value/T.pph*100)} dari PPh</div>`},grid:{left:85,right:65,top:20,bottom:30},xAxis:axis(),yAxis:{type:'category',inverse:true,data:pasals.map(x=>x[0]),axisLine:{show:false},axisTick:{show:false},axisLabel:{color:'#41526B'}},series:[{name:'PPh',type:'bar',barMaxWidth:30,label:{show:true,position:'right',color:C.navy,formatter:p=>pct(p.value/T.pph*100)},data:pasals.map(([name,value,color])=>({name,value,itemStyle:{color}}))}]});
- const ranked=[...units].sort((a,b)=>b.total-a.total);$('ranking').innerHTML=ranked.slice(0,5).map((u,i)=>`<div class="rank-row"><div class="rank-no">${i+1}</div><div><div class="rank-label">${u.name} · ${u.ba}</div><div class="bar-bg"><div class="bar-fill" style="width:${u.total/T.total*100}%"></div></div></div><div class="rank-value">${bn(u.total)}<br><span class="small">${pct(u.total/T.total*100)}</span></div></div>`).join('');
+ const ranked=[...units].sort((a,b)=>b.total-a.total);$('ranking').innerHTML=ranked.slice(0,5).map((u,i)=>`<div class="rank-row"><div class="rank-no">${i+1}</div><div><div class="rank-label">${u.name}</div><div class="bar-bg"><div class="bar-fill" style="width:${u.total/T.total*100}%"></div></div></div><div class="rank-value">${bn(u.total)}<br><span class="small">${pct(u.total/T.total*100)}</span></div></div>`).join('');
  const checks=[['Rekap bulanan vs total sumber',['ppn','pph','total'].every(k=>T[k]===expected[k])],['Total unit vs total bulanan',['ppn','pph','total'].every(k=>sum(units,k)===T[k])],['Rincian bulanan PPN dan pasal',available.every(x=>x.op+x.inv===x.ppn&&x.p22+x.p23+x.p15+x.p42===x.pph)],['Komposisi unit vs total sumber',Object.keys(expected).every(k=>sum(units,k)===expected[k])],['PPh operasi + investasi per unit',units.every(x=>x.phOp+x.phInv===x.pph)]];
  window.auditResults=checks;
  $('audit').innerHTML=`<div class="callout ${checks.every(x=>x[1])?'teal':'red'}"><b>${checks.every(x=>x[1])?'5 pemeriksaan aritmetika cocok':'Ada selisih: perlu verifikasi'}</b><ul class="audit-list">${checks.map(([n,ok])=>`<li>${n}: <b>${ok?'cocok':'SELISIH'}</b></li>`).join('')}</ul></div>`;
- const detailKeys=['op','inv','p22','p23','p15','p42','total'];$('detail-body').innerHTML=months.map(x=>`<tr><td data-sort="${x.i}">${x.name}</td>${detailKeys.map(k=>`<td data-sort="${x.total===null?'':x[k]}">${x.total===null?'—':rp(x[k])}</td>`).join('')}</tr>`).join('');$('detail-foot').innerHTML=`<tr><td>TOTAL</td>${detailKeys.map(k=>`<td>${rp(sum(available,k))}</td>`).join('')}</tr>`;
+ stackedChart({canvasId:'monthStackChart',legId:'monthStackLeg',selId:'monthStackSort',sortAll:'none',
+  items:available.map(x=>({label:x.name,total:x.total,vals:[x.op,x.inv,x.p22,x.p23,x.p15,x.p42]}))});
 }
 function renderAnalysis(){
  const avg=T.total/available.length,peak=available.reduce((a,b)=>a.total>b.total?a:b),oct=months[9],sep=months[8],mom=(oct.total/sep.total-1)*100,uid=units.find(x=>x.ba===5201),uidShare=uid.total/T.total*100,ppnShare=T.ppn/T.total*100,invShare=expected.inv/T.ppn*100,phShare=(expected.p22+expected.p23)/T.pph*100,q2=sum(available.slice(3,6),'total'),q3=sum(available.slice(6,9),'total');
@@ -192,15 +215,15 @@ function renderAnalysis(){
  ['warn','PPh · fokus Pasal 23 & 22',`Pasal 23 sebesar ${bn(expected.p23)} dan Pasal 22 ${bn(expected.p22)}; gabungannya <b>${pct(phShare)} dari PPh</b>. Pasal 15 hanya ${rp(expected.p15)} dan tercatat pada UP3 Kudus: konfirmasi kelengkapan, bukan asumsi kurang setor.`],
  ['','Tren · penurunan Oktober',`Oktober ${bn(oct.total)}, turun <b>${pct(Math.abs(mom))}</b> dari September. PPN turun ${pct((1-oct.ppn/sep.ppn)*100)} dan PPh turun ${pct((1-oct.pph/sep.pph)*100)}. Penyebab tidak dapat ditentukan tanpa detail transaksi dan jadwal setor.`],
  ['danger','Kelengkapan · dua bulan kosong',`November–Desember <b>belum memiliki angka</b>. Rasio 10/12 bulan (${pct(10/12*100)}) hanya menggambarkan ketersediaan periode, bukan pencapaian target pajak. Jangan menyebut ${bn(T.total)} sebagai realisasi tahun penuh.`],
- ['warn','Mutu data · unit & header',`UP3 Yogyakarta mencatat ${bn(units.find(x=>x.ba===5213).total)} pada rekap YTD; Juni–Oktober tidak memuat nominal. Konfirmasi apakah nihil atau belum tercatat. Header Agustus, label “42”, dan nama entitas juga perlu standardisasi.`]
+ ['warn','Mutu data · unit & header',`UP3 Yogyakarta mencatat ${bn(units.find(x=>x.ba===5213).total)} pada rekap YTD; Juni–Oktober tidak memuat nominal. Konfirmasi apakah nihil atau belum tercatat. Header Agustus, label “4(2)”, dan nama entitas juga perlu standardisasi.`]
  ];
  $('insights').innerHTML=insights.map(([cls,title,text])=>`<article class="ins ${cls}"><div class="ins-title">${title}</div><div class="ins-text">${text}</div></article>`).join('');
  const actions=[
  ['Prioritas tinggi · Perencanaan kas',`Susun kalender kas pajak berbasis jadwal invoice dan kewajiban setor. Gunakan puncak April ${bn(peak.total)} sebagai skenario historis, bukan prediksi pasti bulan berikutnya.`,'PIC usulan: Treasury & Pajak · rolling bulanan'],
- ['Prioritas tinggi · Review BA 5201',`Prioritaskan pencocokan pembayaran ${bn(uid.total)} dengan bukti setor/NTPN, bukti potong, dan masa pajak. Dokumentasikan pengecualian serta hasil koreksi.`,'PIC usulan: Tim Pajak UID · setiap penutupan bulan'],
+ ['Prioritas tinggi · Review BA 5201',`Prioritaskan pencocokan pembayaran ${bn(uid.total)} dengan bukti setor/NTPN (Nomor Transaksi Penerimaan Negara), bukti potong, dan masa pajak. Dokumentasikan pengecualian serta hasil koreksi.`,'PIC usulan: Tim Pajak UID · setiap penutupan bulan'],
  ['Prioritas tinggi · Lengkapi akhir tahun','Konfirmasi status November–Desember dan sel kosong Yogyakarta. Bedakan “nihil terverifikasi” dari “belum tersedia”; wajibkan pengesahan unit sebelum konsolidasi.','PIC usulan: Keuangan unit · sebelum tutup buku'],
  ['Prioritas menengah · PPN investasi',`Rekonsiliasi ${bn(expected.inv)} dengan faktur, klasifikasi operasi–investasi, kontrak, serta dokumen proyek. Jangan menyimpulkan korelasi progres proyek dari nominal pajak saja.`,'PIC usulan: Pajak & Investasi · bulanan'],
- ['Prioritas menengah · Validasi pasal',`Fokuskan pengujian pada Pasal 23 dan 22 (${pct(phShare)} PPh). Telusuri Pasal 15 di Kudus; konfirmasi arti “42” dan susunan header Agustus terhadap dokumen sumber.`,'PIC usulan: Tim Pajak · review sampel berbasis risiko'],
+ ['Prioritas menengah · Validasi pasal',`Fokuskan pengujian pada Pasal 23 dan 22 (${pct(phShare)} PPh). Telusuri Pasal 15 di Kudus; konfirmasi arti “4(2)” dan susunan header Agustus terhadap dokumen sumber.`,'PIC usulan: Tim Pajak · review sampel berbasis risiko'],
  ['Prioritas tinggi · Quality gate data','Otomatiskan kontrol: PPN operasi + investasi = total PPN; jumlah pasal = PPh; total unit = total bulanan. Simpan log perubahan, nama entitas baku, tanggal pemutakhiran, dan status validasi.','PIC usulan: Data owner & Akuntansi · setiap pembaruan']
  ];
  $('recommendations').innerHTML=actions.map(([k,p,o])=>`<article class="reco-card"><div class="k">${k}</div><p>${p}</p></article>`).join('');
@@ -210,14 +233,6 @@ function csv(name,rows){const text='\uFEFF'+rows.map(r=>r.map(v=>'"'+String(v??'
 function activate(id){document.querySelectorAll('[role=tab]').forEach(b=>{const on=b.dataset.panel===id;b.classList.toggle('active',on);b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1;$(b.dataset.panel).hidden=!on;});requestAnimationFrame(()=>{charts.forEach(c=>c.resize());if(window.ScrollTrigger)ScrollTrigger.refresh();});}
 document.querySelectorAll('[role=tab]').forEach((b,i,list)=>{b.addEventListener('click',()=>activate(b.dataset.panel));b.addEventListener('keydown',e=>{let j;if(e.key==='ArrowRight')j=(i+1)%list.length;else if(e.key==='ArrowLeft')j=(i+list.length-1)%list.length;else if(e.key==='Home')j=0;else if(e.key==='End')j=list.length-1;else return;e.preventDefault();list[j].focus();activate(list[j].dataset.panel);});});
 $('export-month').addEventListener('click',()=>csv('rekap-pajak-bulanan-2026.csv',[['Masa','PPN_Rp','PPh_Rp','Total_Rp','Kumulatif_YTD_Rp','Status'],...months.slice(opts.from,opts.to+1).map(x=>[x.name,...[x.ppn,x.pph,x.total,x.cum].map(v=>v===null?'':rp(v)),x.total===null?'Belum tersedia':'Tersedia'])]));
-$('export-unit').addEventListener('click',()=>{
- const list=[...$('unit-body').rows].map(r=>units.find(u=>u.name===r.cells[0].textContent));
- csv('rekap-pajak-unit-YTD-2026.csv',[
-  ['Unit','PPN_Operasi_Rp','PPN_Investasi_Rp','Total_PPN_Rp','PPh_22_Rp','PPh_23_Rp','PPh_15_Rp','PPh_42_label_sumber_Rp','Total_PPh_Rp','Total_Pajak_Rp','Porsi_YTD'],
-  ...list.map(u=>[u.name,...['op','inv','ppn','p22','p23','p15','p42','pph','total'].map(k=>rp(u[k])),pct(u.total/T.total*100)]),
-  ['TOTAL',...['op','inv','ppn','p22','p23','p15','p42','pph','total'].map(k=>rp(sum(units,k))),'100,00%']
- ]);
-});
 function speedometer(label,amount,reference,basis,cls){
   const percent=reference>0?amount/reference*100:null;
   const max=Math.max(100,Math.ceil((percent||0)/25)*25);
@@ -250,14 +265,21 @@ renderMonthly=function(){
   const chart=charts.get('trend');
   if(chart){chart.setOption({legend:{show:false}});}
   makeLegend('trend','trend-legend',series.map(name=>({name,color:name==='PPN'?C.navy:C.gold})),{kind:'series'});
+  let row=$('trend-legend-row');if(!row){row=document.createElement('div');row.id='trend-legend-row';$('trend-legend').before(row);}
+  row.prepend($('trend-legend'));
+  let average=$('trend-average');if(!average){average=document.createElement('div');average.id='trend-average';row.append(average);}
+  const selectedKeys=opts.metric==='all'?['ppn','pph']:[opts.metric];
+  const selectedAverage=valid.length?valid.reduce((s,x)=>s+selectedKeys.reduce((v,k)=>v+x[k],0),0)/valid.length:null;
+  average.innerHTML=`<span class="average-dash" aria-hidden="true"></span>Rata-rata: <b>${selectedAverage===null?'Belum tersedia':bn(selectedAverage)}</b>`;
 };
 function makeLegend(chartId,legendId,parts,settings={}){
   let el=$(legendId);
   if(!el){el=document.createElement('div');el.id=legendId;$(chartId).after(el);}
   el.className='ai-donut-legend';el.setAttribute('aria-label','Legenda interaktif '+chartId);
   el.innerHTML=parts.map((p,i)=>`<button type="button" data-i="${i}" aria-pressed="true"><i style="background:${p.color}"></i><span>${p.label||p.name}</span></button>`).join('');
-  let hint=el.nextElementSibling;
-  if(!hint||!hint.classList.contains('leg-hint')){hint=document.createElement('div');hint.className='leg-hint';el.after(hint);}
+  const anchor=chartId==='trend'&&$('trend-legend-row')?$('trend-legend-row'):el;
+  let hint=anchor.nextElementSibling;
+  if(!hint||!hint.classList.contains('leg-hint')){hint=document.createElement('div');hint.className='leg-hint';anchor.after(hint);}
   hint.style.textAlign='center';hint.textContent='(Klik legend untuk menampilkan atau menyembunyikan grafik)';
   const chart=charts.get(chartId),hidden=new Set();
   function sync(){el.querySelectorAll('button').forEach((b,i)=>{const visible=!hidden.has(i);b.classList.toggle('off',!visible);b.setAttribute('aria-pressed',String(visible));});}
@@ -283,7 +305,7 @@ renderComposition=function(){
   renderCompositionOriginal();
   const parts=[{name:'Operasi',label:'PPN — Operasi',value:expected.op,color:C.teal},{name:'Investasi',label:'PPN — Investasi',value:expected.inv,color:C.navy}];
   renderPpnDonut(parts);
-  const pasals=[{name:'Pasal 23',value:expected.p23,color:C.navy},{name:'Pasal 22',value:expected.p22,color:C.gold},{name:'Pasal 42*',value:expected.p42,color:C.teal},{name:'Pasal 15',value:expected.p15,color:C.purple}];
+  const pasals=[{name:'Pasal 23',value:expected.p23,color:C.navy},{name:'Pasal 22',value:expected.p22,color:C.gold},{name:'Pasal 4(2)',value:expected.p42,color:C.teal},{name:'Pasal 15',value:expected.p15,color:C.purple}];
   makeLegend('pph-split','pph-chart-legend',pasals,{kind:'bar-items'});
 };
 /* ---------- DONAT PPN (format mengikuti donat Komposisi Nilai AI per Program) ---------- */
@@ -318,8 +340,12 @@ const ppnCenter={
   afterDraw(chart){
     const el=chart.getDatasetMeta(0).data[0]; if(!el) return;
     const ctx=chart.ctx; ctx.save(); ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillStyle='#6B7280'; ctx.font='600 11px Arial, Helvetica, sans-serif'; ctx.fillText('TOTAL PPN YTD',el.x,el.y-18);
-    ctx.fillStyle=C.navy; ctx.font='700 20px Arial, Helvetica, sans-serif'; ctx.fillText('Rp'+fmt(T.ppn/1e9,2)+' M',el.x,el.y+8);
+    const val='Rp'+fmt(T.ppn/1e9,2)+' M';
+    ctx.font='700 100px Arial, Helvetica, sans-serif';
+    const fs=Math.floor(100*(el.innerRadius*1.9)/ctx.measureText(val).width);
+    ctx.font=`700 ${fs}px Arial, Helvetica, sans-serif`; ctx.fillStyle=C.navy; ctx.fillText(val,el.x,el.y+fs*0.35);
+    const fl=Math.max(9,Math.round(fs*0.42));
+    ctx.font=`600 ${fl}px Arial, Helvetica, sans-serif`; ctx.fillStyle='#6B7280'; ctx.fillText('TOTAL PPN YTD',el.x,el.y-fs*0.85);
     ctx.restore();
   }
 };
@@ -479,6 +505,78 @@ function ppnSyncLegend(){
     b.classList.toggle('off',!v);b.setAttribute('aria-pressed',String(v));
   });
 }
+/* ---------- BAR BERTUMPUK MENDATAR (format mengikuti grafik Total Biaya pada bpp.html) ---------- */
+const STK_KEYS=['op','inv','p22','p23','p15','p42'];
+const STK_NAMES=['PPN Operasi','PPN Investasi','PPh 22','PPh 23','PPh 15','PPh 4(2)'];
+const STK_COLORS=[C.teal,C.navy,C.gold,'#2877A8',C.purple,'#8D9AAC'];
+function stackedPopup(chart,tooltip,st){
+ let box=$('stackPopup');if(!box){box=document.createElement('div');box.id='stackPopup';box.className='ai-donut-popup stack-popup';box.setAttribute('role','tooltip');document.body.append(box);}
+ if(!tooltip.opacity||!tooltip.dataPoints?.length||chart.canvas.offsetParent===null){box.style.display='none';box.setAttribute('aria-hidden','true');return;}
+ const point=tooltip.dataPoints[0],item=st.list[point.dataIndex];
+ const skin=popupSkin(STK_COLORS[point.datasetIndex]);
+ box.style.backgroundColor=skin.hue;box.style.backgroundImage=skin.veil?'linear-gradient('+skin.veil+','+skin.veil+')':'none';box.style.color=skin.text;box.style.borderColor=skin.edge;
+ box.replaceChildren();const title=document.createElement('strong');title.textContent=item.label;box.append(title);
+ const indices=st.vis.map((v,i)=>v?i:-1).filter(i=>i>=0);
+ indices.forEach(i=>{const row=document.createElement('div');row.className='stack-popup-row';const swatch=document.createElement('i');swatch.className='popup-swatch';swatch.style.background=STK_COLORS[i];const name=document.createElement('span');name.textContent=STK_NAMES[i];const value=document.createElement('b');value.textContent=bn(item.vals[i]);row.append(swatch,name,value);box.append(row);});
+ const total=document.createElement('div');total.className='stack-popup-total';total.textContent='Total pajak: '+bn(item.total);box.append(total);
+ if(indices.length!==STK_KEYS.length){const visible=document.createElement('div');visible.textContent='Total ditampilkan: '+bn(indices.reduce((s,i)=>s+item.vals[i],0));box.append(visible);}
+ box.style.display='block';box.setAttribute('aria-hidden','false');
+ const r=chart.canvas.getBoundingClientRect(),vw=document.documentElement.clientWidth,vh=innerHeight;box.style.maxWidth=Math.min(310,vw-16)+'px';
+ const w=box.offsetWidth,h=box.offsetHeight;const anchorX=r.left+tooltip.caretX,anchorY=r.top+tooltip.caretY;
+ box.style.left=Math.max(8,Math.min(vw-w-8,anchorX+12))+'px';box.style.top=Math.max(8,Math.min(vh-h-8,anchorY-h/2))+'px';
+}
+window.addEventListener('scroll',()=>{const b=$('stackPopup');if(b)b.style.display='none';},true);
+const stackedTotalLabels={id:'stackedTotalLabels',afterDatasetsDraw(chart){
+ const st=chart.$stackState;if(!st)return;const ctx=chart.ctx;ctx.save();ctx.font='700 11px Arial';ctx.fillStyle=C.navy;ctx.textAlign='left';ctx.textBaseline='middle';
+ st.list.forEach((item,row)=>{const indices=st.vis.map((v,i)=>v?i:-1).filter(i=>i>=0);if(!indices.length)return;const visibleTotal=indices.reduce((s,i)=>s+item.vals[i],0);const text=bn(visibleTotal);let end=chart.scales.x.getPixelForValue(0),y;
+ indices.forEach(i=>{const bar=chart.getDatasetMeta(i).data[row];if(bar){end=Math.max(end,bar.x);y=bar.y;}});
+ if(y===undefined||item.missing)return;ctx.fillText(text,end+7,y);
+ });ctx.restore();
+}};
+function stackedChart(cfg){
+  const st={sel:'all',vis:STK_KEYS.map(()=>true),list:[]};
+  const chart=new Chart(document.getElementById(cfg.canvasId),{
+    type:'bar',
+    data:{labels:[],datasets:STK_KEYS.map((k,i)=>({label:STK_NAMES[i],data:[],backgroundColor:STK_COLORS[i],borderRadius:0,maxBarThickness:26}))},
+    options:{
+      indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      layout:{padding:{right:155}},
+      interaction:{mode:'nearest',intersect:true},
+      plugins:{legend:{display:false},tooltip:{enabled:false,external:({chart,tooltip})=>stackedPopup(chart,tooltip,st)}},
+      scales:{x:{stacked:true,grid:{color:C.grid},title:{display:true,text:'Rp Miliar'}},y:{stacked:true,grid:{display:false}}}
+    },plugins:[stackedTotalLabels]
+  });
+  chart.$stackState=st;
+  const leg=document.getElementById(cfg.legId);
+  leg.innerHTML=STK_NAMES.map((n,i)=>`<span data-i="${i}"><i style="background:${STK_COLORS[i]}"></i>${n}</span>`).join('');
+  const sel=document.getElementById(cfg.selId);
+  sel.innerHTML='<option value="all" selected>Semua parameter</option>'+STK_NAMES.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
+  function apply(){
+    const list=[...cfg.items];
+    if(st.sel!=='all') list.sort((a,b)=>b.vals[st.sel]-a.vals[st.sel]);
+    else if(cfg.sortAll==='total') list.sort((a,b)=>b.total-a.total);
+    st.list=list;
+    chart.data.labels=list.map(x=>x.label);
+    chart.data.datasets.forEach((ds,i)=>{ds.data=list.map(x=>x.vals[i]/1e9);chart.setDatasetVisibility(i,st.vis[i]);});
+    const popup=$('stackPopup');if(popup)popup.style.display='none';
+    chart.update();
+    leg.querySelectorAll('span').forEach((s,i)=>s.classList.toggle('off',!st.vis[i]));
+  }
+  leg.onclick=e=>{
+    const s=e.target.closest('span[data-i]'); if(!s) return;
+    const i=+s.dataset.i;
+    if(st.vis[i]&&st.vis.filter(Boolean).length===1) return;
+    st.vis[i]=!st.vis[i]; apply();
+  };
+  sel.addEventListener('change',()=>{
+    const v=sel.value;
+    st.sel=v==='all'?'all':+v;
+    st.vis=STK_KEYS.map((_,i)=>v==='all'||i===+v);
+    apply();
+  });
+  apply();
+  return chart;
+}
 document.querySelectorAll('.chart-toolbar label').forEach(label=>{label.textContent='Urutkan berdasarkan:';});
 function makeTableSortable(tableId){
  const table=$(tableId),body=table.tBodies[0];
@@ -503,7 +601,7 @@ function makeTableSortable(tableId){
  });
 }
 $('hero-total').textContent=bn(T.total);renderMonthly();renderUnits();renderComposition();renderAnalysis();
-makeTableSortable('monthly-table');makeTableSortable('unit-table');makeTableSortable('detail-table');
+makeTableSortable('monthly-table');
 window.addEventListener('resize',()=>charts.forEach(c=>c.resize()));
 if(window.gsap&&window.ScrollTrigger&&!matchMedia('(prefers-reduced-motion: reduce)').matches){gsap.registerPlugin(ScrollTrigger);document.querySelectorAll('#pay .box').forEach(el=>gsap.from(el,{y:12,duration:.45,scrollTrigger:{trigger:el,start:'top 94%',once:true}}));}
 </script>
