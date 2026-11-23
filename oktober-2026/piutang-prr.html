@@ -72,17 +72,27 @@ select:focus{border-color:var(--teal);box-shadow:0 0 0 2px rgba(14,124,123,.10)}
 .neutral{color:var(--grey)}
 .small{font-size:11px;color:var(--grey)}
 
+/* KARTU SKOR BERTUMPUK (speedometer di atas, nilai rupiah di bawah) */
+.card-stack .card-score{flex-direction:column-reverse;align-items:center;justify-content:center;text-align:center;gap:4px}
+.card-stack .card-gauge{width:150px;flex:0 0 auto;margin:0 auto}
+.card-stack .value{text-align:center;margin:0}
+
 /* GRID / BOX */
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .grid-wide{display:grid;grid-template-columns:1.35fr .65fr;gap:16px}
+.split{align-items:stretch}
+.split-col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.split-col > .box{margin:0;flex:1 1 auto;display:flex;flex-direction:column;min-height:0}
+.split-col > .callout{margin:0}
+.split-col > .cards{margin:0}
 .box{background:#fff;border:1px solid var(--line);border-radius:4px;padding:17px;margin:16px 0;box-shadow:0 1px 4px rgba(11,46,79,.025);min-width:0}
 .box h3{margin:0 0 12px;font-family:Arial,serif;color:var(--navy-d);font-size:17px}
 .box-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
 .box-head h3{margin:0}
 .chart{height:360px;position:relative}
 .chart.small-chart{height:320px}
-.chart.donut{height:340px}
 .chart.tall{height:460px}
+.chart.fill{height:auto;flex:1 1 auto;min-height:200px;position:relative}
 .chart-caption{font-size:11.5px;color:var(--grey);margin:-6px 0 10px}
 
 /* CHART TOOLBAR (dropdown Urutkan) */
@@ -169,6 +179,7 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
   .hero h1{font-size:28px}
   .chart{height:300px}
   .chart.tall{height:380px}
+  .chart.fill{height:auto;min-height:260px}
 }
 @media(max-width:600px){
   .wrap,.hero-inner,.tabbar{padding-left:15px;padding-right:15px}
@@ -227,34 +238,36 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
       <div class="card green" data-g="pi-tertinggi"><div class="label">UP3 Tertinggi</div><div class="value">Semarang</div><div class="delta neutral">Rp547,23 M</div><div class="small">Setara 20,24% dari total piutang.</div></div>
     </div>
 
-    <div class="grid-wide">
-      <div class="box">
-        <div class="box-head"><h3>Sebaran Piutang — 12 UP3</h3>
-          <div class="chart-toolbar"><label for="piBarSort">Urutkan berdasarkan:</label>
-            <select id="piBarSort">
-              <option value="all" selected>Semua parameter</option>
-              <option value="sap">Piutang SAP</option>
-              <option value="ap2t">Piutang AP2T</option>
-              <option value="selisih">Selisih SAP–AP2T</option>
-            </select></div>
+    <div class="grid-wide split">
+      <div class="split-col">
+        <div class="box">
+          <div class="box-head"><h3>Sebaran Piutang — 12 UP3</h3>
+            <div class="chart-toolbar"><label for="piBarSort">Urutkan berdasarkan:</label>
+              <select id="piBarSort">
+                <option value="all" selected>Semua parameter</option>
+                <option value="sap">Piutang SAP</option>
+                <option value="ap2t">Piutang AP2T</option>
+                <option value="selisih">Selisih SAP–AP2T</option>
+              </select></div>
+          </div>
+          <div class="chart-caption">Nilai dalam Miliar Rupiah, diurutkan dari nominal terbesar ke terkecil.</div>
+          <div class="chart fill"><canvas id="piutangBarChart"></canvas></div>
         </div>
-        <div class="chart-caption">Nilai dalam Miliar Rupiah, diurutkan dari nominal terbesar ke terkecil.</div>
-        <div class="chart"><canvas id="piutangBarChart"></canvas></div>
+        <div class="cards cards-2">
+          <div class="card card-stack" data-g="pi-t1"><div class="label">Top 1 — Semarang</div><div class="value">Rp547,23 M</div><div class="small">20,24% dari total piutang.</div></div>
+          <div class="card card-stack" data-g="pi-t2"><div class="label">Top 2 — Kudus</div><div class="value">Rp349,01 M</div><div class="small">12,91% dari total piutang.</div></div>
+        </div>
       </div>
 
-      <div>
+      <div class="split-col">
         <div class="callout">
           <b>Konsentrasi Top 5: 60,55%.</b> Lima UP3 terbesar memiliki total piutang sebesar Rp1.637,51 Miliar dari total Rp2.704,35 Miliar.
         </div>
         <div class="box">
           <h3>Komposisi Top 5 vs Lainnya</h3>
-          <div class="chart donut"><canvas id="piutangDonut"></canvas></div>
+          <div class="chart fill"><canvas id="piutangDonut"></canvas></div>
           <div id="piutangLegend" class="ai-donut-legend" aria-label="Legend komposisi piutang per UP3"></div>
           <div class="leg-hint" style="text-align:center">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
-        </div>
-        <div class="cards cards-2" style="margin:16px 0 0">
-          <div class="card" data-g="pi-t1"><div class="label">Top 1 — Semarang</div><div class="value">Rp547,23 M</div><div class="small">20,24% dari total piutang.</div></div>
-          <div class="card" data-g="pi-t2"><div class="label">Top 2 — Kudus</div><div class="value">Rp349,01 M</div><div class="small">12,91% dari total piutang.</div></div>
         </div>
       </div>
     </div>
@@ -287,39 +300,41 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
       <div class="card gold" data-g="prr-sumber"><div class="label">Sumber Selisih</div><div class="value">Tegal</div><div class="delta neg">Rp2,30 M</div><div class="small">Seluruh selisih Rp2,30 M berasal dari UP3 Tegal.</div></div>
     </div>
 
-    <div class="grid-wide">
-      <div class="box">
-        <div class="box-head"><h3>Sebaran PRR SAP — 12 UP3</h3>
-          <div class="chart-toolbar"><label for="prrBarSort">Urutkan berdasarkan:</label>
-            <select id="prrBarSort">
-              <option value="all" selected>Semua parameter</option>
-              <option value="ap2t">PRR AP2T</option>
-              <option value="selisih">Selisih SAP–AP2T</option>
-            </select></div>
-        </div>
-        <div class="ctrl-row">
-          <div class="leg-wrap">
-            <div class="leg" id="prrBarLeg"></div>
-            <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+    <div class="grid-wide split">
+      <div class="split-col">
+        <div class="box">
+          <div class="box-head"><h3>Sebaran PRR SAP — 12 UP3</h3>
+            <div class="chart-toolbar"><label for="prrBarSort">Urutkan berdasarkan:</label>
+              <select id="prrBarSort">
+                <option value="all" selected>Semua parameter</option>
+                <option value="ap2t">PRR AP2T</option>
+                <option value="selisih">Selisih SAP–AP2T</option>
+              </select></div>
           </div>
+          <div class="ctrl-row">
+            <div class="leg-wrap">
+              <div class="leg" id="prrBarLeg"></div>
+              <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+            </div>
+          </div>
+          <div class="chart-caption">Nilai dalam Miliar Rupiah. Bagian merah pada bar menunjukkan selisih SAP–AP2T.</div>
+          <div class="chart fill"><canvas id="prrBarChart"></canvas></div>
         </div>
-        <div class="chart-caption">Nilai dalam Miliar Rupiah. Bagian merah pada bar menunjukkan selisih SAP–AP2T.</div>
-        <div class="chart"><canvas id="prrBarChart"></canvas></div>
+        <div class="cards cards-2">
+          <div class="card card-stack" data-g="prr-t1"><div class="label">Top 1 — Semarang</div><div class="value">Rp6,15 M</div><div class="small">28,10% dari total PRR SAP.</div></div>
+          <div class="card gold card-stack" data-g="prr-t2"><div class="label">Top 2 — Tegal</div><div class="value">Rp3,55 M</div><div class="small">16,22% dari total PRR SAP, dengan selisih Rp2,30 M.</div></div>
+        </div>
       </div>
 
-      <div>
+      <div class="split-col">
         <div class="callout">
           <b>Konsentrasi Top 5: 79,65%.</b> Lima UP3 terbesar memiliki PRR SAP sebesar Rp17,42 Miliar dari total Rp21,87 Miliar.
         </div>
         <div class="box">
           <h3>Komposisi Top 5 vs Lainnya</h3>
-          <div class="chart donut"><canvas id="prrDonut"></canvas></div>
+          <div class="chart fill"><canvas id="prrDonut"></canvas></div>
           <div id="prrLegend" class="ai-donut-legend" aria-label="Legend komposisi PRR per UP3"></div>
           <div class="leg-hint" style="text-align:center">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
-        </div>
-        <div class="cards cards-2" style="margin:16px 0 0">
-          <div class="card" data-g="prr-t1"><div class="label">Top 1 — Semarang</div><div class="value">Rp6,15 M</div><div class="small">28,10% dari total PRR SAP.</div></div>
-          <div class="card gold" data-g="prr-t2"><div class="label">Top 2 — Tegal</div><div class="value">Rp3,55 M</div><div class="small">16,22% dari total PRR SAP, dengan selisih Rp2,30 M.</div></div>
         </div>
       </div>
     </div>
@@ -497,17 +512,17 @@ const gridX = {grid:{color:C.grid},ticks:{callback:v=>v.toLocaleString('id-ID')}
 const charts = {};
 
 /* ---------- LEGEND HTML UNTUK GRAFIK BATANG (klik = transparan/sembunyi) ---------- */
-const LEGDEF = {};                                   // kunci chart -> {el, series}
-function togArr(a,i){                                 // minimal satu seri tetap tampil
+const LEGDEF = {};
+function togArr(a,i){
   if(a[i] && a.filter(Boolean).length===1) return false;
   a[i] = !a[i]; return true;
 }
-const LEGVIS = {};                                   // elemen legend -> status tampil per seri
+const LEGVIS = {};
 function defLegend(chartKey, el, series){
   LEGDEF[chartKey] = {el, series};
   if(!LEGVIS[el]) LEGVIS[el] = series.map(()=>true);
 }
-function legParam(chartKey, map, val){                // dropdown = filter parameter pada legend
+function legParam(chartKey, map, val){
   const d = LEGDEF[chartKey]; if(!d) return;
   const only = map[val];
   LEGVIS[d.el] = d.series.map((x,i)=> only === -1 ? true : i === only);
@@ -630,7 +645,6 @@ function pulseLoop(chart){
   chart._pulseRaf = requestAnimationFrame(step);
 }
 
-/* Registri donut: canvasId -> {legend, popup, info} */
 const DMAP = {
   piutangDonut:{legend:'piutangLegend', popup:'piutangDonutPopup', info:null},
   prrDonut:{legend:'prrLegend', popup:'prrDonutPopup', info:null}
@@ -768,7 +782,7 @@ const donutFx = {
 };
 
 /* ---------- warna pop-up & kontras teks ---------- */
-const ALPHA_POPUP = 0.75;                                  // latar pop-up: warna legend 75%, transparan 25%
+const ALPHA_POPUP = 0.75;
 const hexRgb = h => { h = String(h).replace('#','');
   if(h.length === 3) h = h.split('').map(c=>c+c).join('');
   const n = parseInt(h.slice(0,6),16); return [(n>>16)&255,(n>>8)&255,n&255]; };
@@ -779,18 +793,14 @@ const lumHex = h => { const c = hexRgb(h).map(v => { v /= 255; return v <= 0.039
   return 0.2126*c[0] + 0.7152*c[1] + 0.0722*c[2]; };
 const contrastHex = (a,b) => { const l1 = lumHex(a), l2 = lumHex(b); return (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05); };
 
-/* Latar pop-up: warna legend 75% (transparan 25%). Agar teks tetap terbaca di latar
-   mana pun yang sedang lewat di bawahnya (panel putih, kartu, atau irisan berwarna),
-   ditambahkan lapisan tipis sewarna teks. Pilih teks + ketebalan lapisan paling hemat
-   yang menghasilkan kontras >= 4.5:1 (WCAG AA). */
 const VEILS = [0,0.06,0.12,0.18,0.24,0.30,0.36,0.42];
 const BACKDROPS = ['#FFFFFF','#E8EEF5','#000000','#20304A'].concat(PALETTE,[OTHER_COLOR]);
 function popupSkin(color){
   const white = '#FFFFFF', ink = '#081E36';
   const wajah = (veil, veilHex, bg) => { const dasar = mixHex(bg, color, ALPHA_POPUP); return veil ? mixHex(dasar, veilHex, veil) : dasar; };
   let out = null;
-  [[ink, white], [white, ink]].forEach(pair => {              // teks gelap -> lapisan putih
-    const txt = pair[0], veilHex = pair[1];                   // teks terang -> lapisan gelap
+  [[ink, white], [white, ink]].forEach(pair => {
+    const txt = pair[0], veilHex = pair[1];
     for(const v of VEILS){
       const min = Math.min(...BACKDROPS.map(bg => contrastHex(wajah(v, veilHex, bg), txt)));
       if(min >= 4.5){
@@ -817,7 +827,6 @@ function externalDonutTooltip({chart, tooltip}){
   }
   box._chartRef = chart;
   const point = tooltip.dataPoints && tooltip.dataPoints[0];
-  // tampil selama ada irisan yang sedang disorot (kursor di irisan, di legend-nya, atau sentuhan)
   if((chart._dhover ?? -1) < 0 || !point || chart.canvas.offsetParent === null){
     box.style.display = 'none'; box.setAttribute('aria-hidden','true'); return;
   }
@@ -830,13 +839,13 @@ function externalDonutTooltip({chart, tooltip}){
   const swatch = document.createElement('i'); swatch.className = 'popup-swatch';
   const value = document.createElement('span');
   value.textContent = info.text;
-  swatch.style.background = skin.swatch;               // tetap terlihat di atas latar sewarna
+  swatch.style.background = skin.swatch;
   swatch.style.boxShadow = 'inset 0 0 0 1px ' + skin.edge;
   row.append(swatch, value); box.replaceChildren(title, row);
-  box.style.backgroundColor = skin.hue;                // warna legend 75% = transparan 25%
+  box.style.backgroundColor = skin.hue;
   box.style.backgroundImage = skin.veil ? 'linear-gradient(' + skin.veil + ',' + skin.veil + ')' : 'none';
-  box.style.color = skin.text;                         // teks kontras terhadap latar
-  box.style.borderColor = skin.edge;                   // outline tipis mengikuti warna teks
+  box.style.color = skin.text;
+  box.style.borderColor = skin.edge;
   box.style.display = 'block'; box.setAttribute('aria-hidden','false');
   const r = chart.canvas.getBoundingClientRect(), vw = document.documentElement.clientWidth, vh = window.innerHeight;
   box.style.maxWidth = Math.max(120, Math.min(250, vw-16)) + 'px';
@@ -899,7 +908,6 @@ function makeDonut(canvasId, sorted, key, cfg){
   };
   legendEl.onmouseover = highlight;
   legendEl.onmouseleave = ()=>setDonutHover(chart,-1,null);
-  // focusin/focusout tidak punya atribut on* di semua peramban -> pakai addEventListener
   legendEl.addEventListener('focusin', highlight);
   legendEl.addEventListener('focusout', ev=>{ if(!legendEl.contains(ev.relatedTarget)) setDonutHover(chart,-1,null); });
 }
@@ -923,7 +931,7 @@ function renderPiBar(key){
         label:'Piutang SAP',
         data: list.map(x=>+M(x.sap).toFixed(2)),
         backgroundColor: list.map(x=> PI_TOP5.has(x.up3) ? C.navy : C.light),
-        borderRadius:3, maxBarThickness:26
+        borderRadius:3, maxBarThickness:18
       }]
     },
     options:{
@@ -982,8 +990,8 @@ function renderPrrBar(key){
     data:{
       labels: list.map(x=>x.name),
       datasets:[
-        {label:'PRR AP2T', data:list.map(x=>+M(x.ap2t).toFixed(2)), backgroundColor:list.map(x=>x.up3===prrSorted[0].up3?C.navy:C.blue), borderRadius:3, maxBarThickness:26, stack:'s', hidden:!v[0]},
-        {label:'Selisih SAP–AP2T', data:list.map(x=>+M(x.sap-x.ap2t).toFixed(2)), backgroundColor:C.red, borderRadius:3, maxBarThickness:26, stack:'s', hidden:!v[1]}
+        {label:'PRR AP2T', data:list.map(x=>+M(x.ap2t).toFixed(2)), backgroundColor:list.map(x=>x.up3===prrSorted[0].up3?C.navy:C.blue), borderRadius:3, maxBarThickness:18, stack:'s', hidden:!v[0]},
+        {label:'Selisih SAP–AP2T', data:list.map(x=>+M(x.sap-x.ap2t).toFixed(2)), backgroundColor:C.red, borderRadius:3, maxBarThickness:18, stack:'s', hidden:!v[1]}
       ]
     },
     options:{
@@ -1043,7 +1051,6 @@ const ratioRows = PIUTANG.map(p=>{
   return {name:nameCase(p.up3), ratio: pct(r.sap,p.sap)};
 }).sort((a,b)=>b.ratio-a.ratio);
 
-/* Garis rata-rata vertikal + label di ATAS area plot (di atas batang tertinggi, tidak tertindih batang) */
 const avgLinePlugin = {
   id:'avgLine',
   afterDatasetsDraw(chart){
@@ -1054,7 +1061,6 @@ const avgLinePlugin = {
     const label = 'Rata-rata '+fmtPct(avgRatio);
     ctx.save();
 
-    /* garis putus-putus */
     ctx.beginPath();
     ctx.setLineDash([6,4]);
     ctx.strokeStyle = C.gold;
@@ -1064,7 +1070,6 @@ const avgLinePlugin = {
     ctx.stroke();
     ctx.setLineDash([]);
 
-    /* label di atas area plot, dengan latar putih agar terbaca */
     ctx.font = 'bold 11px Arial';
     const padX = 6, padY = 4;
     const tw = ctx.measureText(label).width;
