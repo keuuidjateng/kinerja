@@ -243,7 +243,7 @@ tr.l2 td:first-child{padding-left:28px;color:#41526B}
   <div class="grid">
     <div class="col">
       <div class="box">
-        <h3>Pendapatan Usaha — Komposisi</h3>
+        <h3>Komposisi Pendapatan Usaha</h3>
         <div class="chart small-chart donut"><canvas id="revChart"></canvas></div>
         <div id="revLegend" class="ai-donut-legend" aria-label="Legend komposisi pendapatan usaha"></div>
         <div class="leg-hint" style="text-align:center">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
@@ -268,7 +268,7 @@ tr.l2 td:first-child{padding-left:28px;color:#41526B}
     </div>
     <div class="col">
       <div class="box">
-        <h3>Beban Usaha — Komposisi Utama</h3>
+        <h3>Komposisi Beban Usaha</h3>
         <div class="chart small-chart donut"><canvas id="expChart"></canvas></div>
         <div id="expLegend" class="ai-donut-legend" aria-label="Legend komposisi beban usaha"></div>
         <div class="leg-hint" style="text-align:center">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
@@ -344,13 +344,13 @@ tr.l2 td:first-child{padding-left:28px;color:#41526B}
   <div class="grid">
     <div class="col">
       <div class="box">
-        <h3>Struktur Aset</h3>
+        <h3>Komposisi Aset</h3>
         <div class="chart small-chart donut"><canvas id="assetChart"></canvas></div>
         <div id="assetLegend" class="ai-donut-legend" aria-label="Legend struktur aset"></div>
         <div class="leg-hint" style="text-align:center">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
       </div>
       <div class="grp navy">
-        <div class="grp-head"><span>Year On Year Struktur Aset</span>
+        <div class="grp-head"><span>Year On Year Aset</span>
           <div class="chart-toolbar"><label for="grpAsetSort">Urutkan berdasarkan:</label>
             <select id="grpAsetSort">
               <option value="all" selected>Semua parameter</option>
@@ -370,13 +370,13 @@ tr.l2 td:first-child{padding-left:28px;color:#41526B}
     </div>
     <div class="col">
       <div class="box">
-        <h3>Struktur Pendanaan (Ekuitas &amp; Liabilitas)</h3>
+        <h3>Komposisi Pendanaan (Ekuitas &amp; Liabilitas)</h3>
         <div class="chart small-chart donut"><canvas id="liabChart"></canvas></div>
         <div id="liabLegend" class="ai-donut-legend" aria-label="Legend struktur pendanaan"></div>
         <div class="leg-hint" style="text-align:center">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
       </div>
       <div class="grp gold">
-        <div class="grp-head"><span>Year On Year Struktur Pendanaan</span>
+        <div class="grp-head"><span>Year On Year Pendanaan</span>
           <div class="chart-toolbar"><label for="grpDanaSort">Urutkan berdasarkan:</label>
             <select id="grpDanaSort">
               <option value="all" selected>Semua parameter</option>
@@ -442,6 +442,18 @@ tr.l2 td:first-child{padding-left:28px;color:#41526B}
         <div class="ins-title"><span class="ins-no">06</span>Pendanaan bergeser dari Akun Antar Satuan ke ekuitas, likuiditas tetap ketat.</div>
         <div class="ins-text">Akun Antar Satuan turun Rp7.982.238 juta (−35,09%) dan proporsinya turun dari 71,37% menjadi 52,11% dari total pendanaan. Rasio liabilitas terhadap ekuitas membaik dari 24,16x menjadi 4,68x. Namun Rasio Lancar turun ke 0,75x (Okt 2025: 0,84x), Kas dan Setara Kas hanya Rp2 juta, dan Uang Jaminan Langganan mencapai 51,62% dari Liabilitas Jangka Pendek.</div>
       </div>
+      <div class="ins danger">
+        <div class="ins-title"><span class="ins-no">07</span>Sekitar sepertiga kenaikan laba usaha tergerus pos non-operasi.</div>
+        <div class="ins-text">Kenaikan Laba Usaha Rp5.770.189 juta, tetapi Rp2.048.128 juta (35,49%) terserap oleh penurunan pos lain-lain. Akibatnya, kenaikan laba sebelum pajak hanya Rp3.722.061 juta. Beban Pinjaman naik 23,93% dan Beban Selisih Kurs naik 233,71%.</div>
+      </div>
+      <div class="ins warn">
+        <div class="ins-title"><span class="ins-no">08</span>Utang usaha meningkat tajam dan menjadi komponen liabilitas jangka pendek yang baru bergerak cepat.</div>
+        <div class="ins-text">Utang Usaha naik 102,99% menjadi Rp589.347 juta (15,46% dari Liabilitas Jangka Pendek), sementara total Liabilitas Jangka Pendek hanya naik 9,68%. Kenaikan ini perlu diurai agar tidak menjadi tekanan arus kas.</div>
+      </div>
+      <div class="ins ok">
+        <div class="ins-title"><span class="ins-no">09</span>Piutang usaha relatif terkendali dibanding pertumbuhan pendapatan.</div>
+        <div class="ins-text">Piutang Usaha Neto turun 1,28% (Rp34.526 juta), sementara Pendapatan Usaha naik 15,22%. Rasio piutang terhadap pendapatan YTD membaik dari 5,61% menjadi 4,81%. Namun cakupan penyisihan piutang turun dari sekitar 2,92% menjadi 2,28% dari piutang bruto, sehingga kecukupannya perlu ditinjau.</div>
+      </div>
     </div>
 
     <div class="callout red"><b>Perlu konfirmasi data:</b>
@@ -449,6 +461,7 @@ tr.l2 td:first-child{padding-left:28px;color:#41526B}
         <li>Saldo Laba (ekuitas) per 31 Oktober 2026 identik dengan laba sebelum pajak tahun berjalan (Rp4.988.973 juta), dan pola yang sama berlaku pada 31 Oktober 2025. Konfirmasi apakah saldo laba tahun sebelumnya sudah ditutup ke Akun Antar Satuan, karena ini memengaruhi tafsir kenaikan ekuitas 293,79%.</li>
         <li>Aset Tetap Bruto turun 8,20% sementara Akumulasi Penyusutan naik 74,82%. Pastikan penyebabnya: penghapusan, reklasifikasi, atau transfer antar unit.</li>
         <li>Beberapa persentase pada sumber Excel berbeda dari hasil hitung ulang (misalnya Kepegawaian sumber "(4)" vs hitung ulang (3,53%), dan Penyusutan sumber "(2)" vs (2,12%)). Dashboard ini memakai hitung ulang dari angka mentah.</li>
+        <li>Beban Penyisihan Piutang tercatat sebagai beban positif Rp15.883 juta, sementara saldo penyisihan neraca juga turun. Konfirmasi apakah ada penghapusan piutang (write-off) pada periode ini.</li>
       </ul>
     </div>
 
@@ -457,6 +470,9 @@ tr.l2 td:first-child{padding-left:28px;color:#41526B}
       <div class="reco-card"><div class="k">Fokus 01 · Kualitas Pendapatan</div><p>Subsidi dan kompensasi menyumbang 85,9% kenaikan pendapatan. Pisahkan monitoring penjualan tenaga listrik dari komponen yang bergantung pada kebijakan pemerintah.</p></div>
       <div class="reco-card"><div class="k">Fokus 02 · Biaya &amp; Non-Operasi</div><p>Pembelian tenaga listrik menentukan 94,18% beban. Awasi Administrasi (+17,06%), selisih kurs (+233,71%), dan beban pinjaman yang menekan laba di luar usaha.</p></div>
       <div class="reco-card"><div class="k">Fokus 03 · Neraca &amp; Likuiditas</div><p>Rasio lancar turun ke 0,75x. Telusuri penurunan Aset Tetap Neto, ketergantungan pada Akun Antar Satuan (52,11% pendanaan), dan Uang Jaminan Langganan (51,62% liabilitas jangka pendek).</p></div>
+      <div class="reco-card"><div class="k">Fokus 04 · Kualitas Laba Non-Operasi</div><p>Sekitar 35% kenaikan laba usaha tergerus pos lain-lain. Bentuk rencana lindung nilai dan tinjau struktur pinjaman bersama tim treasury agar beban selisih kurs dan bunga tidak terus membesar.</p></div>
+      <div class="reco-card"><div class="k">Fokus 05 · Utang Usaha</div><p>Utang usaha naik 102,99% menjadi Rp589.347 juta. Lakukan analisis umur utang (aging) dan rekonsiliasi dengan tagihan pembelian tenaga listrik agar tidak terjadi keterlambatan pembayaran.</p></div>
+      <div class="reco-card"><div class="k">Fokus 06 · Kecukupan Penyisihan Piutang</div><p>Cakupan penyisihan turun ke sekitar 2,28% dari piutang bruto. Tinjau kecukupan penyisihan sebelum tutup tahun dan pastikan dasar penghapusan piutang terdokumentasi.</p></div>
     </div>
   </div>
 </section>
@@ -1043,7 +1059,7 @@ neraca(){
     [14764569,4768974,4988973,3812667],
     {centerLabel:'Total Pendanaan',metric:'Nilai',basis:'dari total pendanaan'});
 
-  /* Kelompok Item Struktur Aset — satu grafik, induk saja */
+  /* Kelompok Item Aset — satu grafik, induk saja, format sama dengan Year On Year Pendapatan Usaha */
   const asetItems=[
     iv('Aset Tetap (Neto)',N['Aset Tetap (Neto)']),
     iv('Aset Lancar',N['ASET LANCAR']),
@@ -1052,16 +1068,16 @@ neraca(){
     iv('Properti Investasi',N['Properti Investasi']),
     iv('Aset Tidak Lancar Lainnya',N['Aset Tidak Lancar Lainnya'])
   ];
-  groupChart('grpAset','Item Struktur Aset',asetItems,'navy');
+  groupChart('grpAset','Item Aset',asetItems,'navy',true);
 
-  /* Kelompok Item Struktur Pendanaan — satu grafik, induk saja */
+  /* Kelompok Item Pendanaan — satu grafik, induk saja, format sama dengan Year On Year Beban Usaha */
   const danaItems=[
     iv('Akun Antar Satuan',N['AKUN ANTAR SATUAN ADMINISTRASI']),
     iv('Liabilitas Jangka Panjang',N['LIABILITAS JANGKA PANJANG']),
     iv('Ekuitas',N['EKUITAS']),
     iv('Liabilitas Jangka Pendek',N['LIABILITAS JANGKA PENDEK'])
   ];
-  groupChart('grpDana','Item Struktur Pendanaan',danaItems,'gold');
+  groupChart('grpDana','Item Pendanaan',danaItems,'gold',true);
 
   /* Deviasi YoY Aset — bawah kolom kiri, navy */
   devBox('devAsetBox','Deviasi YoY Aset',asetItems,C.pln);
