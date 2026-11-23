@@ -54,6 +54,9 @@ button,select{font-family:inherit}
 .card.teal{background:#E3F1F0;border-top-color:var(--teal)}
 .card.gold{background:#F8F1DC;border-top-color:var(--gold)}
 .card.green{background:#E4F1EA;border-top-color:var(--green)}
+.card.st-ok{background:#E4F1EA;border-top-color:var(--green)}
+.card.st-warn{background:#F8F1DC;border-top-color:var(--gold)}
+.card.st-bad{background:#F6E3E0;border-top-color:var(--red)}
 .card-score{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0}
 .card-score .value{margin:0;min-width:0;overflow-wrap:anywhere}
 .card-gauge{width:112px;flex:0 0 112px;text-align:center}
@@ -105,6 +108,7 @@ th:hover{background:var(--navy-soft)}
 th .sort-ic{display:inline-block;margin-left:6px;opacity:.5;font-size:10px}
 th.sort-asc .sort-ic,th.sort-desc .sort-ic{opacity:1;color:var(--gold)}
 td{padding:8px 9px;border-bottom:1px solid var(--lgrey);text-align:right;white-space:nowrap}
+td.txt{white-space:normal;text-align:left;min-width:280px}
 tbody tr:nth-child(even){background:#F6F8FA}
 tbody tr:hover{background:#EEF6F6}
 tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy)}
@@ -193,7 +197,7 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
 
 <main class="wrap">
 
-<!-- ===================== 01 OVERVIEW (RINCIAN BPP) ===================== -->
+<!-- ===================== 01 OVERVIEW ===================== -->
 <section id="rincian" class="panel active">
   <div class="section">
     <h2 class="section-title"><span class="num">01</span>Unsur Biaya Operasi s.d Oktober Tahun 2022–2026 (Tanpa Beban Pinjaman)</h2>
@@ -246,11 +250,6 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
         <div class="chart small-chart"><canvas id="monthlyBppChart"></canvas></div>
         <div class="legend-row">Nov–Des 2026 belum terisi. Tahun 2026 ditebalkan.</div>
       </div>
-    </div>
-
-    <div class="grid">
-      <div class="callout red"><b>PTL Mendominasi Biaya.</b> Pembelian TL menyumbang 94,18% dari total unsur 2026. Pergerakan PTL menentukan arah BPP secara keseluruhan.</div>
-      <div class="callout teal"><b>Rekonsiliasi dengan Tab BPP Per Unit.</b> Total unsur 2026 (Rp48,81 T) ditambah Beban Pinjaman (Rp0,43 T) sama dengan Total Biaya Operasi gabungan (Rp49,24 T).</div>
     </div>
 
     <div class="box">
@@ -310,7 +309,7 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
 
     <div class="cards">
       <div class="card" data-g="un-tot"><div class="label">Total Biaya Operasi Gabungan</div><div class="value">Rp49,24 T</div><div class="small">Termasuk Beban Pinjaman Rp428,59 M</div></div>
-      <div class="card teal" data-g="un-psa"><div class="label">Pembelian TL PSA</div><div class="value">Rp45,79 T</div><div class="delta neutral">92,99% dari total biaya gabungan</div><div class="small">Komponen dominan</div></div>
+      <div class="card teal" data-g="un-psa"><div class="label">Pembelian TL PSA</div><div class="value">Rp45,79 T</div><div class="delta neutral">93,00% dari total biaya gabungan</div><div class="small">Komponen dominan</div></div>
       <div class="card gold" data-g="un-bppf"><div class="label">BPP Full PSA Gabungan</div><div class="value">Rp1.685</div><div class="small">Rp per kWh · energi 29.217,89 GWh</div></div>
       <div class="card green" data-g="un-bppn"><div class="label">BPP Non PSA Gabungan</div><div class="value">Rp118,01</div><div class="small">Rp per kWh · rentang unit Rp65,41 – Rp142,65</div></div>
     </div>
@@ -366,17 +365,7 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
           <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
         </div>
         <div class="chart tall"><canvas id="shareKwhChart"></canvas></div>
-        <div class="legend-row">Unit dengan pangsa biaya lebih kecil daripada pangsa energi memiliki BPP di bawah gabungan, dan sebaliknya.</div>
       </div>
-    </div>
-
-    <div class="grid">
-      <div class="callout teal"><b>TGL — BPP Full PSA Tertinggi.</b> BPP TGL Rp1.743 per kWh, sekitar 3,44% di atas gabungan (Rp1.685). Energi 2.803,75 GWh dengan biaya operasi Rp4.887,89 M.</div>
-      <div class="callout"><b>PKL — BPP Full PSA Terendah.</b> BPP PKL Rp1.474 per kWh, sekitar 12,52% di bawah gabungan. Selisihnya Rp269 per kWh dengan TGL, layak dijadikan pembanding.</div>
-      <div class="callout"><b>SMG &amp; KDS — Penyumbang Energi Terbesar.</b> SMG 4.599,63 GWh dan KDS 4.033,09 GWh, bersama 29,55% dari energi gabungan. SMG memiliki biaya tertinggi (Rp7.474,71 M), tetapi BPP-nya Rp1.625 atau di bawah gabungan.</div>
-      <div class="callout red"><b>MGL &amp; PWK — BPP Non PSA Tertinggi.</b> BPP Non PSA MGL Rp142,65 dan PWK Rp134,34, lebih dari dua kali SMG (Rp65,41). Porsi pembelian PSA keduanya juga paling rendah (91,63% dan 91,94%).</div>
-      <div class="callout red"><b>KANTOR UID &amp; UP2D — Tanpa Energi.</b> Kedua unit tidak memiliki kWh sehingga BPP tidak terhitung. Beban Pinjaman Rp428,59 M menyumbang 67,12% biaya KANTOR UID (Rp638,55 M). UP2D mencatat Rp169,69 M tanpa pembelian PSA.</div>
-      <div class="callout"><b>Empat Unit Dominan.</b> SMG, KDS, SKA, dan TGL menyumbang 49,75% biaya operasi gabungan dan 50,05% energi gabungan. Pengendalian biaya di keempat unit ini berdampak besar pada BPP gabungan.</div>
     </div>
 
     <div class="box">
@@ -416,17 +405,37 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
 
     <h3 class="sub-title">Temuan Utama</h3>
     <div class="insight-grid">
+      <div class="ins danger">
+        <div class="ins-title">Basis Data 2025 Belum Sebanding</div>
+        <div class="ins-text">Rincian BPP sebelumnya mencatat total biaya Full PSA 2025 sebesar Rp57,56 T, sedangkan tabel Unsur mencatat Rp47,26 T (Rp47,68 T dengan Beban Pinjaman). Selisih sekitar Rp9,9 T. Jika total unsur dipakai, BPP Full PSA 2025 hanya sekitar Rp1.332/kWh, bukan Rp1.607,67, sehingga kenaikan 2026 bisa mencapai sekitar +26%, bukan +4,83%.</div>
+      </div>
       <div class="ins warn">
-        <div class="ins-title">Pembelian PSA Menutup Seluruh Kenaikan Biaya</div>
-        <div class="ins-text">Pembelian TL PSA naik Rp1.622,8 miliar (+3,67%) pada 2026 vs 2025. Kenaikan ini melampaui kenaikan total unsur sebesar Rp1.553,6 miliar (+3,29%).</div>
+        <div class="ins-title">Penurunan Energi 2026 Berpotensi Semu</div>
+        <div class="ins-text">Energi 2026 tercatat 29.217,89 GWh, turun 18,4% dari 35.804 GWh pada 2025. Judul tabel Unsur menyebut data s.d. Oktober. Jika 2025 adalah setahun penuh, proporsi Jan–Okt 2025 (10/12) hanya sekitar 29.837 GWh, sehingga penurunan yang setara hanya sekitar −2%.</div>
+      </div>
+      <div class="ins warn">
+        <div class="ins-title">Kenaikan Biaya 2026 Berasal dari PTL</div>
+        <div class="ins-text">Pembelian TL naik Rp1.551,6 miliar (+3,49%), terutama PSA (+Rp1.622,8 miliar, +3,67%). IP dan IPP turun Rp71,2 miliar sebagai penahan kenaikan. Pembelian PSA menjadi sumber utama kenaikan biaya.</div>
       </div>
       <div class="ins ok">
-        <div class="ins-title">Pembelian IP &amp; IPP Turun Tajam</div>
-        <div class="ins-text">IPP turun 55,90% (Rp52,9 miliar) dan IP turun 11,92% (Rp18,3 miliar). Penurunan keduanya total Rp71,2 miliar dan menjadi penahan kenaikan PSA.</div>
+        <div class="ins-title">Komponen Non-PTL Datar Secara Netto</div>
+        <div class="ins-text">Total non-PTL 2026 Rp2.842,5 miliar, hampir sama dengan 2025 (Rp2.840,4 miliar, +0,07%). Kenaikan Adm Niaga (+Rp61,7 miliar) diimbangi penurunan Penyusutan (−Rp22,1 miliar), Kepegawaian (−Rp25,7 miliar), Adm Umum (−Rp8,1 miliar), dan Pemakaian Material (−Rp6,5 miliar).</div>
       </div>
       <div class="ins danger">
         <div class="ins-title">Adm Niaga Naik 24,79%</div>
-        <div class="ins-text">Biaya Adm Niaga naik dari Rp249,1 miliar menjadi Rp310,9 miliar, atau bertambah Rp61,7 miliar. Ini satu-satunya komponen non-PSA dengan kenaikan besar.</div>
+        <div class="ins-text">Biaya Adm Niaga naik dari Rp249,1 miliar menjadi Rp310,9 miliar, atau bertambah Rp61,7 miliar. Ini satu-satunya komponen non-PTL dengan kenaikan besar dan menjadi penahan utama penurunan komponen lain.</div>
+      </div>
+      <div class="ins warn">
+        <div class="ins-title">BPP Tahunan 2026 Perlu Dikonfirmasi</div>
+        <div class="ins-text">BPP Full PSA tahunan 2026 (Rp1.685,25) sama dengan BPP Oktober (Rp1.685), sedangkan rata-rata bulanan Jan–Okt 2026 hanya Rp1.652,8. Perlu dikonfirmasi apakah angka tahunan adalah rata-rata tertimbang energi periode yang sama.</div>
+      </div>
+      <div class="ins danger">
+        <div class="ins-title">BPP Okt 2026 Masuk Zona Kuning</div>
+        <div class="ins-text">BPP Full PSA Oktober 2026 Rp1.685 adalah 105,18% dari Oktober 2025 (Rp1.602). Nilai ini berada di zona kuning (>90–110%) dan naik 5,18% dalam setahun.</div>
+      </div>
+      <div class="ins ok">
+        <div class="ins-title">Laju Kenaikan Bulanan Melambat</div>
+        <div class="ins-text">BPP bulanan naik 5,8% dari Januari (Rp1.593) ke Oktober 2026 (Rp1.685). Periode yang sama pada 2025 naik 19,7% (Rp1.338 ke Rp1.602). Kenaikan bulanan 2026 lebih landai, tetapi level BPP sudah lebih tinggi.</div>
       </div>
       <div class="ins warn">
         <div class="ins-title">Dispersi BPP Non PSA Lebar</div>
@@ -436,23 +445,51 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
         <div class="ins-title">Konsentrasi Biaya &amp; Energi</div>
         <div class="ins-text">Empat unit terbesar (SMG, KDS, SKA, TGL) menyumbang 49,75% biaya dan 50,05% energi gabungan. Biaya dan energi berjalan beriringan di unit-unit dominan.</div>
       </div>
-      <div class="ins danger">
-        <div class="ins-title">Periode &amp; Cakupan Perlu Dikonfirmasi</div>
-        <div class="ins-text">Tab Overview memakai total unsur tanpa Beban Pinjaman, sedangkan tab Unit memakai total termasuk Beban Pinjaman. Keduanya dapat direkonsiliasi, tetapi periode 2026 (YTD atau setahun penuh) perlu dikonfirmasi sebelum dipaparkan.</div>
-      </div>
+    </div>
+
+    <h3 class="sub-title">Temuan Per Unit</h3>
+    <div class="grid">
+      <div class="callout teal"><b>TGL — BPP Full PSA Tertinggi.</b> BPP TGL Rp1.743 per kWh, sekitar 3,44% di atas gabungan (Rp1.685). Energi 2.803,75 GWh dengan biaya operasi Rp4.887,89 M.</div>
+      <div class="callout"><b>PKL — BPP Full PSA Terendah.</b> BPP PKL Rp1.474 per kWh, sekitar 12,52% di bawah gabungan. Selisihnya Rp269 per kWh dengan TGL, sekitar 18% dari BPP TGL, layak dijadikan pembanding.</div>
+      <div class="callout"><b>SMG &amp; KDS — Penyumbang Energi Terbesar.</b> SMG 4.599,63 GWh dan KDS 4.033,09 GWh, bersama 29,55% dari energi gabungan. SMG memiliki biaya tertinggi (Rp7.474,71 M), tetapi BPP-nya Rp1.625 atau di bawah gabungan.</div>
+      <div class="callout red"><b>MGL &amp; PWK — BPP Non PSA Tertinggi.</b> BPP Non PSA MGL Rp142,65 dan PWK Rp134,34, lebih dari dua kali SMG (Rp65,41). Porsi pembelian PSA keduanya juga paling rendah (91,63% dan 91,94%).</div>
+      <div class="callout red"><b>KANTOR UID &amp; UP2D — Tanpa Energi.</b> Kedua unit tidak memiliki kWh sehingga BPP tidak terhitung. Beban Pinjaman Rp428,59 M menyumbang 67,12% biaya KANTOR UID (Rp638,55 M). UP2D mencatat Rp169,69 M tanpa pembelian PSA.</div>
+      <div class="callout"><b>Empat Unit Dominan.</b> SMG, KDS, SKA, dan TGL menyumbang 49,75% biaya operasi gabungan dan 50,05% energi gabungan. Pengendalian biaya di keempat unit ini berdampak besar pada BPP gabungan.</div>
+      <div class="callout blue"><b>Pangsa Energi vs Pangsa Biaya.</b> Unit dengan pangsa biaya lebih kecil daripada pangsa energi memiliki BPP di bawah gabungan, dan sebaliknya.</div>
     </div>
 
     <h3 class="sub-title">Rekomendasi</h3>
     <div class="reco">
-      <div class="reco-card"><div class="k">Rekomendasi 1 · Verifikasi Periode</div><p>Pastikan periode 2026 (YTD atau setahun penuh) dan sumber energi sebelum angka BPP dipaparkan ke eksekutif.</p></div>
-      <div class="reco-card"><div class="k">Rekomendasi 2 · Pengendalian PSA</div><p>Pembelian TL PSA mencapai 93,81% dari unsur biaya dan menjadi sumber kenaikan terbesar. Fokuskan evaluasi harga dan volume pembelian energi.</p></div>
-      <div class="reco-card"><div class="k">Rekomendasi 3 · Telusuri Adm Niaga</div><p>Biaya Adm Niaga naik 24,79% (Rp61,7 miliar). Telusuri penyebab kenaikan dan apakah berkaitan dengan volume transaksi atau tarif.</p></div>
-      <div class="reco-card"><div class="k">Rekomendasi 4 · BPP Non PSA MGL &amp; PWK</div><p>Telusuri komponen non-pembelian di MGL dan PWK, yang BPP Non PSA-nya lebih dari dua kali SMG.</p></div>
-      <div class="reco-card"><div class="k">Rekomendasi 5 · Konfirmasi KANTOR UID &amp; UP2D</div><p>Konfirmasi alokasi Beban Pinjaman (Rp428,59 miliar) dan Kepegawaian KANTOR UID (Rp96,89 miliar), serta apakah ada energi UP2D yang belum tercatat.</p></div>
-      <div class="reco-card"><div class="k">Rekomendasi 6 · Benchmark PKL vs TGL</div><p>Selisih BPP Full PSA antara PKL (Rp1.474) dan TGL (Rp1.743) sebesar Rp269 per kWh. Bandingkan komposisi biayanya sebagai bahan pembelajaran.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 1 · Samakan Basis Periode</div><p>Pastikan seluruh data 2022–2026 memakai periode yang sama (Jan–Okt atau setahun penuh) sebelum perbandingan tahunan dipaparkan ke eksekutif.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 2 · Rekonsiliasi Total 2025</div><p>Telusuri selisih sekitar Rp9,9 triliun antara rincian lama (Rp57,56 T) dan tabel Unsur (Rp47,26 T) untuk tahun 2025, lalu tetapkan satu sumber yang disepakati.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 3 · Konfirmasi BPP Tahunan 2026</div><p>Pastikan BPP tahunan 2026 (Rp1.685,25) dihitung sebagai rata-rata tertimbang energi dari bulan yang sama, dan bandingkan dengan rata-rata bulanan Rp1.652,8.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 4 · Pengendalian PSA</div><p>Pembelian TL PSA mencapai 93,81% dari unsur biaya dan menjadi sumber kenaikan terbesar. Fokuskan evaluasi harga dan volume pembelian energi.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 5 · Telusuri Adm Niaga</div><p>Biaya Adm Niaga naik 24,79% (Rp61,7 miliar). Telusuri penyebab kenaikan dan apakah berkaitan dengan volume transaksi atau tarif.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 6 · Pantau Zona BPP Bulanan</div><p>Jadikan zona 90–110% dari BPP Okt 2025 sebagai acuan pemantauan bulanan, yaitu sekitar Rp1.442–Rp1.762/kWh. Di atas Rp1.762 perlu eskalasi.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 7 · BPP Non PSA MGL &amp; PWK</div><p>Telusuri komponen non-pembelian di MGL dan PWK, yang BPP Non PSA-nya lebih dari dua kali SMG.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 8 · Konfirmasi KANTOR UID &amp; UP2D</div><p>Konfirmasi alokasi Beban Pinjaman (Rp428,59 miliar) dan Kepegawaian KANTOR UID (Rp96,89 miliar), serta apakah ada energi UP2D yang belum tercatat.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 9 · Benchmark PKL vs TGL</div><p>Selisih BPP Full PSA antara PKL (Rp1.474) dan TGL (Rp1.743) sebesar Rp269 per kWh. Bandingkan komposisi biayanya sebagai bahan pembelajaran.</p></div>
     </div>
 
-    <div class="callout red"><b>Catatan Basis Data:</b> Tab Overview memakai total unsur tanpa Beban Pinjaman dan disajikan dalam Rp Miliar. Tab BPP Per Unit memakai total termasuk Beban Pinjaman. Selisih keduanya (Rp428,59 miliar) sama dengan Beban Pinjaman, sehingga keduanya konsisten dan dapat direkonsiliasi.</div>
+    <h3 class="sub-title">Tindak Lanjut</h3>
+    <div class="box">
+      <div class="table-wrap"><table id="tindakTable">
+        <thead><tr><th>No</th><th>Tindak Lanjut</th><th>Prioritas</th><th>Dasar Data</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td class="txt">Samakan periode data 2022–2026 (Jan–Okt atau setahun penuh)</td><td>Tinggi</td><td class="txt">Tabel Unsur, energi, BPP tahunan</td></tr>
+          <tr><td>2</td><td class="txt">Rekonsiliasi total biaya 2025 (Rp47,26 T vs Rp57,56 T)</td><td>Tinggi</td><td class="txt">Rincian lama dan tabel Unsur</td></tr>
+          <tr><td>3</td><td class="txt">Konfirmasi basis BPP tahunan 2026 (Rp1.685,25)</td><td>Tinggi</td><td class="txt">BPP tahunan vs rata-rata bulanan</td></tr>
+          <tr><td>4</td><td class="txt">Telusuri kenaikan Adm Niaga (+24,79%)</td><td>Sedang</td><td class="txt">Tabel Unsur 2025–2026</td></tr>
+          <tr><td>5</td><td class="txt">Pantau BPP bulanan pada zona kuning (Rp1.442–Rp1.762)</td><td>Sedang</td><td class="txt">BPP bulanan 2026 dan Okt 2025</td></tr>
+          <tr><td>6</td><td class="txt">Telusuri BPP Non PSA MGL dan PWK</td><td>Sedang</td><td class="txt">Tabel Detail BPP per Unit</td></tr>
+          <tr><td>7</td><td class="txt">Konfirmasi Beban Pinjaman dan Kepegawaian KANTOR UID; energi UP2D</td><td>Sedang</td><td class="txt">Tabel Komponen Biaya per Unit</td></tr>
+          <tr><td>8</td><td class="txt">Bandingkan komposisi biaya PKL dengan TGL</td><td>Rendah</td><td class="txt">Tabel Komponen dan Detail per Unit</td></tr>
+        </tbody>
+      </table></div>
+      <div class="table-note">Prioritas Tinggi perlu diselesaikan sebelum angka BPP dan perbandingan tahunan dipaparkan ke eksekutif. Klik judul kolom untuk mengurutkan ulang.</div>
+    </div>
+
+    <div class="callout red"><b>Catatan Basis Data:</b> Tab Overview memakai total unsur tanpa Beban Pinjaman dan disajikan dalam Rp Miliar. Tab BPP Per Unit memakai total termasuk Beban Pinjaman. Selisih keduanya (Rp428,59 miliar) sama dengan Beban Pinjaman, sehingga keduanya konsisten dan dapat direkonsiliasi. Perbandingan 2025 dengan data lama belum konsisten (lihat temuan pertama).</div>
   </div>
 </section>
 
@@ -485,24 +522,20 @@ const charts = {};
 const resetC = id => { if(charts[id]) charts[id].destroy(); };
 
 /* ---------- LEGEND HTML UNTUK GRAFIK BATANG (klik = transparan/sembunyi) ---------- */
-const LEGDEF = {};                                   // kunci chart -> {el, series}
-function togArr(a,i){                                 // minimal satu seri tetap tampil
+const LEGDEF = {};
+function togArr(a,i){
   if(a[i] && a.filter(Boolean).length===1) return false;
   a[i] = !a[i]; return true;
 }
-const LEGVIS = {};                                   // elemen legend -> status tampil per seri
+const LEGVIS = {};
 function defLegend(chartKey, elId, series){
   LEGDEF[chartKey] = {el:elId, series};
   if(!LEGVIS[elId]) LEGVIS[elId] = series.map(()=>true);
 }
-function legParam(chartKey, map, val){                // dropdown = filter parameter pada legend
+function legParam(chartKey, map, val){
   const d = LEGDEF[chartKey]; if(!d) return;
   const only = map[val];
   LEGVIS[d.el] = d.series.map((x,i)=> only === -1 ? true : i === only);
-}
-function legVis(chartKey){
-  const d = LEGDEF[chartKey];
-  return (d && LEGVIS[d.el]) || [];
 }
 function legSet(chartKey){
   const d = LEGDEF[chartKey]; if(!d) return;
@@ -831,7 +864,6 @@ const totSortEl = el('bppTotSort');
 totSortEl.insertAdjacentHTML('beforeend','<option value="all" selected>Semua parameter</option>');
 LEAF.forEach(l=>totSortEl.insertAdjacentHTML('beforeend',`<option value="${l.k}">${l.n}</option>`));
 
-/* Urutkan unit dari terbesar, tampilkan seri sesuai legend/dropdown */
 function renderBppTot(key){
   legParam('bppTot', TOT_MAP, key);
   const kk = key==='all' ? 'total' : key;
@@ -973,13 +1005,18 @@ renderBppUnit(el('bppMetric').value);
 
 /* ---------- SPEEDOMETER KARTU SKOR ---------- */
 const fPct = v => fN(v,2)+'%';
-function speedometer(label, amount, reference, basis, cls){
+function statusOf(p){
+  if(p<=90)  return {k:'ok',   c:C.green, t:'Hijau (≤90%)'};
+  if(p<=110) return {k:'warn', c:C.gold,  t:'Kuning (>90–110%)'};
+  return {k:'bad', c:C.red, t:'Merah (>110%)'};
+}
+function speedometer(label, amount, reference, basis, cls, colorOverride){
   const percent = pc(amount, reference);
   const max = Math.max(100, Math.ceil(percent/25)*25);
   const fraction = Math.max(0, Math.min(1, percent/max));
   const angle = Math.PI + Math.PI*fraction;
   const x = 80 + 52*Math.cos(angle), y = 78 + 52*Math.sin(angle);
-  const color = {teal:C.teal, gold:C.gold, green:C.green}[cls] || C.pln;
+  const color = colorOverride || {teal:C.teal, gold:C.gold, green:C.green}[cls] || C.pln;
   const ticks = [0,.25,.5,.75,1].map(t=>{
     const a = Math.PI + Math.PI*t;
     return `<line x1="${80+56*Math.cos(a)}" y1="${78+56*Math.sin(a)}" x2="${80+61*Math.cos(a)}" y2="${78+61*Math.sin(a)}" stroke="#8D9AAC" stroke-width="1"/>`;
@@ -1004,7 +1041,7 @@ const GAUGES = {
   'ov-uns':  {amount:TOT_UNS[4],  reference:TOT_UNS[4],  basis:'Dari total unsur 2026'},
   'ov-ptl':  {amount:PTL[4],      reference:TOT_UNS[4],  basis:'Dari total unsur 2026'},
   'ov-peny': {amount:UNS.peny[4], reference:TOT_UNS[4],  basis:'Dari total unsur 2026'},
-  'ov-bppf': {amount:BM[2026][9], reference:BM[2025][9], basis:'Dari BPP Okt 2025'},
+  'ov-bppf': {amount:BM[2026][9], reference:BM[2025][9], basis:'Dari BPP Okt 2025', status:true},
 
   'un-tot':  {amount:UD.total[0], reference:UD.total[0], basis:'Dari total biaya gabungan'},
   'un-psa':  {amount:UD.psa[0],   reference:UD.total[0], basis:'Dari total biaya gabungan'},
@@ -1017,11 +1054,17 @@ document.querySelectorAll('.card[data-g]').forEach(card=>{
   const val = card.querySelector('.value'), lab = card.querySelector('.label');
   if(!g || !val || !lab) return;
   const cls = ['teal','gold','green'].find(c=>card.classList.contains(c)) || '';
+  const st = g.status ? statusOf(pc(g.amount,g.reference)) : null;
+  if(st){
+    card.classList.remove('teal','gold','green');
+    card.classList.add('st-'+st.k);
+  }
   const score = document.createElement('div');
   score.className = 'card-score';
   card.insertBefore(score, val);
   score.appendChild(val);
-  score.insertAdjacentHTML('beforeend', speedometer(lab.textContent, g.amount, g.reference, g.basis, cls));
+  score.insertAdjacentHTML('beforeend', speedometer(lab.textContent, g.amount, g.reference, g.basis, cls, st && st.c));
+  if(st) card.insertAdjacentHTML('beforeend', `<div class="small"><b>Status: ${st.t}</b></div>`);
 });
 
 /* ---------- INIT SORTABLE TABLES ---------- */
