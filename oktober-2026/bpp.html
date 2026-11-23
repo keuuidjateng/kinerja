@@ -80,6 +80,8 @@ button,select{font-family:inherit}
 .chart.small-chart{height:320px}
 .chart.tall{height:460px}
 .chart.xtall{height:560px}
+/* 5 kategori (tahun) dibuat rapat seperti grafik Total Biaya: slot batang ±33,5px */
+.chart.stk5{height:226px}
 
 /* CHART TOOLBAR (dropdown Urutkan) */
 .chart-toolbar{display:flex;align-items:center;gap:8px;margin:0 0 10px;justify-content:flex-start}
@@ -152,6 +154,7 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
   .chart{height:300px}
   .chart.tall{height:380px}
   .chart.xtall{height:460px}
+  .chart.stk5{height:198px}
   .chart-toolbar select{min-width:160px}
 }
 @media(max-width:600px){
@@ -253,50 +256,40 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     </div>
 
     <div class="box">
-      <h3>Unsur Biaya Operasi (Rp Miliar &amp; % dari Total) (Tanpa Beban Pinjaman)</h3>
-      <div class="table-wrap"><table id="unsurTable" class="wide">
-        <thead><tr>
-          <th>Keterangan</th>
-          <th>2022 (Rp M)</th><th>%</th>
-          <th>2023 (Rp M)</th><th>%</th>
-          <th>2024 (Rp M)</th><th>%</th>
-          <th>2025 (Rp M)</th><th>%</th>
-          <th>2026 (Rp M)</th><th>%</th>
-          <th>Selisih 26–25 (Rp M)</th><th>% Selisih</th>
-        </tr></thead>
-        <tbody></tbody>
-        <tfoot id="unsurFoot"></tfoot>
-      </table></div>
-      <div class="table-note">Pembelian TL (PTL) adalah jumlah PSA, IP, dan IPP. Total unsur belum termasuk Beban Pinjaman. Klik judul kolom untuk mengurutkan ulang.</div>
-    </div>
-
-    <div class="box">
-      <h3>Pembelian TL (Rp Miliar &amp; % dari Total Unsur)</h3>
-      <div class="table-wrap"><table id="ptlTable" class="wide">
-        <thead><tr>
-          <th>Keterangan</th>
-          <th>2022 (Rp M)</th><th>%</th>
-          <th>2023 (Rp M)</th><th>%</th>
-          <th>2024 (Rp M)</th><th>%</th>
-          <th>2025 (Rp M)</th><th>%</th>
-          <th>2026 (Rp M)</th><th>%</th>
-          <th>Selisih 26–25 (Rp M)</th><th>% Selisih</th>
-        </tr></thead>
-        <tbody></tbody>
-      </table></div>
+      <div class="box-head">
+        <h3>Unsur Biaya Operasi (Rp Miliar &amp; % dari Total) (Tanpa Beban Pinjaman)</h3>
+        <div class="chart-toolbar"><label for="unsurStkSort">Urutkan berdasarkan:</label>
+          <select id="unsurStkSort"></select></div>
+      </div>
+      <div class="ctrl-row">
+        <div class="leg-wrap">
+          <div class="leg" id="unsurStkLeg"></div>
+          <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+        </div>
+      </div>
+      <div class="chart stk5"><canvas id="unsurStkChart"></canvas></div>
+      <div class="legend-row">Urutan tumpukan mengikuti kolom Keterangan. Pembelian TL (PTL) adalah jumlah PSA, IP, dan IPP. Total unsur belum termasuk Beban Pinjaman. Angka di ujung batang adalah total unsur tahun tersebut. Pop-up saat batang disorot menampilkan nilai per komponen dan persentase terhadap total unsur tahun itu.</div>
     </div>
 
     <div class="box">
       <div class="box-head">
-        <h3>BPP Bulanan (Rp/kWh)</h3>
+        <h3>Pembelian TL (Rp Miliar &amp; % dari Total Unsur)</h3>
+        <div class="chart-toolbar"><label for="ptlStkSort">Urutkan berdasarkan:</label>
+          <select id="ptlStkSort"></select></div>
       </div>
-      <div class="table-wrap"><table id="monthlyTable">
-        <thead><tr>
-          <th>Tahun</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>Mei</th><th>Jun</th>
-          <th>Jul</th><th>Agu</th><th>Sep</th><th>Okt</th><th>Nov</th><th>Des</th>
-        </tr></thead>
-        <tbody></tbody>
-      </table></div>
+      <div class="ctrl-row">
+        <div class="leg-wrap">
+          <div class="leg" id="ptlStkLeg"></div>
+          <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+        </div>
+      </div>
+      <div class="chart stk5"><canvas id="ptlStkChart"></canvas></div>
+      <div class="legend-row">Angka di ujung batang adalah total Pembelian TL tahun tersebut. Pop-up saat batang disorot menampilkan nilai per komponen, persentase terhadap total unsur tahun itu, dan total PTL beserta porsinya terhadap total unsur.</div>
+    </div>
+
+    <div class="box">
+      <h3>Pertumbuhan Biaya per Tahun</h3>
+      <div class="legend-row">Nilai dan persentase lengkap tersedia pada tooltip grafik di atas. Tahun 2026 dibandingkan dengan 2025 pada kartu skor.</div>
     </div>
   </div>
 </section>
@@ -327,7 +320,7 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
         </div>
       </div>
       <div class="chart xtall"><canvas id="bppTotChart"></canvas></div>
-      <div class="legend-row">Urutan tumpukan mengikuti kolom Keterangan. Pemeliharaan dan Administrasi ditampilkan melalui komponen penyusunnya agar tidak terhitung dua kali. GABUNGAN tidak ditampilkan karena merupakan jumlah seluruh unit.</div>
+      <div class="legend-row">Urutan tumpukan mengikuti kolom Keterangan. Pemeliharaan dan Administrasi ditampilkan melalui komponen penyusunnya agar tidak terhitung dua kali. GABUNGAN tidak ditampilkan karena merupakan jumlah seluruh unit. Sumbu dimulai dari nol; nilai negatif Pembelian TL IPP SKA (Rp-3,19 M) tidak ditampilkan. Angka di ujung batang adalah total biaya unit; pop-up saat batang disorot menampilkan nilai per komponen, porsi terhadap total unit, dan porsi total unit terhadap biaya gabungan.</div>
     </div>
 
     <div class="grid">
@@ -365,34 +358,8 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
           <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
         </div>
         <div class="chart tall"><canvas id="shareKwhChart"></canvas></div>
+        <div class="legend-row">Unit dengan pangsa biaya lebih kecil daripada pangsa energi memiliki BPP di bawah gabungan, dan sebaliknya.</div>
       </div>
-    </div>
-
-    <div class="box">
-      <h3>Komponen Biaya per Unit (Rp Miliar, diurutkan dari total terbesar)</h3>
-      <div class="table-wrap"><table id="komponenTable" class="wide">
-        <thead><tr>
-          <th>Unit</th><th>Pembelian TL PSA</th><th>Pembelian TL IP</th><th>Pembelian TL IPP</th>
-          <th>Sewa</th><th>BBM HSD</th><th>Pemeliharaan*</th><th>Kepegawaian</th>
-          <th>Penyusutan</th><th>Administrasi*</th><th>Beban Pinjaman</th><th>Total Biaya</th>
-        </tr></thead>
-        <tbody></tbody>
-        <tfoot id="komponenFoot"></tfoot>
-      </table></div>
-      <div class="table-note">* Subtotal: Pemeliharaan = Pemakaian Material + Jasa Borong. Administrasi = Adm Niaga + Adm Umum. Tanda "–" berarti nilai nol atau tidak tersedia.</div>
-    </div>
-
-    <div class="box">
-      <h3>Detail BPP per Unit (diurutkan dari total biaya terbesar)</h3>
-      <div class="table-wrap"><table id="unitDetailTable">
-        <thead><tr>
-          <th>Unit</th><th>Total Biaya (Rp M)</th><th>Pembelian TL PSA (Rp M)</th><th>% PSA thd Total</th>
-          <th>Energi (GWh)</th><th>BPP Full PSA</th><th>BPP Non PSA</th><th>Selisih Full vs Gabungan</th>
-        </tr></thead>
-        <tbody></tbody>
-        <tfoot id="unitDetailFoot"></tfoot>
-      </table></div>
-      <div class="table-note">KANTOR UID dan UP2D tidak memiliki energi (kWh), sehingga BPP ditampilkan "–". Klik judul kolom untuk mengurutkan ulang.</div>
     </div>
   </div>
 </section>
@@ -407,11 +374,11 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     <div class="insight-grid">
       <div class="ins danger">
         <div class="ins-title">Basis Data 2025 Belum Sebanding</div>
-        <div class="ins-text">Rincian BPP sebelumnya mencatat total biaya Full PSA 2025 sebesar Rp57,56 T, sedangkan tabel Unsur mencatat Rp47,26 T (Rp47,68 T dengan Beban Pinjaman). Selisih sekitar Rp9,9 T. Jika total unsur dipakai, BPP Full PSA 2025 hanya sekitar Rp1.332/kWh, bukan Rp1.607,67, sehingga kenaikan 2026 bisa mencapai sekitar +26%, bukan +4,83%.</div>
+        <div class="ins-text">Rincian BPP sebelumnya mencatat total biaya Full PSA 2025 sebesar Rp57,56 T, sedangkan grafik Unsur mencatat Rp47,26 T (Rp47,68 T dengan Beban Pinjaman). Selisih sekitar Rp9,9 T. Jika total unsur dipakai, BPP Full PSA 2025 hanya sekitar Rp1.332/kWh, bukan Rp1.607,67, sehingga kenaikan 2026 bisa mencapai sekitar +26%, bukan +4,83%.</div>
       </div>
       <div class="ins warn">
         <div class="ins-title">Penurunan Energi 2026 Berpotensi Semu</div>
-        <div class="ins-text">Energi 2026 tercatat 29.217,89 GWh, turun 18,4% dari 35.804 GWh pada 2025. Judul tabel Unsur menyebut data s.d. Oktober. Jika 2025 adalah setahun penuh, proporsi Jan–Okt 2025 (10/12) hanya sekitar 29.837 GWh, sehingga penurunan yang setara hanya sekitar −2%.</div>
+        <div class="ins-text">Energi 2026 tercatat 29.217,89 GWh, turun 18,4% dari 35.804 GWh pada 2025. Judul data Unsur menyebut data s.d. Oktober. Jika 2025 adalah setahun penuh, proporsi Jan–Okt 2025 (10/12) hanya sekitar 29.837 GWh, sehingga penurunan yang setara hanya sekitar −2%.</div>
       </div>
       <div class="ins warn">
         <div class="ins-title">Kenaikan Biaya 2026 Berasal dari PTL</div>
@@ -461,7 +428,7 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     <h3 class="sub-title">Rekomendasi</h3>
     <div class="reco">
       <div class="reco-card"><div class="k">Rekomendasi 1 · Samakan Basis Periode</div><p>Pastikan seluruh data 2022–2026 memakai periode yang sama (Jan–Okt atau setahun penuh) sebelum perbandingan tahunan dipaparkan ke eksekutif.</p></div>
-      <div class="reco-card"><div class="k">Rekomendasi 2 · Rekonsiliasi Total 2025</div><p>Telusuri selisih sekitar Rp9,9 triliun antara rincian lama (Rp57,56 T) dan tabel Unsur (Rp47,26 T) untuk tahun 2025, lalu tetapkan satu sumber yang disepakati.</p></div>
+      <div class="reco-card"><div class="k">Rekomendasi 2 · Rekonsiliasi Total 2025</div><p>Telusuri selisih sekitar Rp9,9 triliun antara rincian lama (Rp57,56 T) dan grafik Unsur (Rp47,26 T) untuk tahun 2025, lalu tetapkan satu sumber yang disepakati.</p></div>
       <div class="reco-card"><div class="k">Rekomendasi 3 · Konfirmasi BPP Tahunan 2026</div><p>Pastikan BPP tahunan 2026 (Rp1.685,25) dihitung sebagai rata-rata tertimbang energi dari bulan yang sama, dan bandingkan dengan rata-rata bulanan Rp1.652,8.</p></div>
       <div class="reco-card"><div class="k">Rekomendasi 4 · Pengendalian PSA</div><p>Pembelian TL PSA mencapai 93,81% dari unsur biaya dan menjadi sumber kenaikan terbesar. Fokuskan evaluasi harga dan volume pembelian energi.</p></div>
       <div class="reco-card"><div class="k">Rekomendasi 5 · Telusuri Adm Niaga</div><p>Biaya Adm Niaga naik 24,79% (Rp61,7 miliar). Telusuri penyebab kenaikan dan apakah berkaitan dengan volume transaksi atau tarif.</p></div>
@@ -476,20 +443,20 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
       <div class="table-wrap"><table id="tindakTable">
         <thead><tr><th>No</th><th>Tindak Lanjut</th><th>Prioritas</th><th>Dasar Data</th></tr></thead>
         <tbody>
-          <tr><td>1</td><td class="txt">Samakan periode data 2022–2026 (Jan–Okt atau setahun penuh)</td><td>Tinggi</td><td class="txt">Tabel Unsur, energi, BPP tahunan</td></tr>
-          <tr><td>2</td><td class="txt">Rekonsiliasi total biaya 2025 (Rp47,26 T vs Rp57,56 T)</td><td>Tinggi</td><td class="txt">Rincian lama dan tabel Unsur</td></tr>
+          <tr><td>1</td><td class="txt">Samakan periode data 2022–2026 (Jan–Okt atau setahun penuh)</td><td>Tinggi</td><td class="txt">Grafik Unsur, energi, BPP tahunan</td></tr>
+          <tr><td>2</td><td class="txt">Rekonsiliasi total biaya 2025 (Rp47,26 T vs Rp57,56 T)</td><td>Tinggi</td><td class="txt">Rincian lama dan grafik Unsur</td></tr>
           <tr><td>3</td><td class="txt">Konfirmasi basis BPP tahunan 2026 (Rp1.685,25)</td><td>Tinggi</td><td class="txt">BPP tahunan vs rata-rata bulanan</td></tr>
-          <tr><td>4</td><td class="txt">Telusuri kenaikan Adm Niaga (+24,79%)</td><td>Sedang</td><td class="txt">Tabel Unsur 2025–2026</td></tr>
+          <tr><td>4</td><td class="txt">Telusuri kenaikan Adm Niaga (+24,79%)</td><td>Sedang</td><td class="txt">Grafik Unsur 2025–2026</td></tr>
           <tr><td>5</td><td class="txt">Pantau BPP bulanan pada zona kuning (Rp1.442–Rp1.762)</td><td>Sedang</td><td class="txt">BPP bulanan 2026 dan Okt 2025</td></tr>
-          <tr><td>6</td><td class="txt">Telusuri BPP Non PSA MGL dan PWK</td><td>Sedang</td><td class="txt">Tabel Detail BPP per Unit</td></tr>
-          <tr><td>7</td><td class="txt">Konfirmasi Beban Pinjaman dan Kepegawaian KANTOR UID; energi UP2D</td><td>Sedang</td><td class="txt">Tabel Komponen Biaya per Unit</td></tr>
-          <tr><td>8</td><td class="txt">Bandingkan komposisi biaya PKL dengan TGL</td><td>Rendah</td><td class="txt">Tabel Komponen dan Detail per Unit</td></tr>
+          <tr><td>6</td><td class="txt">Telusuri BPP Non PSA MGL dan PWK</td><td>Sedang</td><td class="txt">Grafik BPP per Unit dan Energi</td></tr>
+          <tr><td>7</td><td class="txt">Konfirmasi Beban Pinjaman dan Kepegawaian KANTOR UID; energi UP2D</td><td>Sedang</td><td class="txt">Grafik Total Biaya per Unit</td></tr>
+          <tr><td>8</td><td class="txt">Bandingkan komposisi biaya PKL dengan TGL</td><td>Rendah</td><td class="txt">Grafik Total Biaya dan BPP per Unit</td></tr>
         </tbody>
       </table></div>
-      <div class="table-note">Prioritas Tinggi perlu diselesaikan sebelum angka BPP dan perbandingan tahunan dipaparkan ke eksekutif. Klik judul kolom untuk mengurutkan ulang.</div>
+      <div class="table-note">Prioritas Tinggi perlu diselesaikan sebelum angka BPP dan perbandingan tahunan dipaparkan ke eksekutif.</div>
     </div>
 
-    <div class="callout red"><b>Catatan Basis Data:</b> Tab Overview memakai total unsur tanpa Beban Pinjaman dan disajikan dalam Rp Miliar. Tab BPP Per Unit memakai total termasuk Beban Pinjaman. Selisih keduanya (Rp428,59 miliar) sama dengan Beban Pinjaman, sehingga keduanya konsisten dan dapat direkonsiliasi. Perbandingan 2025 dengan data lama belum konsisten (lihat temuan pertama).</div>
+    <div class="callout red"><b>Catatan Basis Data:</b> Overview memakai total unsur tanpa Beban Pinjaman dan disajikan dalam Rp Miliar. Tab BPP Per Unit memakai total termasuk Beban Pinjaman. Selisih keduanya (Rp428,59 miliar) sama dengan Beban Pinjaman, sehingga keduanya konsisten dan dapat direkonsiliasi. Perbandingan 2025 dengan data lama belum konsisten (lihat temuan pertama).</div>
   </div>
 </section>
 
@@ -521,7 +488,7 @@ const el  = id => document.getElementById(id);
 const charts = {};
 const resetC = id => { if(charts[id]) charts[id].destroy(); };
 
-/* ---------- LEGEND HTML UNTUK GRAFIK BATANG (klik = transparan/sembunyi) ---------- */
+/* ---------- LEGEND HTML (klik = tampil/sembunyi) ---------- */
 const LEGDEF = {};
 function togArr(a,i){
   if(a[i] && a.filter(Boolean).length===1) return false;
@@ -552,6 +519,45 @@ function legSet(chartKey){
   c.update('none');
 }
 
+/* ---------- LABEL TOTAL DI UJUNG BATANG + POP-UP TOTAL ---------- */
+function rowTot(ch,i){ let s=0; ch.data.datasets.forEach((d,j)=>{ if(!ch.isDatasetVisible(j)) return; const v=+d.data[i]; if(!isNaN(v)) s+=v; }); return s; }
+function rowFull(ch,i){ let s=0; ch.data.datasets.forEach(d=>{ const v=+d.data[i]; if(!isNaN(v)) s+=v; }); return s; }
+function rowEnd(ch,i){ let e=0; ch.data.datasets.forEach((d,j)=>{ if(!ch.isDatasetVisible(j)) return; const v=+d.data[i]; if(!isNaN(v) && v>0) e+=v; }); return e; }
+
+const totalLabelPlugin = {
+  id:'totalLabel',
+  afterDatasetsDraw(chart,args,opts){
+    if(!opts || !opts.fmt) return;
+    const {ctx} = chart, x = chart.scales.x;
+    ctx.save();
+    ctx.font = '700 10.5px Arial, Helvetica, sans-serif';
+    ctx.textBaseline = 'middle';
+    chart.data.labels.forEach((lab,i)=>{
+      let py = null;
+      for(let j=0;j<chart.data.datasets.length && py===null;j++){
+        if(!chart.isDatasetVisible(j)) continue;
+        const e = chart.getDatasetMeta(j).data[i];
+        if(e) py = e.y;
+      }
+      if(py===null) return;
+      const txt = opts.fmt(rowTot(chart,i));
+      const w = ctx.measureText(txt).width;
+      const px = Math.min(x.getPixelForValue(rowEnd(chart,i))+7, chart.width-w-2);
+      ctx.fillStyle = C.pln; ctx.textAlign = 'left';
+      ctx.fillText(txt,px,py);
+    });
+    ctx.restore();
+  }
+};
+
+/* Gaya pop-up (tooltip) seragam untuk grafik batang */
+const TIP = {
+  backgroundColor:'rgba(8,30,54,.94)',titleColor:'#FFFFFF',bodyColor:'#DCE4EE',footerColor:'#C9A227',
+  padding:10,cornerRadius:5,caretPadding:8,displayColors:true,
+  boxWidth:10,boxHeight:10,boxPadding:4,
+  titleFont:{size:12,weight:'700'},bodyFont:{size:11.5},footerFont:{size:11.5,weight:'700'}
+};
+
 /* ---------- TAB SWITCH ---------- */
 const TAB_KEY = 'bppAnalysis.activeTab';
 function activateTab(name){
@@ -571,44 +577,6 @@ document.querySelectorAll('.tab').forEach(btn=>{
     try{ sessionStorage.setItem(TAB_KEY, this.dataset.tab); }catch(e){}
   });
 });
-
-/* ---------- SORTABLE TABLES ---------- */
-function makeTableSortable(table){
-  const headers = table.querySelectorAll('thead th');
-  headers.forEach((th,col)=>{
-    th.title = 'Klik untuk mengurutkan';
-    const ic = document.createElement('span');
-    ic.className = 'sort-ic';
-    ic.textContent = '↕';
-    th.appendChild(ic);
-    th.addEventListener('click',()=>{
-      const tbody = table.tBodies[0];
-      const rows = Array.from(tbody.rows);
-      const dir = th.dataset.sortDir==='desc' ? 'asc' : 'desc';
-      headers.forEach(h=>{
-        delete h.dataset.sortDir;
-        h.classList.remove('sort-asc','sort-desc');
-        const s=h.querySelector('.sort-ic'); if(s) s.textContent='↕';
-      });
-      th.dataset.sortDir = dir;
-      th.classList.add(dir==='asc'?'sort-asc':'sort-desc');
-      th.querySelector('.sort-ic').textContent = dir==='asc'?'↑':'↓';
-      const parse = row => {
-        let t = row.cells[col].textContent.trim();
-        const neg = t.startsWith('(') || t.startsWith('-') || t.startsWith('−');
-        const n = parseFloat(t.replace(/\./g,'').replace(/,/g,'.').replace(/%/g,'').replace(/[()+\-−]/g,'').replace(/–/g,''));
-        if(Number.isNaN(n)) return t.toLowerCase();
-        return neg ? -n : n;
-      };
-      rows.sort((a,b)=>{
-        const av=parse(a), bv=parse(b);
-        if(typeof av==='number' && typeof bv==='number') return dir==='asc'?av-bv:bv-av;
-        return dir==='asc'?String(av).localeCompare(String(bv),'id'):String(bv).localeCompare(String(av),'id');
-      });
-      rows.forEach(r=>tbody.appendChild(r));
-    });
-  });
-}
 
 /* =====================================================
    DATA 01 — UNSUR BIAYA OPERASI (Rupiah penuh)
@@ -690,7 +658,7 @@ function renderUnsur(y){
     options:{
       indexAxis:'y',responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'Rp'+fN(c.raw,2)+' Miliar'}}},
-      scales:{x:{grid:{color:C.grid},title:{display:true,text:'Rp Miliar'}},y:{grid:{display:false}}}
+      scales:{x:{grid:{color:C.grid},min:0,title:{display:true,text:'Rp Miliar'}},y:{grid:{display:false}}}
     }
   });
 }
@@ -731,52 +699,72 @@ charts.monthlyBpp = new Chart(el('monthlyBppChart'),{
 });
 legSet('monthlyBpp');
 
-/* ---------- OVERVIEW: TABEL UNSUR (sortable, initial desc 2026) ---------- */
-(function(){
-  const tb = document.querySelector('#unsurTable tbody');
-  const rows = [
-    {n:'Pembelian TL (PTL)', arr:PTL, cls:'unit-name'},
-    ...UNS_KEYS.map(k=>({n:UNS_LABEL[k], arr:UNS[k]}))
-  ].sort((a,b)=>b.arr[4]-a.arr[4]);
-  rows.forEach(r=>{
-    const d = r.arr[4]-r.arr[3];
-    tb.insertAdjacentHTML('beforeend',
-      `<tr><td><span class="unit-name">${r.n}</span></td>`+
-      r.arr.map((v,i)=>`<td>${fN(v/1e9,2)}</td><td>${fN(pc(v,TOT_UNS[i]),2)}%</td>`).join('')+
-      `<td class="${d>0?'neg':'pos'}">${d<0?'('+fN(-d/1e9,2)+')':fN(d/1e9,2)}</td>`+
-      `<td class="${d>0?'neg':'pos'}">${fS(dif(r.arr[4],r.arr[3]),2)}</td></tr>`);
-  });
-  const dt = TOT_UNS[4]-TOT_UNS[3];
-  el('unsurFoot').innerHTML =
-    `<tr class="total"><td>TOTAL UNSUR BIAYA OPERASI</td>`+
-    TOT_UNS.map((v,i)=>`<td>${fN(v/1e9,2)}</td><td>${fN(100,2)}%</td>`).join('')+
-    `<td>${dt<0?'('+fN(-dt/1e9,2)+')':fN(dt/1e9,2)}</td><td>${fS(dif(TOT_UNS[4],TOT_UNS[3]),2)}</td></tr>`;
-})();
+/* ---------- OVERVIEW: STACKED BAR PER TAHUN (Unsur & PTL) ---------- */
+const STK_COL = {psa:'#0B2E4F',ip:'#2877A8',ipp:'#159A98',sewa:'#C9A227',hsd:'#B23A2E',mat:'#7656A6',
+  jasa:'#1E7A4C',kep:'#B8872F',peny:'#6B7280',niaga:'#4B7BA8',umum:'#8B5E34'};
 
-/* ---------- OVERVIEW: TABEL PTL (sortable, desc 2026) ---------- */
-(function(){
-  const tb = document.querySelector('#ptlTable tbody');
-  const rows = ['psa','ip','ipp'].map(k=>({n:UNS_LABEL[k]?UNS_LABEL[k]:k, arr:UNS[k]}));
-  rows[0].n='Pembelian TL PSA'; rows[1].n='Pembelian TL IP'; rows[2].n='Pembelian TL IPP';
-  rows.sort((a,b)=>b.arr[4]-a.arr[4]).forEach(r=>{
-    const d = r.arr[4]-r.arr[3];
-    tb.insertAdjacentHTML('beforeend',
-      `<tr><td><span class="unit-name">${r.n}</span></td>`+
-      r.arr.map((v,i)=>`<td>${v<0?'('+fN(-v/1e9,2)+')':fN(v/1e9,2)}</td><td>${fN(pc(v,TOT_UNS[i]),2)}%</td>`).join('')+
-      `<td class="${d>0?'neg':'pos'}">${d<0?'('+fN(-d/1e9,2)+')':fN(d/1e9,2)}</td>`+
-      `<td class="${d>0?'neg':'pos'}">${fS(dif(r.arr[4],r.arr[3]),2)}</td></tr>`);
+function buildStack(cfg){
+  let order = YRS.map((_,i)=>i);
+  const key = cfg.key;
+  defLegend(key, cfg.legId, cfg.series.map(s=>({label:s.n,color:s.c})));
+  const selMap = {all:-1};
+  cfg.series.forEach((s,j)=>{ selMap[s.k] = j; });
+  const sel = el(cfg.selId);
+  sel.insertAdjacentHTML('beforeend','<option value="all" selected>Semua parameter</option>');
+  cfg.series.forEach(s=>sel.insertAdjacentHTML('beforeend',`<option value="${s.k}">${s.n}</option>`));
+  charts[key] = new Chart(el(cfg.canvasId),{
+    type:'bar',
+    plugins:[totalLabelPlugin],
+    data:{labels:[],datasets:cfg.series.map(s=>({label:s.n,data:[],backgroundColor:s.c,stack:'s',borderRadius:0,maxBarThickness:30}))},
+    options:{
+      indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      layout:{padding:{right:88}},
+      plugins:{
+        legend:{display:false},
+        totalLabel:{fmt:v=>'Rp'+fN(v,2)+' M'},
+        tooltip:{...TIP,callbacks:{
+          label:c=>{
+            const i = order[c.dataIndex];
+            const v = cfg.series[c.datasetIndex].vals[i];
+            return `${c.dataset.label}: Rp${fN(v/1e9,2)} M (${fN(pc(v,cfg.base[i]),2)}%)`;
+          },
+          footer:items=>{
+            const p = items[0].dataIndex;      // posisi pada sumbu (sudah diurutkan)
+            const i = order[p];                 // indeks tahun aslinya
+            const t = rowTot(charts[key],p);
+            return 'Total: Rp'+fN(t,2)+' M'+(cfg.shareText?' — '+fN(pc(t,cfg.base[i]/1e9),2)+'% '+cfg.shareText:'');
+          }
+        }}
+      },
+      scales:{
+        x:{stacked:true,min:0,grid:{color:C.grid},ticks:{callback:v=>fN(v)},title:{display:true,text:'Rp Miliar'}},
+        y:{stacked:true,grid:{display:false}}
+      }
+    }
   });
-})();
+  function render(k){
+    legParam(key, selMap, k);
+    const val = i => k==='all' ? cfg.total[i] : cfg.series.find(s=>s.k===k).vals[i];
+    order = YRS.map((_,i)=>i).sort((a,b)=>val(b)-val(a));
+    const ch = charts[key];
+    ch.data.labels = order.map(i=>`${YRS[i]}  (Rp${fN(cfg.total[i]/1e12,2)} T)`);
+    cfg.series.forEach((s,j)=>{ ch.data.datasets[j].data = order.map(i=>+(s.vals[i]/1e9).toFixed(2)); });
+    legSet(key);
+  }
+  sel.addEventListener('change',e=>render(e.target.value));
+  render('all');
+}
 
-/* ---------- OVERVIEW: TABEL BPP BULANAN (tahun terbaru di atas) ---------- */
-(function(){
-  const tb = document.querySelector('#monthlyTable tbody');
-  [2026,2025,2024,2023,2022].forEach(y=>{
-    tb.insertAdjacentHTML('beforeend',
-      `<tr><td><span class="unit-name">${y}</span></td>`+
-      BM[y].map(x=>`<td>${x!==null?fN(x):'—'}</td>`).join('')+`</tr>`);
-  });
-})();
+buildStack({
+  key:'unsurStk', canvasId:'unsurStkChart', legId:'unsurStkLeg', selId:'unsurStkSort',
+  total:TOT_UNS, base:TOT_UNS, shareText:null,
+  series:UNS_KEYS.map(k=>({k, n:UNS_LABEL[k], c:STK_COL[k], vals:UNS[k]}))
+});
+buildStack({
+  key:'ptlStk', canvasId:'ptlStkChart', legId:'ptlStkLeg', selId:'ptlStkSort',
+  total:PTL, base:TOT_UNS, shareText:'dari total unsur',
+  series:['psa','ip','ipp'].map(k=>({k, n:UNS_LABEL[k], c:STK_COL[k], vals:UNS[k]}))
+});
 
 /* =====================================================
    DATA 02 — BPP PER UNIT (Rupiah penuh)
@@ -839,6 +827,7 @@ const U = UN.slice(1).map((_,j)=>mkUnit(j+1)).sort((a,b)=>b.total-a.total);
 defLegend('bppTot','bppTotLeg',LEAF.map(l=>({label:l.n,color:l.c})));
 charts.bppTot = new Chart(el('bppTotChart'),{
   type:'bar',
+  plugins:[totalLabelPlugin],
   data:{
     labels: U.map(u=>`${u.name}  (Rp${fN(u.total,0)} M)`),
     datasets: LEAF.map(l=>({
@@ -849,9 +838,20 @@ charts.bppTot = new Chart(el('bppTotChart'),{
   },
   options:{
     indexAxis:'y',responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': Rp'+fN(c.raw,2)+' M'}}},
+    layout:{padding:{right:92}},
+    plugins:{
+      legend:{display:false},
+      totalLabel:{fmt:v=>'Rp'+fN(v,2)+' M'},
+      tooltip:{...TIP,callbacks:{
+        label:c=>c.dataset.label+': Rp'+fN(c.raw,2)+' M ('+fN(pc(c.raw, rowFull(charts.bppTot, c.dataIndex)),2)+'%)',
+        footer:items=>{
+          const t = rowTot(charts.bppTot, items[0].dataIndex);
+          return 'Total: Rp'+fN(t,2)+' M — '+fN(pc(t,G.total),2)+'% dari total biaya gabungan';
+        }
+      }}
+    },
     scales:{
-      x:{stacked:true,grid:{color:C.grid},ticks:{callback:v=>fN(v)},title:{display:true,text:'Rp Miliar'}},
+      x:{stacked:true,min:0,grid:{color:C.grid},ticks:{callback:v=>fN(v)},title:{display:true,text:'Rp Miliar'}},
       y:{stacked:true,grid:{display:false}}
     }
   }
@@ -916,7 +916,7 @@ function renderBppUnit(metric){
     options:{
       indexAxis:'y',responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': Rp'+fN(c.raw,2)+'/kWh'}}},
-      scales:{x:{grid:{color:C.grid},title:{display:true,text:'Rp/kWh'}},y:{grid:{display:false}}}
+      scales:{x:{grid:{color:C.grid},min:0,title:{display:true,text:'Rp/kWh'}},y:{grid:{display:false}}}
     }
   });
 }
@@ -934,7 +934,7 @@ renderBppUnit(el('bppMetric').value);
     options:{
       indexAxis:'y',responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'Energi: '+fN(c.raw,2)+' GWh'}}},
-      scales:{x:{grid:{color:C.grid},ticks:{callback:v=>fN(v)}},y:{grid:{display:false}}}
+      scales:{x:{grid:{color:C.grid},min:0,ticks:{callback:v=>fN(v)}},y:{grid:{display:false}}}
     }
   });
 })();
@@ -959,48 +959,6 @@ renderBppUnit(el('bppMetric').value);
     }
   });
   legSet('shareKwh');
-})();
-
-/* ---------- UNIT: TABEL KOMPONEN (desc by total) ---------- */
-(function(){
-  const tb = document.querySelector('#komponenTable tbody');
-  const f = v => (v ? fN(v,2) : '–');
-  U.forEach(u=>{
-    const pem = u.mat+u.jasa;
-    const adm = u.niaga+u.umum;
-    tb.insertAdjacentHTML('beforeend',
-      `<tr><td><span class="unit-name">${u.name}</span></td>`+
-      `<td>${f(u.psa)}</td><td>${f(u.ip)}</td><td>${f(u.ipp)}</td><td>${f(u.sewa)}</td><td>${f(u.hsd)}</td>`+
-      `<td>${f(pem)}</td><td>${f(u.kep)}</td><td>${f(u.peny)}</td><td>${f(adm)}</td><td>${f(u.pinj)}</td>`+
-      `<td>${f(u.total)}</td></tr>`);
-  });
-  const pemG = G.mat+G.jasa, admG = G.niaga+G.umum;
-  el('komponenFoot').innerHTML =
-    `<tr class="total"><td>GABUNGAN</td>`+
-    `<td>${f(G.psa)}</td><td>${f(G.ip)}</td><td>${f(G.ipp)}</td><td>${f(G.sewa)}</td><td>${f(G.hsd)}</td>`+
-    `<td>${f(pemG)}</td><td>${f(G.kep)}</td><td>${f(G.peny)}</td><td>${f(admG)}</td><td>${f(G.pinj)}</td>`+
-    `<td>${f(G.total)}</td></tr>`;
-})();
-
-/* ---------- UNIT: TABEL DETAIL (desc by total) ---------- */
-(function(){
-  const tb = document.querySelector('#unitDetailTable tbody');
-  U.forEach(u=>{
-    const sel = u.bppF==null ? '–' : ((u.bppF-G.bppF>0?'+':'')+fN(u.bppF-G.bppF,0));
-    tb.insertAdjacentHTML('beforeend',
-      `<tr><td><span class="unit-name">${u.name}</span></td>`+
-      `<td>${fN(u.total,2)}</td>`+
-      `<td>${fN(u.psa,2)}</td>`+
-      `<td>${fN(pc(u.psa,u.total),2)}%</td>`+
-      `<td>${u.kwh==null?'–':fN(u.kwh,2)}</td>`+
-      `<td>${u.bppF==null?'–':fN(u.bppF,0)}</td>`+
-      `<td>${u.bppN==null?'–':fN(u.bppN,2)}</td>`+
-      `<td>${sel}</td></tr>`);
-  });
-  el('unitDetailFoot').innerHTML =
-    `<tr class="total"><td>GABUNGAN</td>`+
-    `<td>${fN(G.total,2)}</td><td>${fN(G.psa,2)}</td><td>${fN(pc(G.psa,G.total),2)}%</td>`+
-    `<td>${fN(G.kwh,2)}</td><td>${fN(G.bppF,0)}</td><td>${fN(G.bppN,2)}</td><td>–</td></tr>`;
 })();
 
 /* ---------- SPEEDOMETER KARTU SKOR ---------- */
@@ -1066,9 +1024,6 @@ document.querySelectorAll('.card[data-g]').forEach(card=>{
   score.insertAdjacentHTML('beforeend', speedometer(lab.textContent, g.amount, g.reference, g.basis, cls, st && st.c));
   if(st) card.insertAdjacentHTML('beforeend', `<div class="small"><b>Status: ${st.t}</b></div>`);
 });
-
-/* ---------- INIT SORTABLE TABLES ---------- */
-['unsurTable','ptlTable','monthlyTable','komponenTable','unitDetailTable'].forEach(id=>makeTableSortable(el(id)));
 
 /* ---------- RESTORE TAB ----------
    Refresh halaman: kembali ke tab terakhir.
