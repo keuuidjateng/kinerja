@@ -884,6 +884,10 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
   function polarHex(p){
     return p < 95 ? '#B23A2E' : (p < 100 ? '#C9A227' : '#1E7A4C');
   }
+  // Kartu skor "Unit Melampaui Target": 0–5% hijau, >5–60% kuning, >60–100% merah
+  function unitScoreColor(p){
+    return p <= 5 ? '#1E7A4C' : (p <= 60 ? '#C9A227' : '#B23A2E');
+  }
   // Porsi realisasi per item terhadap kategori
   function shareColor(share){
     if (share >= 10) return {fill:'status-fill-risk', tag:'tag-risk'};
@@ -1718,13 +1722,13 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
   }
 
   /* ===================== SPEEDOMETER KARTU SKOR ===================== */
-  function speedometer(label, amount, reference, basis, cls){
+  function speedometer(label, amount, reference, basis, cls, colorOverride, maxOverride){
     var percent = ratio(amount, reference) || 0;
-    var max = Math.max(100, Math.ceil(percent / 25) * 25);
+    var max = maxOverride || Math.max(100, Math.ceil(percent / 25) * 25);
     var fraction = Math.max(0, Math.min(1, percent / max));
     var angle = Math.PI + Math.PI * fraction;
     var x = 80 + 52 * Math.cos(angle), y = 78 + 52 * Math.sin(angle);
-    var color = {teal:'#0E7C7B', gold:'#C9A227', green:'#1E7A4C'}[cls] || '#0B2E4F';
+    var color = colorOverride || {teal:'#0E7C7B', gold:'#C9A227', green:'#1E7A4C'}[cls] || '#0B2E4F';
     var ticks = [0, .25, .5, .75, 1].map(function(t){
       var a = Math.PI + Math.PI * t;
       return '<line x1="' + (80 + 56 * Math.cos(a)) + '" y1="' + (78 + 56 * Math.sin(a)) + '" x2="' + (80 + 61 * Math.cos(a)) + '" y2="' + (78 + 61 * Math.sin(a)) + '" stroke="#8D9AAC" stroke-width="1"/>';
@@ -1746,6 +1750,10 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
   var TOP_UNIT = UNITS.map(function(u){ return u.a + u.b; }).reduce(function(m, v){ return Math.max(m, v); }, 0);
   var TOP_BIAYA = ITEMS.A.concat(ITEMS.B).reduce(function(m, x){ return Math.max(m, x.real); }, 0);
 
+  // Kartu "Unit Melampaui Target": skala 0–100%, warna mengikuti ambang 5% dan 60%
+  var UNIT_OVER_COUNT = KPI_UNITS.filter(function(u){ return u.real > u.tsept; }).length;
+  var UNIT_OVER_TOTAL = KPI_UNITS.length;
+
   var GAUGES = {
     'ov-real':  {amount:TOT.real,    reference:TOT.revisi,    basis:'dari target revisi 2026'},
     'ov-pct':   {amount:TOT.real,    reference:TOT.tsept,     basis:'dari target s/d Okt'},
@@ -1755,7 +1763,7 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
     'kpi-rev':  {amount:KPI_TOT.rev,  reference:TOT.y25 / 1e6, basis:'dari realisasi 2025'},
     'kpi-tsept':{amount:KPI_TOT.tsept,reference:KPI_TOT.rev,  basis:'dari target revisi 2026'},
     'kpi-real': {amount:KPI_TOT.real, reference:KPI_TOT.tsept, basis:'dari target s/d Okt'},
-    'kpi-unit': {amount:13,            reference:14,           basis:'dari 14 unit pelaksana'}
+    'kpi-unit': {amount:UNIT_OVER_COUNT, reference:UNIT_OVER_TOTAL, basis:'dari 14 unit pelaksana', color:unitScoreColor(ratio(UNIT_OVER_COUNT, UNIT_OVER_TOTAL)), max:100}
   };
 
   function initScoreGauges(){
@@ -1768,7 +1776,7 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
       score.className = 'card-score';
       card.insertBefore(score, val);
       score.appendChild(val);
-      score.insertAdjacentHTML('beforeend', speedometer(lab.textContent, g.amount, g.reference, g.basis, cls));
+      score.insertAdjacentHTML('beforeend', speedometer(lab.textContent, g.amount, g.reference, g.basis, cls, g.color, g.max));
     });
   }
   initScoreGauges();
