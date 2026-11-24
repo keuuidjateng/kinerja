@@ -603,54 +603,20 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     <h2 class="section-title"><span class="num">04</span>Analisis &amp; Rekomendasi</h2>
     <div class="rule"></div>
 
-    <div class="callout blue"><b>Struktur aset didominasi Aset Tetap Netto.</b> Pada posisi GABUNGAN, Aset Tetap Netto Rp24,68 T atau 87,09% dari Total Aset Rp28,34 T.</div>
-    <div class="callout red"><b>Perhatian ekuitas defisit dan likuiditas jangka pendek.</b> Ekuitas defisit di UID (-Rp1,78 T), UP2D (-Rp182,50 M) dan UP3 Yogyakarta (-Rp135,92 M). Rasio lancar GABUNGAN 0,75x: Aset Lancar Rp2,87 T belum menutup Liabilitas Jangka Pendek Rp3,81 T.</div>
-
-    <h3 class="sub-title">Temuan Utama</h3>
-    <div class="insight-grid">
-      <div class="ins ok">
-        <div class="ins-title">Aset Tetap Netto Menjadi Komponen Dominan</div>
-        <div class="ins-text">Aset Tetap Netto Rp24,68 triliun atau <b>87,09%</b> dari Total Aset Rp28,34 triliun. Akumulasi penyusutan Rp2,37 triliun setara 8,74% dari nilai bruto, sehingga sebagian besar aset masih berada pada umur ekonomis yang relatif baru.</div>
-      </div>
-      <div class="ins warn">
-        <div class="ins-title">Struktur Pendanaan Bertumpu pada Akun Antar Satuan</div>
-        <div class="ins-text">Akun Antar Satuan Administrasi Rp14,76 triliun (<b>52,10%</b> dari total pasiva), Total Ekuitas Rp4,99 triliun (17,61%), Liabilitas Jangka Panjang Rp4,77 triliun (16,83%) dan Liabilitas Jangka Pendek Rp3,81 triliun (13,46%). Aset unit dibiayai terutama melalui rekening antar unit.</div>
-      </div>
-      <div class="ins warn">
-        <div class="ins-title">Piutang Usaha Komponen Utama Aset Lancar</div>
-        <div class="ins-text">Piutang Usaha Netto Rp2,66 triliun atau <b>92,95%</b> dari Aset Lancar Rp2,87 triliun. UID, UP2D dan UP3 Yogyakarta tidak mencatat piutang usaha. Porsi terbesar berada di UP3 SEMARANG (20,10% dari total piutang).</div>
-      </div>
-      <div class="ins danger">
-        <div class="ins-title">Kas dan Setara Kas Hampir Nihil</div>
-        <div class="ins-text">Kas dan Setara Kas hanya Rp2.175.000 (di bawah 0,01% dari Aset Lancar) dan seluruhnya tercatat di UID. Kewajiban jangka pendek Rp3,81 triliun tidak didukung kas, sehingga kemampuan membayar bergantung pada penerimaan piutang dan pemindahan dana antar unit.</div>
-      </div>
-      <div class="ins danger">
-        <div class="ins-title">Ekuitas Defisit di Tiga Satuan</div>
-        <div class="ins-text">UID (-Rp1,78 T), UP2D (-Rp182,50 M) dan UP3 Yogyakarta (-Rp135,92 M). Saldo antar satuan UID mencapai Rp2,68 triliun atau 221% dari total asetnya, dan UP2D Rp1,42 triliun atau 113%. Kedua satuan ini sangat bergantung pada pendanaan dari unit lain.</div>
-      </div>
-      <div class="ins warn">
-        <div class="ins-title">Uang Jaminan Langganan Mendominasi Liabilitas Jangka Pendek</div>
-        <div class="ins-text">Rp1,97 triliun atau <b>51,59%</b> dari Liabilitas Jangka Pendek Rp3,81 triliun. Konsentrasi terbesar di UP3 SEMARANG (Rp377,71 M, 19,19%) dan UP3 PEKALONGAN (Rp151,27 M). Nilai ini perlu dikelola karena terkait kewajiban kepada pelanggan.</div>
-      </div>
-      <div class="ins warn">
-        <div class="ins-title">Pendapatan Ditangguhkan Membebani Pasiva</div>
-        <div class="ins-text">Pendapatan ditangguhkan jangka panjang Rp4,71 triliun (98,72% dari liabilitas jangka panjang) ditambah Biaya Penyambungan jangka pendek Rp442,11 miliar, total sekitar Rp5,15 triliun atau 18,17% dari total pasiva. Pengakuannya akan memengaruhi pendapatan dan ekuitas di masa mendatang.</div>
-      </div>
-      <div class="ins danger">
-        <div class="ins-title">Rasio Lancar Rendah Tersebar Luas</div>
-        <div class="ins-text">8 dari 14 satuan yang memiliki aset (di luar UP3 Yogyakarta) berada di bawah 0,8x, termasuk UP3 PEKALONGAN (0,61x), UP3 CILACAP (0,63x) dan UP2D (0,59x). UID berada di 0,03x.</div>
+    <div class="intro">Temuan dan rekomendasi di bawah ini menyesuaikan unit yang dipilih. Ubah pilihan unit di sini atau di tab lain.</div>
+    <div class="filter-box">
+      <div class="filter-grid">
+        <div class="field"><label for="unitSelectAnalisis">Pilih Unit</label><select class="unit-select" id="unitSelectAnalisis"></select></div>
       </div>
     </div>
 
-    <h3 class="sub-title">Rekomendasi</h3>
-    <div class="reco">
-      <div class="reco-card"><div class="k">Rekomendasi 1 · Rekonsiliasi Antar Satuan</div><p>Nilai GABUNGAN Akun Antar Satuan (Rp14,76 T) sama dengan jumlah langsung saldo seluruh satuan, sehingga pasangan saldo antar satuan belum tampak dieliminasi. Rekonsiliasi pasangan saldo per satuan dan pastikan eliminasi dilakukan sebelum menyajikan posisi gabungan.</p></div>
-      <div class="reco-card"><div class="k">Rekomendasi 2 · Penyehatan Ekuitas</div><p>Telaah penyebab defisit UID (Rp1,78 T) dan UP2D (Rp182,50 M), seperti akumulasi rugi, beban penyusutan atau penurunan nilai, lalu susun opsi penyehatan termasuk kemungkinan penambahan modal atau penataan ulang pembiayaan antar unit.</p></div>
-      <div class="reco-card"><div class="k">Rekomendasi 3 · Status UP3 Yogyakarta</div><p>UP3 Yogyakarta tidak mencatat aset, memiliki ekuitas negatif Rp135,92 M, akun antar satuan Rp133,52 M dan liabilitas jangka pendek Rp2,40 M. Tinjau status operasional dan kejelasan sumber dana untuk menutup ekuitas negatifnya.</p></div>
-      <div class="reco-card"><div class="k">Rekomendasi 4 · Likuiditas &amp; Kas</div><p>Kas hanya Rp2,2 juta sementara liabilitas jangka pendek Rp3,81 T. Susun proyeksi kas bulanan yang memetakan penerimaan piutang dan kewajiban jatuh tempo, serta tetapkan batas minimum rasio lancar per satuan, terutama untuk UID, UP2D, PEKALONGAN dan CILACAP.</p></div>
-      <div class="reco-card"><div class="k">Rekomendasi 5 · Penagihan Piutang</div><p>Prioritaskan penagihan Piutang Usaha Rp2,66 T (92,95% Aset Lancar). Fokus pada UP3 SEMARANG (Rp535,60 M), UP3 KUDUS (Rp346,31 M) dan UP3 SURAKARTA (Rp323,58 M), serta telaah umur piutang untuk mengidentifikasi piutang yang berisiko tidak tertagih.</p></div>
-      <div class="reco-card"><div class="k">Rekomendasi 6 · Kewajiban Non-Kas &amp; PDP</div><p>Tinjau mekanisme Uang Jaminan Langganan (Rp1,97 T) dan Pendapatan Ditangguhkan (Rp5,15 T), serta percepat penyelesaian PDP Rp647,40 M untuk dikapitalisasi ke aset tetap, terutama di UP3 SEMARANG (Rp149,76 M) dan UP3 KUDUS (Rp92,37 M).</p></div>
-    </div>
+    <div id="calloutAnalisis"></div>
+
+    <h3 class="sub-title" id="findTitle">Temuan Utama</h3>
+    <div class="insight-grid" id="insightGrid"></div>
+
+    <h3 class="sub-title" id="recoTitle">Rekomendasi</h3>
+    <div class="reco" id="recoGrid"></div>
 
     <div class="grid">
       <div class="box"><h3>Unit dengan Aset Terbesar</h3><div id="insightTopAsset"></div></div>
@@ -677,8 +643,6 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
         </table>
       </div>
     </div>
-
-    <div class="callout red"><b>Catatan Basis Data &amp; Konsolidasi:</b> Angka pada tab ini bersumber dari Excel Posisi Keuangan. Nilai Akun Antar Satuan pada GABUNGAN sama dengan jumlah langsung seluruh satuan dan belum dieliminasi, sehingga rasio yang memakai total pasiva gabungan perlu dibaca bersama catatan tersebut.</div>
   </div>
 </section>
 
@@ -1262,7 +1226,7 @@ function stack(id,segs){
 /* ==========================================================
    UNIT SELECTORS
 ========================================================== */
-const SEL_IDS=["unitSelect","unitSelectAset","unitSelectEL"];
+const SEL_IDS=["unitSelect","unitSelectAset","unitSelectEL","unitSelectAnalisis"];
 SEL_IDS.forEach(id=>{
   $(id).innerHTML=UNIT_ORDER.map(u=>`<option value="${u}">${u}</option>`).join("");
   $(id).value=currentUnit;
@@ -1314,6 +1278,142 @@ function setScore(key,amount,reference,basis){
   score.querySelectorAll('.card-gauge').forEach(g=>g.remove());
   const cls=['teal','gold','green'].find(c=>card.classList.contains(c))||'';
   score.insertAdjacentHTML('beforeend',speedometer(lab.textContent,amount,reference,basis,cls));
+}
+
+/* ==========================================================
+   ANALISIS & REKOMENDASI (dinamis mengikuti unit terpilih)
+========================================================== */
+function renderAnalysis(){
+  const u=currentUnit, d=data[u], isG=u==="GABUNGAN", rp=shortRp;
+  const nm=isG?"GABUNGAN":u;
+  const liab=d.liabPanjang+d.liabPendek;
+  const passiva=d.ekuitas+d.liabPanjang+d.liabPendek+d.antarSatuan;
+  const rasio=rasioLancar(d);
+  const hasAset=d.totalAset>0;
+  const ctx=isG?"Pada posisi GABUNGAN":`Pada ${u}`;
+  const kasRatio=d.liabPendek?d.kas/d.liabPendek:0;
+  const uj=valOf(LIAB_PENDEK[6].v,u), bp=valOf(LIAB_PENDEK[1].v,u), dtg=valOf(LIAB_PANJANG[0].v,u);
+  const pdTot=dtg+bp;
+
+  /* Peringkat unit pada suatu parameter (hanya nilai > 0) */
+  const rankTxt=key=>{
+    if(isG) return "";
+    const arr=UNITS.map(x=>({x,v:data[x][key]})).filter(o=>o.v>0).sort((a,b)=>b.v-a.v);
+    const i=arr.findIndex(o=>o.x===u);
+    return i<0?"":` (peringkat ${i+1} dari ${arr.length} satuan)`;
+  };
+  const top3=[...UNITS].sort((a,b)=>data[b].piutangUsaha-data[a].piutangUsaha).slice(0,3).join(", ");
+
+  $("findTitle").textContent=`Temuan Utama: ${nm}`;
+  $("recoTitle").textContent=`Rekomendasi: ${nm}`;
+
+  /* Komponen aset & pasiva, diurutkan dari terbesar */
+  const parts=[
+    {n:"Aset Tetap Netto",v:d.asetTetap},
+    {n:"Pekerjaan Dalam Pelaksanaan",v:d.pdp},
+    {n:"Properti Investasi",v:d.properti},
+    {n:"Aset Tidak Lancar Lain",v:d.asetTidakLancarLain},
+    {n:"Aset Lancar",v:d.asetLancar}
+  ].sort((a,b)=>b.v-a.v);
+  const top=parts[0];
+  const pp=[
+    {n:"Ekuitas",v:Math.abs(d.ekuitas)},
+    {n:"Akun Antar Satuan",v:d.antarSatuan},
+    {n:"Liabilitas Jangka Panjang",v:d.liabPanjang},
+    {n:"Liabilitas Jangka Pendek",v:d.liabPendek}
+  ].sort((a,b)=>b.v-a.v);
+
+  /* Callout ringkasan */
+  const callBlue = hasAset
+    ? `<b>Struktur aset ${nm} didominasi ${top.n}.</b> ${ctx} ${top.n} ${rp(top.v)} atau ${pct(top.v,d.totalAset)} dari Total Aset ${rp(d.totalAset)}.`
+    : `<b>${nm} tidak mencatat aset.</b> Struktur aset tidak dapat dianalisis, sehingga posisi hanya tercermin pada sisi pasiva.`;
+  const conc=[];
+  if(d.ekuitas<0) conc.push(`ekuitas defisit ${rp(d.ekuitas)}`);
+  if(d.liabPendek>0 && rasio<1) conc.push(`rasio lancar ${rasioTxt(rasio)}: aset lancar ${rp(d.asetLancar)} belum menutup liabilitas jangka pendek ${rp(d.liabPendek)}`);
+  const callRed = conc.length
+    ? `<b>Perhatian ${nm}:</b> ${conc.join("; ")}.`
+    : `<b>Posisi ${nm} relatif terjaga.</b> Ekuitas ${rp(d.ekuitas)}${d.liabPendek>0?`, rasio lancar ${rasioTxt(rasio)}`:", tanpa liabilitas jangka pendek"}.`;
+  $("calloutAnalisis").innerHTML=`<div class="callout blue">${callBlue}</div><div class="callout ${conc.length?"red":"teal"}">${callRed}</div>`;
+
+  /* Temuan utama (6 kartu) */
+  const f=[];
+  f.push(!hasAset
+    ? {c:"warn",t:"Tidak Ada Aset Tercatat",x:`${nm} tidak mencatat aset. Ekuitas ${rp(d.ekuitas)} dan liabilitas ${rp(liab)} tidak didukung aset di sisi aktiva.`}
+    : d.asetTetap>0
+      ? {c:pctN(d.asetTetap,d.totalAset)>=50?"ok":"warn",
+         t:top.n==="Aset Tetap Netto"?"Aset Tetap Netto Menjadi Komponen Dominan":"Aset Tetap Netto Bukan Komponen Dominan",
+         x:`Aset tetap netto ${rp(d.asetTetap)} atau ${pct(d.asetTetap,d.totalAset)} dari Total Aset ${rp(d.totalAset)}.${d.asetBruto>0?` Akumulasi penyusutan ${rp(-d.akumPenyusutan)} setara ${pct(-d.akumPenyusutan,d.asetBruto)} dari nilai bruto.`:""}`}
+      : {c:"warn",t:"Tanpa Aset Tetap Netto",x:`${nm} tidak memiliki aset tetap netto. Total aset ${rp(d.totalAset)} berasal dari komponen lain.`});
+
+  f.push(passiva>0
+    ? {c:pctN(d.antarSatuan,passiva)>40?"warn":"ok",
+       t:`Pendanaan Didominasi ${pp[0].n}`,
+       x:`Akun Antar Satuan ${rp(d.antarSatuan)} (${pct(d.antarSatuan,passiva)} dari total pasiva), Total Ekuitas ${rp(d.ekuitas)} (${pct(d.ekuitas,passiva)}), Liabilitas Jangka Panjang ${rp(d.liabPanjang)} (${pct(d.liabPanjang,passiva)}) dan Liabilitas Jangka Pendek ${rp(d.liabPendek)} (${pct(d.liabPendek,passiva)}).${pctN(d.antarSatuan,passiva)>40?" Aset unit dibiayai terutama melalui rekening antar satuan.":""}`}
+    : {c:"warn",t:"Tanpa Struktur Pasiva",x:`Total pasiva ${nm} nol.`});
+
+  f.push(d.asetLancar>0 && d.piutangUsaha>0
+    ? {c:pctN(d.piutangUsaha,d.asetLancar)>=80?"warn":"ok",
+       t:`Piutang Usaha ${pct(d.piutangUsaha,d.asetLancar)} dari Aset Lancar`,
+       x:`Piutang Usaha Netto ${rp(d.piutangUsaha)} atau ${pct(d.piutangUsaha,d.asetLancar)} dari Aset Lancar ${rp(d.asetLancar)}.${rankTxt("piutangUsaha")}`}
+    : d.asetLancar>0
+      ? {c:"ok",t:"Tanpa Piutang Usaha",x:`${nm} tidak mencatat piutang usaha. Aset lancar ${rp(d.asetLancar)} terdiri dari komponen lain, termasuk persediaan ${rp(d.persediaan)}.`}
+      : {c:"warn",t:"Tanpa Aset Lancar",x:`${nm} tidak mencatat aset lancar maupun piutang usaha.`});
+
+  f.push(d.liabPendek>0 && d.kas===0
+    ? {c:"danger",t:"Tidak Ada Kas",x:`${nm} tidak mencatat kas dan setara kas, sementara liabilitas jangka pendek ${rp(d.liabPendek)}. Kewajiban jangka pendek hanya dapat dipenuhi dari penerimaan piutang dan pemindahan dana antar satuan.`}
+    : d.liabPendek>0 && kasRatio<0.01
+      ? {c:"danger",t:"Kas Hampir Nihil",x:`Kas dan setara kas hanya Rp${rupiah(d.kas)}, atau ${pct(d.kas,d.liabPendek)} dari liabilitas jangka pendek ${rp(d.liabPendek)}.`}
+      : d.kas>0
+        ? {c:"ok",t:"Kas Tersedia",x:`Kas dan setara kas Rp${rupiah(d.kas)}${d.liabPendek>0?`, atau ${pct(d.kas,d.liabPendek)} dari liabilitas jangka pendek`:""}.`}
+        : {c:"ok",t:"Tanpa Kewajiban Jangka Pendek",x:`${nm} tidak memiliki liabilitas jangka pendek yang perlu dibayar dari kas.`});
+
+  f.push(d.ekuitas<0
+    ? {c:"danger",t:"Ekuitas Defisit",x:`Ekuitas ${rp(d.ekuitas)} berada dalam kondisi defisit, atau ${pct(d.ekuitas,d.totalAset)} dari Total Aset. Saldo akun antar satuan ${rp(d.antarSatuan)} menunjukkan ketergantungan pada pendanaan dari satuan lain.`}
+    : {c:"ok",t:"Ekuitas Positif",x:`Ekuitas ${rp(d.ekuitas)} atau ${pct(d.ekuitas,d.totalAset)} dari Total Aset.${rankTxt("ekuitas")}`});
+
+  f.push(d.liabPendek===0
+    ? {c:"ok",t:"Tanpa Liabilitas Jangka Pendek",x:`${nm} tidak memiliki liabilitas jangka pendek, sehingga tidak ada risiko jatuh tempo jangka pendek.`}
+    : rasio<0.8
+      ? {c:"danger",t:"Rasio Lancar Rendah",x:`Rasio lancar ${rasioTxt(rasio)}: aset lancar ${rp(d.asetLancar)} belum menutup liabilitas jangka pendek ${rp(d.liabPendek)}.`}
+      : rasio<1
+        ? {c:"warn",t:"Rasio Lancar Di Bawah 1x",x:`Rasio lancar ${rasioTxt(rasio)}: aset lancar ${rp(d.asetLancar)} belum sepenuhnya menutup liabilitas jangka pendek ${rp(d.liabPendek)}.`}
+        : {c:"ok",t:"Likuiditas Memadai",x:`Rasio lancar ${rasioTxt(rasio)}: aset lancar ${rp(d.asetLancar)} menutup liabilitas jangka pendek ${rp(d.liabPendek)}.`});
+
+  $("insightGrid").innerHTML=f.map(o=>`<div class="ins ${o.c}"><div class="ins-title">${o.t}</div><div class="ins-text">${o.x}</div></div>`).join("");
+
+  /* Rekomendasi (6 kartu) */
+  const rc=[];
+  rc.push(d.antarSatuan>0
+    ? {t:"Rekonsiliasi Antar Satuan",
+       x:isG
+         ? `Akun Antar Satuan GABUNGAN ${rp(d.antarSatuan)} sama dengan jumlah langsung saldo seluruh satuan, sehingga pasangan saldo belum tampak dieliminasi. Rekonsiliasi pasangan saldo per satuan dan lakukan eliminasi sebelum menyajikan posisi gabungan.`
+         : `Saldo akun antar satuan ${u} sebesar ${rp(d.antarSatuan)} perlu dicocokkan dengan pasangan saldo di satuan lawan transaksi agar selisih dapat dijelaskan dan dieliminasi pada posisi gabungan.`}
+    : {t:"Tidak Ada Saldo Antar Satuan",x:`Tidak ada saldo akun antar satuan pada ${nm}. Pastikan transaksi dari satuan lain yang mengarah ke unit ini juga sudah terkonfirmasi.`});
+
+  rc.push(d.ekuitas<0
+    ? {t:"Penyehatan Ekuitas",x:`Telaah penyebab defisit ${rp(d.ekuitas)} pada ${nm}, seperti akumulasi rugi, beban penyusutan, atau penurunan nilai aset, lalu susun opsi penyehatan termasuk penambahan modal atau penataan ulang pembiayaan antar satuan.`}
+    : {t:"Jaga Ekuitas Positif",x:`Ekuitas ${rp(d.ekuitas)} tercatat positif. Pertahankan dengan memantau laba atau rugi berjalan dan penurunan nilai aset setiap periode.`});
+
+  rc.push(d.liabPendek>0 && (rasio<1 || kasRatio<0.01)
+    ? {t:"Likuiditas & Kas",x:`Kas Rp${rupiah(d.kas)} sementara liabilitas jangka pendek ${rp(d.liabPendek)}. Susun proyeksi kas bulanan yang memetakan penerimaan piutang dan kewajiban jatuh tempo, serta tetapkan batas minimum rasio lancar${isG?" per satuan":""}.`}
+    : {t:"Pantau Rasio Lancar",x:`${d.liabPendek>0?`Rasio lancar ${rasioTxt(rasio)}.`:"Unit tidak memiliki liabilitas jangka pendek."} Pantau jatuh tempo kewajiban jangka pendek secara berkala.`});
+
+  rc.push(d.piutangUsaha>0
+    ? {t:"Penagihan Piutang",
+       x:isG
+         ? `Prioritaskan penagihan Piutang Usaha ${rp(d.piutangUsaha)} (${pct(d.piutangUsaha,d.asetLancar)} dari Aset Lancar). Fokus pada ${top3}, serta telaah umur piutang untuk mengidentifikasi piutang yang berisiko tidak tertagih.`
+         : `Prioritaskan penagihan Piutang Usaha ${u} ${rp(d.piutangUsaha)} (${pct(d.piutangUsaha,d.asetLancar)} dari Aset Lancar). Telaah umur piutang untuk mengidentifikasi piutang yang berisiko tidak tertagih.`}
+    : {t:"Fokus pada Aset Lancar Lain",x:`${nm} tidak mencatat piutang usaha. Pantau piutang lain jangka pendek ${rp(d.piutangLainPendek)} dan persediaan ${rp(d.persediaan)} sebagai sumber likuiditas.`});
+
+  rc.push(uj+pdTot+d.pdp>0
+    ? {t:"Kewajiban Pelanggan & Non-Kas",x:`Uang jaminan langganan ${rp(uj)}${d.liabPendek>0?` (${pct(uj,d.liabPendek)} dari liabilitas jangka pendek)`:""} dan pendapatan ditangguhkan ${rp(pdTot)}. Tinjau mekanisme keduanya${d.pdp>0?`, serta percepat penyelesaian PDP ${rp(d.pdp)} untuk dikapitalisasi ke aset tetap`:""}.`}
+    : {t:"Tidak Ada Kewajiban Pelanggan",x:`${nm} tidak mencatat uang jaminan langganan maupun pendapatan ditangguhkan.`});
+
+  rc.push(d.asetTetap>0 && d.asetBruto>0
+    ? {t:"Utilisasi Aset Tetap",x:`Aset tetap netto ${rp(d.asetTetap)} dengan akumulasi penyusutan ${pct(-d.akumPenyusutan,d.asetBruto)} dari nilai bruto. Pantau utilisasi aset, terutama yang mendekati akhir umur ekonomis, dan pastikan rencana pemeliharaan tersedia.`}
+    : {t:"Pengendalian Aset Tidak Lancar Lain",x:`${nm} tidak memiliki aset tetap netto. Pantau aset tidak lancar lain ${rp(d.asetTidakLancarLain)} dan pastikan penilaiannya sesuai kebijakan.`});
+
+  $("recoGrid").innerHTML=rc.map((o,i)=>`<div class="reco-card"><div class="k">Rekomendasi ${i+1} · ${o.t}</div><p>${o.x}</p></div>`).join("");
 }
 
 /* ==========================================================
@@ -1455,6 +1555,9 @@ function updateDashboard(){
     .sort((a,b)=>b.value-a.value);
   hbar("liabPanjangChart", liabItems(LIAB_PANJANG), null);
   hbar("liabPendekChart",  liabItems(LIAB_PENDEK), null);
+
+  /* Analisis & rekomendasi mengikuti unit terpilih */
+  renderAnalysis();
 }
 
 /* ==========================================================
