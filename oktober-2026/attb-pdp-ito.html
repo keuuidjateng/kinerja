@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UID Jawa Tengah — Monitoring ATTB, PDP & Persediaan</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+<style>
+:root{--navy:#0B2E4F;--navy-d:#081E36;--navy-soft:#12406B;--gold:#C9A227;--teal:#0E7C7B;--teal2:#159A98;--grey:#6B7280;--bg:#FBFBFA;--red:#B23A2E;--green:#1E7A4C;--line:#D7DBE1;--blue:#2877A8;--text2:#41526B}
+*{box-sizing:border-box}body{margin:0;font:14px/1.5 Arial,Helvetica,sans-serif;color:#20304A;background:var(--bg)}button,select,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--teal2);outline-offset:3px}.wrap,.hero-inner,.tabbar{max-width:1380px;margin:auto;padding:0 28px}.wrap{padding-bottom:50px}.hero{background:radial-gradient(circle at 80% 20%,rgba(21,154,152,.18),transparent 32%),linear-gradient(135deg,var(--navy-d),var(--navy) 60%,var(--navy-soft));color:#fff;padding:40px 0 30px}.eyebrow{text-transform:uppercase;letter-spacing:3px;font-size:11px;color:var(--gold);font-weight:700;margin-bottom:13px}.hero h1{font-size:36px;line-height:1.2;margin:0 0 10px}.sub{color:#CBD6E4;margin:0 0 20px;max-width:1000px}.metabar{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;border-top:1px solid #ffffff2e;padding-top:15px}.metabar div{font-size:11px;color:#B9C6D6}.metabar strong{display:block;color:#fff;font-size:22px;margin-top:3px}.tabs{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 2px 8px #0000000b}.tabbar{display:flex;gap:3px;overflow-x:auto}.tab{border:0;background:none;padding:15px 18px;font-weight:700;color:#607086;border-bottom:3px solid transparent;white-space:nowrap}.tab:hover{background:#D9E9F7;color:var(--navy-d)}.tab.active{background:var(--navy);color:#fff;border-bottom-color:var(--gold)}[hidden]{display:none!important}.section{padding:32px 0 5px}.section-title{font-size:23px;color:var(--navy-d);margin:0 0 5px}.num{color:var(--gold);font-size:14px;margin-right:10px}.rule{height:3px;width:55px;background:var(--gold);margin:12px 0 20px}.intro{color:var(--text2);margin:0 0 20px}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0}.cards.three{grid-template-columns:repeat(3,1fr)}.cards.two{grid-template-columns:repeat(2,1fr)}.card{background:#E8EEF5;border:1px solid var(--line);border-top:3px solid var(--navy);border-radius:4px;padding:16px;min-width:0}.card.teal{background:#E3F1F0;border-top-color:var(--teal)}.card.gold{background:#F8F1DC;border-top-color:var(--gold)}.card.green{background:#E4F1EA;border-top-color:var(--green)}.label{text-transform:uppercase;letter-spacing:.8px;font-size:10.5px;color:var(--grey);font-weight:700}.value{font-size:22px;font-weight:700;color:var(--navy-d);margin:7px 0}.small{font-size:11px;color:var(--grey);overflow-wrap:anywhere}.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:20px}.box{background:#fff;border:1px solid var(--line);border-radius:4px;padding:20px;min-width:0;margin-bottom:18px}.box h3{font-size:17px;color:var(--navy-d);margin:0 0 6px}.chart{height:340px;position:relative;margin-top:14px}.chart.tall{height:450px}.legend{display:flex;flex-direction:column;gap:7px;margin-top:12px}.legend button{display:flex;gap:8px;align-items:center;border:0;background:none;text-align:left;padding:5px;color:var(--text2);font-size:11px}.legend i{width:10px;height:10px;border-radius:2px;flex-shrink:0}.legend .off{opacity:.45;text-decoration:line-through}.table-scroll{overflow:auto;border:1px solid var(--line);border-radius:4px;background:#fff;margin:16px 0}table{width:100%;border-collapse:collapse;font-size:11.5px;font-variant-numeric:tabular-nums}th{background:var(--navy);color:#fff;text-align:right;padding:11px 9px;white-space:nowrap}th button{border:0;background:none;color:inherit;font-weight:700;padding:0;text-align:inherit;width:100%}td{padding:9px;border-bottom:1px solid #E7E9EC;text-align:right;white-space:nowrap}td:first-child,th:first-child{text-align:left}td.txt{white-space:normal;text-align:left;min-width:175px}tbody tr:nth-child(even){background:#F6F8FA}tbody tr:hover{background:#EEF6F6}tfoot td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy)}tbody tr.sub-row td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy)}.insight-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.ins{background:#fff;border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:2px;padding:18px 20px}.ins.warn{border-left-color:var(--gold)}.ins.danger{border-left-color:var(--red)}.ins.ok{border-left-color:var(--green)}.ins h3{font-size:14px;margin:0 0 8px;color:var(--navy)}.ins p{margin:0;color:var(--text2);font-size:13px}.tag{font-size:10px;text-transform:uppercase;font-weight:700;letter-spacing:.8px;color:var(--grey);display:block;margin-bottom:8px}.callout{padding:15px 18px;background:#F4F0DF;border-left:4px solid var(--gold);border-radius:2px;margin:18px 0;color:#4A3E14}.reco{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0}.reco-card{background:var(--navy-d);color:#fff;border-radius:4px;padding:18px}.reco-card .k{font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;font-weight:700}.reco-card h3{font-size:15px;margin:8px 0}.reco-card p{font-size:12px;color:#DCE4EE;margin:0}.analysis-group{margin-top:24px}.analysis-group>h3{font-size:18px;color:var(--navy-d)}footer{border-top:1px solid var(--line);padding:20px 28px;font-size:11px;color:var(--grey);max-width:1380px;margin:auto}.skip{position:absolute;top:-80px;background:#fff;padding:10px;z-index:100}.skip:focus{top:0}
+@media(max-width:1000px){.cards{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.reco{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.wrap,.hero-inner,.tabbar{padding-left:16px;padding-right:16px}.hero{padding:28px 0 24px}.hero h1{font-size:26px}.metabar{grid-template-columns:repeat(2,1fr);gap:16px}.metabar strong{font-size:19px}.tab{padding:13px 14px;font-size:12px}.section-title{font-size:21px}.cards,.cards.two,.cards.three,.insight-grid,.reco{grid-template-columns:1fr}.box{padding:16px}.chart{height:310px}.chart.tall{height:440px}.section{padding-top:25px}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
+.card{min-height:132px;box-shadow:0 1px 4px rgba(11,46,79,.03)}
+.card-score{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0}
+.card-score .value{margin:0;min-width:0;overflow-wrap:anywhere}
+.card-gauge{width:112px;flex:0 0 112px;text-align:center}
+.card-gauge svg{display:block;width:100%;height:auto}
+.gauge-basis{font-size:9px;color:var(--grey);line-height:1.3;margin-top:2px}
+.delta{font-size:12px;font-weight:700;color:var(--grey)}
+.tab{display:flex;align-items:center;gap:7px}
+.tab svg{width:15px;height:15px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.box{padding:17px;margin:16px 0;box-shadow:0 1px 4px rgba(11,46,79,.025)}
+.box h3{margin:0 0 12px}
+.grid{grid-template-columns:1fr 1fr;gap:16px}
+.chart-toolbar{display:flex;align-items:center;gap:8px;margin:0 0 10px;justify-content:flex-start}
+.chart-toolbar label{font-size:12px;font-weight:700;color:var(--grey);white-space:nowrap}
+.chart-toolbar select{width:auto;min-width:200px;padding:7px 10px;font-size:12.5px}
+.ctrl-row{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;margin:12px 0 10px}
+.ctrl-row .chart-toolbar{margin:0}
+.leg-wrap{display:flex;flex-direction:column;align-items:flex-end;margin-left:auto;gap:2px}
+.leg{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:11.5px;color:var(--text2);justify-content:flex-end}
+.leg button{display:inline-flex;align-items:center;gap:5px;border:0;background:none;padding:0;color:inherit;font:inherit;cursor:pointer}
+.leg button.off{opacity:.4;text-decoration:line-through}
+.leg i{width:11px;height:10px;border-radius:2px;display:inline-block}
+.leg-hint{font-size:10.5px;font-style:italic;color:var(--grey)}
+.ai-donut-legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px 12px;margin:12px 0 6px}
+.ai-donut-legend button{display:flex;align-items:flex-start;gap:7px;border:0;background:none;padding:3px;text-align:left;font:400 10px Arial,sans-serif;color:var(--text2);cursor:pointer}
+.ai-donut-legend button span{min-width:0;overflow-wrap:anywhere}
+.ai-donut-legend i{width:10px;height:10px;flex:0 0 10px;margin-top:1px;border-radius:2px}
+.ai-donut-legend button.off{opacity:.4;text-decoration:line-through}
+.chart.donut-chart{height:340px}
+.chart.xtall{height:560px}
+.donut-note{margin-top:12px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--text2)}
+.donut-note strong{color:var(--navy-d)}
+.donut-note ul{margin:6px 0 0;padding-left:18px}
+.donut-note li{margin:3px 0}
+.ai-donut-popup{position:fixed;z-index:10000;display:none;pointer-events:none;width:max-content;max-width:250px;border-radius:5px;padding:10px 12px;font:12px/1.45 Arial,Helvetica,sans-serif;color:var(--navy-d);background:rgba(255,255,255,.7);border:1px solid var(--line);box-shadow:0 3px 10px rgba(8,30,54,.22)}
+.ai-donut-popup strong{display:block;margin-bottom:4px;font-size:12px}
+.stack-popup-row{margin-top:3px;white-space:nowrap}
+@media(max-width:1000px){.grid{grid-template-columns:1fr}}
+@media(max-width:600px){.chart-toolbar{flex-wrap:wrap}.chart-toolbar select{min-width:0;max-width:100%}.ai-donut-legend{grid-template-columns:repeat(2,minmax(0,1fr))}.chart.donut-chart{height:300px}.card-score{gap:8px}.card-gauge{width:100px;flex-basis:100px}.value{font-size:22px}}
+
+.roadmap{position:relative;list-style:none;padding:0;margin:16px 0 14px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:64px 34px}
+.roadmap-step{position:relative;padding:12px 14px;border:1px solid var(--line);border-top:3px solid var(--navy);border-radius:4px;background:#F6F8FA;min-width:0}
+.roadmap-step.filled{background:#E8EEF5}
+.roadmap-step:nth-child(2){border-top-color:var(--teal)}
+.roadmap-step:nth-child(5){border-top-color:var(--gold);background:#F8F1DC}
+.roadmap-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.roadmap-number{color:var(--gold);font-size:18px;font-weight:700}
+.roadmap-step h4{font-size:12px;color:var(--navy-d);margin:0 0 8px;line-height:1.35}
+.roadmap-value{font-size:15px;font-weight:700;color:var(--navy);overflow-wrap:anywhere}
+.roadmap-percent{font-size:10.5px;color:var(--grey);margin-top:3px}
+.roadmap-step:not(:last-child)::after{content:'➜';position:absolute;right:-30px;top:50%;transform:translateY(-50%);width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--teal);font-size:30px;font-weight:900;line-height:1;z-index:1;text-shadow:0 1px 0 #fff}
+.roadmap-step:nth-child(3n)::after{display:none}
+.roadmap-total{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;border-top:2px solid var(--navy);background:rgba(11,46,79,.12);padding:12px 14px;border-radius:4px;color:var(--navy);font-size:14px;font-weight:700;margin-bottom:20px}
+.roadmap-total span{font-weight:700}
+.roadmap-links{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.roadmap-links path{fill:none;stroke:var(--teal);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.roadmap-links polygon{fill:var(--teal)}
+.roadmap-total strong{font-size:18px}
+@media(max-width:900px){.roadmap{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}.roadmap-step::after{display:none!important}}
+@media(max-width:600px){.roadmap{grid-template-columns:1fr;gap:12px}.roadmap-total strong{font-size:16px}}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+</style></head>
+<body><a class="skip" href="#main">Lewati ke konten</a>
+<header class="hero"><div class="hero-inner"><div class="eyebrow">UID Jawa Tengah · Executive Management Dashboard</div><h1>Monitoring ATTB, PDP &amp; Persediaan Material</h1><p class="sub">Penghapusan ATTB, saldo PDP, ITO &amp; DOI, dan umur material. Seluruh insight, mitigasi, serta tindak lanjut dipusatkan di tab Analisis &amp; Rekomendasi.</p><div class="metabar"><div>Total saldo ATTB hapus<strong>Rp100,07 Miliar</strong></div><div>Grand Total PDP<strong>Rp647,40 Miliar</strong></div><div>Persediaan material<strong>Rp195,11 Miliar</strong></div><div>ITO / DOI persediaan<strong>6,57 kali / 46,29 hari</strong></div></div></div></header>
+<nav class="tabs" aria-label="Navigasi dashboard"><div class="tabbar" role="tablist" id="tabs"></div></nav>
+<main id="main" class="wrap"></main>
+<footer>Sumber: data ATTB pengguna dan data PDP, ITO &amp; DOI, Slow Moving Material, serta Bursa &amp; Hapus pada attb-pdp-ito.html. Acuan visual: anggaran-investasi.html. Dashboard internal, bukan pengganti laporan resmi. Grafik memerlukan CDN Chart.js; tabel dan analisis tetap tersedia jika grafik tidak termuat.</footer>
+<script>
+const PDP=[
+  ['UP3 SEMARANG',149764003778],
+  ['UP3 KUDUS',92373058475],
+  ['UP3 TEGAL',84855574664],
+  ['UP3 SUKOHARJO',62871043854],
+  ['UP2D',50639227361],
+  ['UP3 PEKALONGAN',43482905628],
+  ['UP3 SURAKARTA',42692801726],
+  ['UP3 MAGELANG',32052084187],
+  ['UP3 GROBOGAN',27523358933],
+  ['UP3 SALATIGA',21182398812],
+  ['UP3 CILACAP',18189781896],
+  ['UP3 KLATEN',12313483179],
+  ['UP3 PURWOKERTO',9457238447]
+];
+const PDP_TOTAL=647396960940;
+
+const ITO=[
+  {n:'Minyak Biosolar',awal:234414976,beli:2638661938,pakai:3742834953,akhir:0,ito:31.93,doi:9.52,st:'Normal'},
+  {n:'Transformator',awal:3022200299,beli:279962810154,pakai:262905374610,akhir:11712446745,ito:35.69,doi:8.52,st:'Normal'},
+  {n:'Switchgear dan Jaringan',awal:52631650123,beli:290712619189,pakai:270473581617,akhir:65785995710,ito:4.57,doi:66.55,st:'Perlu review'},
+  {n:'Kabel',awal:4784711313,beli:116182816441,pakai:101451157962,akhir:18417343880,ito:8.75,doi:34.76,st:'Normal'},
+  {n:'Alat ukur pembatas dan kontrol',awal:30364402655,beli:258530028483,pakai:230742347145,akhir:51407064547,ito:5.64,doi:53.87,st:'Pantau'},
+  {n:'Menara dan tiang',awal:5774021583,beli:32438853255,pakai:32686231872,akhir:5006097330,ito:6.06,doi:50.13,st:'Pantau'},
+  {n:'Persediaan umum',awal:11895209394,beli:130380290053,pakai:99791880630,akhir:37208410813,ito:4.06,doi:74.79,st:'Perlu review'},
+  {n:'Material Scada',awal:1188398447,beli:7006014084,pakai:2674759514,akhir:5574598017,ito:0.79,doi:384.32,st:'Perlu review'}
+];
+const ITO_TOTAL={awal:109660593814,beli:1115213431659,pakai:1000725333350,akhir:195111957042,ito:6.57,doi:46.29};
+const ITO_BBM={awal:109895008790,beli:1117852093597,pakai:1004468168303,akhir:195111957042,ito:6.59,doi:46.16};
+
+const MC9=[
+  {n:'Transformator',k:[11549084254,163362493,0,0],t:11712446747},
+  {n:'Switchgear dan Jaringan',k:[57138287349,8186152101,176461632,285094631],t:65785995713},
+  {n:'Kabel',k:[18026006025,350646199,40691655,0],t:18417343879},
+  {n:'Alat ukur pembatas dan kontrol',k:[50478453981,785155292,71567281,71887997],t:51407064551},
+  {n:'Menara dan tiang',k:[3857278827,1090844104,16013264,41961138],t:5006097333},
+  {n:'Persediaan umum',k:[36187227829,997592130,21968354,1622500],t:37208410813},
+  {n:'Material Scada',k:[5574598017,0,0,0],t:5574598017}
+];
+const MC9_TOTAL={k:[182810936282,11573752319,326702186,400566266],t:195111957053};
+
+const BURSA=[
+  {n:'Material Bursa',awal:4527297736,k:[1087613682,257536265,846853639,1763623461],akhir:3955627047},
+  {n:'Material Hapus',awal:548405121,k:[76745295,377092252,0,38209],akhir:453875756}
+];
+const BURSA_TOTAL={awal:5075702857,k:[1164358977,634628517,846853639,1763661670],akhir:4409502803};
+const ATTB=[
+['Belum Diusulkan',20973866772,20.96,'ATTB tahun lama dan usulan yang perlu diidentifikasi kembali karena ditolak SPI.','Berkoordinasi dengan UP3 untuk identifikasi; mengusulkan ulang ATTB yang ditolak SPI.','Sebagian saldo hasil akan diteliti dan diusulkan kembali.'],
+['Telah terbit AE.4 dan Ulasan GRC',27241558000,27.22,'Koordinasi untuk proses GRC Unit; pihak koordinasi tidak disebutkan lengkap pada sumber.'],
+['Verifikasi Divisi Pembina',null,null],['Verifikasi Divisi Akuntansi',null,null],['Proses Persetujuan (DEKOM)',51852504565,51.82],['Proses Persetujuan (RUPS)',null,null],['Terbit Persetujuan (Belum Writeoff) DEKOM',null,null],['Terbit Persetujuan (Belum Writeoff) RUPS',null,null],['Saldo Koreksi',null,null]];
+const ATTB_TOTAL=100067929337,MOVEMENT=[['Saldo Write Off Persetujuan Tahun 0',81372291702],['Saldo Mutasi',54437860788]];
+const $=id=>document.getElementById(id),f=(n,d=0)=>Number(n).toLocaleString('id-ID',{minimumFractionDigits:d,maximumFractionDigits:d}),rp=n=>n==null?'–':'Rp'+f(n),pct=n=>n==null?'–':f(n,2)+'%',m=n=>f(n/1e9,2),mlr=n=>'Rp'+m(n)+' Miliar',esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const C=['#0B2E4F','#0E7C7B','#C9A227','#2877A8','#1E7A4C','#7656A6','#B23A2E'],ages=['< 1 Tahun','1–3 Tahun','>3–5 Tahun','>5 Tahun'],charts={},titles={attb:'Penghapusan ATTB',pdp:'PDP',ito:'ITO & DOI',slowmoving:'Material Slow Moving',analysis:'Analisis & Rekomendasi'};
+const tabIcons={attb:'<path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5M8 12h8M8 16h5"/>',pdp:'<path d="M3 21V3M3 21h18"/><rect x="5" y="6" width="13" height="3" fill="currentColor" fill-opacity=".35"/><rect x="5" y="11" width="9" height="3" fill="currentColor" fill-opacity=".35"/><rect x="5" y="16" width="5" height="3" fill="currentColor" fill-opacity=".35"/>',ito:'<path d="M20 7a9 9 0 0 0-15-2L3 7M3 3v4h4M4 17a9 9 0 0 0 15 2l2-2M21 21v-4h-4"/>',slowmoving:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/>',analysis:'<path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/>'};
+$('tabs').innerHTML=Object.entries(titles).map(([id,t],i)=>`<button class="tab ${i?'':'active'}" id="tab-${id}" role="tab" aria-selected="${!i}" aria-controls="${id}" data-tab="${id}" tabindex="${i?-1:0}"><svg viewBox="0 0 24 24" aria-hidden="true">${tabIcons[id]}</svg>${esc(t)}</button>`).join('');
+const section=(n,title,body)=>`<section class="section"><h2 class="section-title"><span class="num">${n}</span>${esc(title)}</h2><div class="rule"></div>${body}</section>`;
+const metric=(items,cls='')=>`<div class="cards ${cls}">${items.map((x,i)=>`<div class="card ${['','teal','gold','green'][i%4]}"><div class="label">${esc(x[0])}</div><div class="value">${esc(x[1])}</div><div class="small">${esc(x[2]||'')}</div></div>`).join('')}</div>`;
+const chartBox=(id,title,note,tall=false,legend=false,extra='')=>`<div class="box"><h3>${esc(title)}</h3>${note?`<div class="small">${esc(note)}</div>`:''}${legend||['attbBar','pdpBar','itoBar','doiBar'].includes(id)?'':`<div class="ctrl-row"><div class="chart-toolbar"><label for="${id}Sort">Urutkan berdasarkan:</label><select id="${id}Sort"></select></div>${['itoBar','doiBar'].includes(id)?'':`<div class="leg-wrap"><div class="leg" id="${id}Legend"></div><div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div></div>`}</div>`}<div class="chart ${legend?'donut-chart':id==='ageBar'||id==='attbBar'?'xtall':tall?'tall':''}"><canvas id="${id}" role="img" aria-label="${esc(title)}. Nilai lengkap tersedia ${['pdpBar','ageBar','materialAgeBar'].includes(id)?'pada tooltip grafik':'di tabel pada tab ini'}."></canvas></div>${legend?`<div class="ai-donut-legend" id="${id}Legend"></div><div class="leg-hint" style="text-align:center">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>${extra}`:''}</div>`;
+const top3=PDP.slice(0,3).reduce((s,x)=>s+x[1],0);
+const panels={
+attb:section('01','Penghapusan ATTB',`<p class="intro">Nilai perolehan dalam rupiah. Periode ATTB belum disebutkan pengguna; data lain mengikuti template per 31 Oktober 2026.</p>${metric(ATTB.filter(x=>x[1]!=null).map(x=>[x[0],'Rp'+m(x[1])+' Miliar',rp(x[1])+' · '+pct(x[2])]),'three')}<div class="grid">${chartBox('attbBar','Nilai Perolehan Per Tahapan','')}${chartBox('attbDonut','Komposisi Saldo ATTB Hapus','',false,true)}</div><div id="attbRoadmap"></div>`)+section('02','Kondisi write off & mutasi',metric(MOVEMENT.map(x=>[x[0],'Rp'+m(x[1])+' Miliar',rp(x[1])]),'two')+''),
+pdp:section('03','Distribusi saldo PDP per unit',`<p class="intro">Data per 31 Oktober 2026 · 12 UP3 dan UP2D.</p>${metric([['Grand Total PDP','Rp'+m(PDP_TOTAL)+' Miliar',rp(PDP_TOTAL)],['Semarang','Rp'+m(PDP[0][1])+' Miliar',pct(PDP[0][1]/PDP_TOTAL*100)+' dari total'],['Semarang + Kudus + Tegal',pct(top3/PDP_TOTAL*100),'Rp'+m(top3)+' Miliar'],['Cakupan','13 entitas','12 UP3 dan UP2D']])}<div class="grid">${chartBox('pdpBar','Saldo PDP per unit','',true)}${chartBox('pdpDonut','Komposisi PDP','',false,true,`<div class="donut-note"><strong>Top 3 penyumbang terbesar</strong><ul><li>UP3 Semarang — Rp149,76 M (23,13%)</li><li>UP3 Kudus — Rp92,37 M (14,27%)</li><li>UP3 Tegal — Rp84,86 M (13,11%)</li></ul></div>`)}</div>`),
+ito:section('04','ITO & DOI persediaan material',`<p class="intro">1 Januari–31 Oktober 2026 (304 hari). ITO = pemakaian ÷ rata-rata saldo awal dan akhir; DOI = 304 ÷ ITO. Pemakaian mencakup beban pemakaian, pengurangan ke AT, dan pengurangan ke PDP konstruksi.</p>${metric([['Saldo awal','Rp'+m(ITO_TOTAL.awal)+' Miliar','1 Januari 2026'],['Pembelian','Rp'+m(ITO_TOTAL.beli)+' Miliar','1 Januari–31 Oktober 2026'],['Pemakaian','Rp'+m(ITO_TOTAL.pakai)+' Miliar','1 Januari–31 Oktober 2026'],['Saldo akhir','Rp'+m(ITO_TOTAL.akhir)+' Miliar','31 Oktober 2026']])}<div class="grid">${chartBox('itoBar','ITO Per Kelompok Material','',true)}${chartBox('doiBar','DOI Per Kelompok Material','',true)}</div><div id="itoTable"></div><p class="small">Agregat gabungan BBM dan persediaan menampilkan hitung ulang; penjelasan koreksi sumber tersedia pada tab Analisis &amp; Rekomendasi.</p>`),
+slowmoving:section('05','Klasifikasi Material Slow Moving',`<p class="intro">Metrik kelompok umur di bawah hanya mencakup Slow Moving Material MC.9 (basis Rp195.111.957.053). Grafik komposisi di bawahnya juga memuat Material Bursa dan Hapus.</p>${metric(ages.map((x,i)=>[x,'Rp'+m(MC9_TOTAL.k[i])+' Miliar',rp(MC9_TOTAL.k[i])+' · '+pct(MC9_TOTAL.k[i]/MC9_TOTAL.t*100)]))}${chartBox('ageBar','Komposisi Umur Per Material','',true)}${chartBox('materialAgeBar','Komposisi Material Per Umur','',true)}`),
+analysis:section('06','Analisis & Rekomendasi','<div class="ctrl-row"><div class="chart-toolbar"><label for="analysisScope">Tampilkan analisis:</label><select id="analysisScope"><option value="all">Semua topik</option><option value="attb">Penghapusan ATTB</option><option value="pdp">PDP</option><option value="ito">ITO &amp; DOI</option><option value="slowmoving">Material Slow Moving</option><option value="quality">Kualitas data &amp; lintas data</option></select></div></div><div id="analysisGroups"></div>')};
+$('main').innerHTML=Object.entries(panels).map(([id,body])=>`<div id="${id}" class="panel" role="tabpanel" aria-labelledby="tab-${id}" ${id==='attb'?'':'hidden'}>${body}</div>`).join('');
+function table(id,heads,rows,total=[],mid=null){
+const cell=x=>{const a=Array.isArray(x)?x:[x,x];return `<td class="${typeof a[1]==='number'?'':'txt'}" data-sort="${esc(a[1]??'')}">${esc(a[0])}</td>`};
+$(id).innerHTML=`<div class="table-scroll"><table aria-label="${esc(heads.join(', '))}"><thead><tr>${heads.map(h=>`<th aria-sort="none"><button type="button" title="Urutkan ${esc(h)}">${esc(h)} ↕</button></th>`).join('')}</tr></thead><tbody>${rows.length?rows.map((r,k)=>`<tr>${r.map(cell).join('')}</tr>`+(mid&&k===mid.idx?`<tr class="sub-row">${mid.r.map(cell).join('')}</tr>`:'')).join(''):`<tr><td colspan="${heads.length}">Tidak ada baris yang sesuai filter.</td></tr>`}</tbody>${total.length?`<tfoot>${total.map(r=>`<tr>${r.map(cell).join('')}</tr>`).join('')}</tfoot>`:''}</table></div>`;
+const t=$(id).querySelector('table');t.querySelectorAll('th').forEach((th,i)=>th.querySelector('button').addEventListener('click',()=>{const asc=th.getAttribute('aria-sort')!=='ascending';t.querySelectorAll('th').forEach(x=>x.setAttribute('aria-sort','none'));th.setAttribute('aria-sort',asc?'ascending':'descending');const sub=t.tBodies[0].querySelector('tr.sub-row'),anc=sub?sub.previousElementSibling:null;const r=[...t.tBodies[0].rows].filter(x=>x.cells.length===heads.length&&!x.classList.contains('sub-row'));r.sort((a,b)=>{const x=a.cells[i].dataset.sort,y=b.cells[i].dataset.sort;const v=x!==''&&y!==''&&Number.isFinite(Number(x))&&Number.isFinite(Number(y))?Number(x)-Number(y):x.localeCompare(y,'id',{numeric:true});return asc?v:-v});r.forEach(x=>t.tBodies[0].append(x));if(sub&&anc)anc.after(sub)}));}
+const itoRow=x=>[x.n,...['awal','beli','pakai','akhir'].map(k=>[rp(x[k]),x[k]]),[f(x.ito,2),x.ito],[f(x.doi,2),x.doi]];
+table('itoTable',['Uraian','Saldo 01 Jan 2026','Pembelian','Pemakaian','Saldo 31 Okt 2026','ITO (kali)','DOI (hari)'],ITO.map(itoRow),[itoRow({...ITO_TOTAL,n:'SUB TOTAL PERSEDIAAN MATERIAL'}),itoRow({...ITO_BBM,n:'TOTAL BBM DAN PERSEDIAAN (hasil hitung ulang)'})],{idx:0,r:itoRow({...ITO[0],n:'SUB TOTAL BBM'})});
+$('attbRoadmap').innerHTML=`<ol class="roadmap" aria-label="Roadmap tahapan proses usulan ATTB">${ATTB.map((x,i)=>`<li class="roadmap-step${x[1]!=null?' filled':''}"><div class="roadmap-top"><span class="roadmap-number">${String(i+1).padStart(2,'0')}</span></div><h4>${esc(x[0])}</h4><div class="roadmap-value">${x[1]==null?'–':rp(x[1])}</div><div class="roadmap-percent">${x[2]==null?'–':pct(x[2])}</div></li>`).join('')}</ol><div class="roadmap-total"><span>Total saldo ATTB hapus</span><strong>${rp(ATTB_TOTAL)}</strong></div>`;
+function drawRoadmapLinks(){
+  const ol=document.querySelector('#attbRoadmap .roadmap');if(!ol)return;
+  const NS='http://www.w3.org/2000/svg';
+  let svg=ol.querySelector('.roadmap-links');if(!svg){svg=document.createElementNS(NS,'svg');svg.setAttribute('class','roadmap-links');svg.setAttribute('aria-hidden','true');ol.append(svg)}
+  svg.replaceChildren();
+  if(matchMedia('(max-width:900px)').matches)return;
+  const steps=ol.querySelectorAll('.roadmap-step'),base=ol.getBoundingClientRect();
+  const box=i=>{const r=steps[i].getBoundingClientRect();return{t:r.top-base.top,b:r.bottom-base.top,cx:r.left-base.left+r.width/2}};
+  [[2,3],[5,6]].forEach(([a,b])=>{
+    const A=box(a),B=box(b),y1=A.b+6,y2=B.t-10,mid=(y1+y2)/2;
+    const path=document.createElementNS(NS,'path');path.setAttribute('d',`M${A.cx} ${y1} V${mid} H${B.cx} V${y2-12}`);
+    const head=document.createElementNS(NS,'polygon');head.setAttribute('points',`${B.cx-8},${y2-12} ${B.cx+8},${y2-12} ${B.cx},${y2}`);
+    svg.append(path,head);
+  });
+}
+drawRoadmapLinks();addEventListener('resize',drawRoadmapLinks);
+const findings={
+attb:[
+['Prioritas 01','51,82% saldo berada pada proses DEKOM','Rp51,85 Miliar masih pada proses persetujuan DEKOM, bukan persetujuan yang telah terbit. Pantau kelengkapan berkas dan jadwal pembahasan. Tanggal masuk tahap dan SLA belum tersedia.','danger'],
+['Prioritas 02','48,18% pada dua tahap sebelumnya','Belum Diusulkan Rp20,97 Miliar (20,96%) dan AE.4/GRC Rp27,24 Miliar (27,22%) berjumlah Rp48,22 Miliar. Jalankan identifikasi ulang aset tahun lama/ditolak SPI dan penyelesaian koordinasi GRC secara paralel.','warn'],
+['Validasi','Jumlah ATTB dan persentase konsisten','Tiga nilai berjumlah tepat Rp100.067.929.337. Porsi hitung ulang 20,9596%; 27,2231%; 51,8173% membulat sesuai sumber. Enam tanda “–” belum membuktikan tahap bersaldo nol.','ok'],
+['Batas interpretasi','Write off dan mutasi bukan waterfall','Write off Rp81,37 Miliar dan mutasi Rp54,44 Miliar tidak dapat ditambah/dikurangkan terhadap saldo ATTB tanpa saldo awal, periode, tanda mutasi, serta populasi yang sama. Rasio write off terhadap saldo ATTB bukan tingkat penyelesaian.','warn'],
+['Kelengkapan','Support dan hambatan belum terpetakan','Hanya dua tahap berisi isu; mitigasi dan tindak lanjut hanya tersedia untuk Belum Diusulkan. Seluruh support kosong. Klarifikasi frasa “sebagian saldo hasil”, pihak koordinasi GRC, alasan penolakan SPI, PIC, nilai per aset, dan aging tahap.','warn']],
+pdp:[
+['Konsentrasi 01','Semarang memegang saldo terbesar','Semarang Rp149,76 Miliar (23,13%); Kudus Rp92,37 Miliar (14,27%); Tegal Rp84,86 Miliar (13,11%). Semarang bersama Kudus mencakup 37,40% total.','warn'],
+['Konsentrasi 02','Tiga unit mencakup 50,51% PDP','Semarang, Kudus, dan Tegal berjumlah Rp326,99 Miliar. Prioritaskan review kesiapan proyek, aging, dan kelengkapan kapitalisasi. Saldo tinggi sendiri belum membuktikan keterlambatan proyek.','warn'],
+['Cakupan & perubahan','13 entitas; rata-rata Rp49,80 Miliar','Purwokerto terkecil Rp9,46 Miliar (1,46%). Narasi template menyebut total turun Rp29,74 Miliar (4,39%) dari Rp677,14 Miliar, tetapi rincian/periode saldo pembanding tidak tersedia; verifikasi sebelum menyatakan tren.',''],
+['Rekomendasi','Pantau proses, bukan nominal saja','Minta aging, status pekerjaan, berita acara, dan hambatan kapitalisasi per unit; tetapkan pemilik tindakan serta review berkala. Data belum mendukung proyeksi waktu penutupan PDP.','']],
+ito:[
+['Prioritas 01','Scada perlu review kebutuhan','Saldo Rp5,57 Miliar, sekitar 4,69 kali saldo awal Rp1,19 Miliar; pemakaian Rp2,67 Miliar. ITO 0,79 dan DOI 384,32 hari menunjukkan perputaran rendah, bukan umur fisik setiap barang.','danger'],
+['Prioritas 02','Persediaan naik 77,93%','Saldo naik Rp85,45 Miliar dari Rp109,66 menjadi Rp195,11 Miliar. Pembelian Rp1.115,21 Miliar melebihi pemakaian Rp1.000,73 Miliar sebesar Rp114,49 Miliar. Evaluasi kebutuhan per kelompok dan sesuaikan rencana pengadaan.','danger'],
+['DOI tinggi','Review material terpilih','Persediaan Umum 74,79 hari; Switchgear 66,55 hari dengan saldo terbesar Rp65,79 Miliar; Alat Ukur 53,87 hari; Menara/Tiang 50,13 hari. Ambang 50/60 hari pada template adalah indikator review, bukan SLA resmi.','warn'],
+['Status template','Status review dipusatkan di sini','Perlu review: Switchgear, Persediaan Umum, Scada. Pantau: Alat Ukur dan Menara/Tiang. Normal: Biosolar, Transformator, Kabel. Status ini berasal dari template, bukan hasil audit atau uji kebutuhan aktual.',''],
+['Koreksi sumber','Agregat BBM perlu diperbaiki','Template menyebut sumber gabungan BBM dan persediaan menulis ITO 19,25 dan DOI 27,91. Hitung ulang dari pemakaian dan saldo rata-rata menghasilkan 6,59 kali dan 46,16 hari. Pertahankan jejak koreksi dan cek periode/cakupan.','warn']],
+slowmoving:[
+['Kelompok I','93,70% Slow Moving Material di bawah satu tahun','Rp182,81 Miliar berada pada kelompok termuda. Mayoritas umur relatif muda, tetapi belum cukup menyimpulkan risiko usang rendah tanpa kebutuhan, spesifikasi, kondisi fisik, dan pola pemakaian.','ok'],
+['Kelompok II','Rp11,57 Miliar berumur 1–3 tahun','Porsi 5,93%; terbesar Switchgear Rp8,19 Miliar, diikuti Persediaan Umum sekitar Rp1,00 Miliar. Total di atas 1 tahun Rp12,30 Miliar; Switchgear Rp8,65 Miliar (70,30%). Prioritaskan penelusuran kebutuhan dan redistribusi.','warn'],
+['Kelompok III','Rp326,70 Juta berumur >3–5 tahun','Switchgear Rp176,46 Juta; Alat Ukur Rp71,57 Juta; Kabel Rp40,69 Juta; Persediaan Umum Rp21,97 Juta; Menara/Tiang Rp16,01 Juta. Lakukan monitoring per item dan lokasi.','warn'],
+['Kelompok IV','Rp400,57 Juta berumur >5 tahun','Switchgear Rp285,09 Juta; Alat Ukur Rp71,89 Juta; Menara/Tiang Rp41,96 Juta; Persediaan Umum Rp1,62 Juta. Narasi template menyebut sebelumnya nihil; data historis tidak tersedia untuk memvalidasi perubahan.','danger'],
+['Bursa & Hapus','59,20% berumur lebih dari 3 tahun','Rp2,61 Miliar dari Rp4,41 Miliar berumur >3 tahun. Saldo turun dari Rp5,08 menjadi Rp4,41 Miliar (13,12%). Identifikasi lalu evaluasi pemanfaatan, redistribusi, atau penghapusan sesuai ketentuan; jangan gabungkan dengan ATTB tanpa pemetaan aset.','danger']],
+quality:[
+['Temuan tambahan','Residual persediaan −Rp29,04 Miliar','Saldo awal + pembelian − pemakaian = Rp224.148.692.123; saldo akhir Rp195.111.957.042. Residual −Rp29.036.735.081 belum dijelaskan ketiga komponen tersebut. Minta rincian mutasi/koreksi dan cakupan transaksi sebelum menyimpulkan kesalahan.','danger'],
+['Koreksi interpretasi','DOI berbeda dari umur Slow Moving Material','DOI Scada 384,32 hari dan seluruh saldo Slow Moving Material di bawah satu tahun tidak otomatis bertentangan. DOI adalah rasio saldo rata-rata terhadap pemakaian selama periode; Slow Moving Material adalah kelompok umur barang. Cek tanggal penerimaan dan basis hitung keduanya.','warn'],
+['Presisi sumber','Slow Moving Material dan ITO berbeda Rp11','Slow Moving Material Rp195.111.957.053 versus persediaan ITO Rp195.111.957.042. Total rincian PDP dan Slow Moving Material konsisten. Perbedaan kecil antarsumber tetap perlu jejak rekonsiliasi tanpa mengubah nilai asli.',''],
+['Pembulatan','Gunakan angka penuh untuk indikator','ITO/DOI sumber memiliki presisi yang tidak terlihat pada dua desimal. Gunakan saldo dan pemakaian penuh untuk hitung ulang; jangan membagi 304 dengan ITO tampilan lalu menyebut selisih kecil sebagai kesalahan.',''],
+['Lintas data','Saldo tidak otomatis saling eksklusif','ATTB, PDP, persediaan, dan Bursa & Hapus tidak boleh dijumlahkan sebagai total eksposur tanpa validasi hubungan antar-aset dan periode. Prioritaskan saldo, aging, kelengkapan data, serta kebutuhan operasional.','warn']]};
+$('analysisGroups').innerHTML=Object.entries(findings).map(([key,list])=>`<section class="analysis-group" data-scope="${key}"><h3>${esc(titles[key]||'Kualitas data & lintas data')}</h3><div class="insight-grid">${list.map(x=>`<article class="ins ${x[3]}"><span class="tag">${esc(x[0])}</span><h3>${esc(x[1])}</h3><p>${esc(x[2])}</p></article>`).join('')}</div>${key==='attb'?'<h3>Usulan support & rencana aksi ATTB</h3><div id="attbActions"></div>':''}${key==='quality'?'<h3>Rekomendasi</h3><div id="crossActions"></div><div class="callout"><strong>Urutan usulan:</strong> konfirmasi periode, populasi, dan mutasi; lengkapi register ATTB; pantau DEKOM dan GRC secara paralel; review pengadaan/Scada; tindak lanjuti material berumur dan PDP utama. PIC, jadwal, serta target nominal ditetapkan setelah validasi, bukan diasumsikan dari data.</div>':''}</section>`).join('');
+table('attbActions',['Fokus','Usulan tindak lanjut','Usulan support / PIC','Indikator pemantauan'],[
+['Belum Diusulkan · Rp20,97 M','Pisahkan aset tahun lama dan ditolak SPI; identifikasi per aset, lengkapi bukti, dan ajukan ulang sesuai ketentuan.','UP3, fungsi aset, SPI untuk klarifikasi temuan.','Nilai teridentifikasi/diajukan ulang, kelengkapan, aging.'],
+['AE.4 / GRC · Rp27,24 M','Klarifikasi kelengkapan ulasan GRC dan proses GRC Unit yang masih diperlukan; tutup kekurangan dokumen.','GRC Unit, pengusul, divisi pembina sesuai kewenangan.','Status ulasan, daftar dokumen, tanggal serah-terima.'],
+['DEKOM · Rp51,85 M','Pantau nomor usulan, penerimaan, kelengkapan, dan jadwal pembahasan; tindak lanjuti sesuai otorisasi.','Pengusul dan penghubung proses persetujuan DEKOM.','Aging tahap, kelengkapan, keputusan diterima.'],
+['Write off & mutasi','Rekonsiliasi saldo awal, mutasi tambah/kurang, persetujuan, write off, dan saldo akhir per aset/periode.','Fungsi aset dan akuntansi; data transaksi.','Residual rekonsiliasi dan cakupan populasi disepakati.']]);
+const actions=[['01 · Scada','Review kebutuhan & perputaran','Periksa rencana pemakaian, saldo Rp5,57 Miliar, tanggal penerimaan Slow Moving Material, dan parameter ITO/DOI; keduanya tidak otomatis tidak konsisten.'],['02 · Pengadaan','Kendalikan pembelian','Jelaskan selisih pembelian–pemakaian Rp114,49 Miliar serta mutasi lain; usulkan batas stok maksimum berbasis kebutuhan dan lead time.'],['03 · DOI','Review material terpilih','Fokus Persediaan Umum, Switchgear, Alat Ukur, Menara/Tiang; sepakati ambang monitoring sebelum menjadikannya target.'],['04 · Umur','Telusuri saldo di atas 1 tahun','Review Rp12,30 Miliar, terutama Switchgear Rp8,65 Miliar; tentukan pemanfaatan/redistribusi berdasarkan kondisi dan kebutuhan.'],['05 · Bursa & Hapus','Tindak lanjuti material berumur','Evaluasi Rp2,61 Miliar berumur >3 tahun untuk pemanfaatan, redistribusi, atau penghapusan sesuai ketentuan dan kewenangan.'],['06 · PDP & data','Pantau unit utama dan rekonsiliasi','Review Semarang, Kudus, Tegal beserta aging dan bukti kapitalisasi; rekonsiliasi residual Rp29,04 Miliar, koreksi BBM, dan selisih Rp11.']];
+$('crossActions').innerHTML='<div class="reco">'+actions.map(x=>`<article class="reco-card"><div class="k">${esc(x[0])}</div><h3>${esc(x[1])}</h3><p>${esc(x[2])}</p></article>`).join('')+'</div>';
+$('analysisScope').addEventListener('change',e=>document.querySelectorAll('[data-scope]').forEach(x=>x.hidden=e.target.value!=='all'&&x.dataset.scope!==e.target.value));
+if(window.Chart){Chart.defaults.font.family='Arial, Helvetica, sans-serif';Chart.defaults.font.size=11;Chart.defaults.color='#41526B';Chart.defaults.animation.duration=matchMedia('(prefers-reduced-motion: reduce)').matches?0:650}
+const center={id:'center',afterDraw(chart){
+  if(chart.config.type!=='doughnut')return;
+  const el=chart.getDatasetMeta(0).data[0];if(!el)return;
+  const {x,y,innerRadius}=el,ctx=chart.ctx,val='Rp'+f(chart.$total/1e9,1)+' M';
+  ctx.save();let fs=Math.round(innerRadius*.5);ctx.font=`700 ${fs}px Arial, Helvetica, sans-serif`;
+  while(ctx.measureText(val).width>innerRadius*1.8&&fs>8){fs--;ctx.font=`700 ${fs}px Arial, Helvetica, sans-serif`}
+  ctx.fillStyle=C[0];ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(val,x,y+fs*.35);
+  const fl=Math.max(9,Math.round(fs*.42));ctx.font=`600 ${fl}px Arial, Helvetica, sans-serif`;ctx.fillStyle='#6B7280';ctx.fillText(chart.$centerLabel,x,y-fs*.85);ctx.restore();
+}};
+const ALPHA_POPUP = 0.75;
+const hexRgb = h => { h = String(h).replace('#','');
+  if(h.length === 3) h = h.split('').map(c=>c+c).join('');
+  const n = parseInt(h.slice(0,6),16); return [(n>>16)&255,(n>>8)&255,n&255]; };
+const rgbHex = a => '#' + a.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');
+const mixHex = (a,b,t) => { const A = hexRgb(a), B = hexRgb(b); return rgbHex(A.map((v,i)=>v+(B[i]-v)*t)); };
+const rgbaStr = (h,a) => { const c = hexRgb(h); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; };
+const lumHex = h => { const c = hexRgb(h).map(v => { v /= 255; return v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4); });
+  return 0.2126*c[0] + 0.7152*c[1] + 0.0722*c[2]; };
+const contrastHex = (a,b) => { const l1 = lumHex(a), l2 = lumHex(b); return (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05); };
+const VEILS = [0,0.06,0.12,0.18,0.24,0.30,0.36,0.42];
+const BACKDROPS = ['#FFFFFF','#E8EEF5','#000000','#20304A'].concat(C);
+function popupSkin(color){
+  const white = '#FFFFFF', ink = '#081E36';
+  const wajah = (veil, veilHex, bg) => { const dasar = mixHex(bg, color, ALPHA_POPUP); return veil ? mixHex(dasar, veilHex, veil) : dasar; };
+  let out = null;
+  [[ink, white], [white, ink]].forEach(pair => {
+    const txt = pair[0], veilHex = pair[1];
+    for(const v of VEILS){
+      const min = Math.min(...BACKDROPS.map(bg => contrastHex(wajah(v, veilHex, bg), txt)));
+      if(min >= 4.5){
+        if(!out || v < out.veil || (v === out.veil && min > out.gain)) out = { text:txt, veilHex, veil:v, gain:min };
+        break;
+      }
+    }
+  });
+  if(!out) out = { text:white, veilHex:ink, veil:0.42, gain:0 };
+  return { hue: rgbaStr(color, ALPHA_POPUP), text: out.text,
+           veil: out.veil ? rgbaStr(out.veilHex, out.veil) : null,
+           edge: mixHex(wajah(out.veil, out.veilHex, '#FFFFFF'), out.text, 0.65) };
+}
+
+function popup(chart,tooltip){
+  let box=$('chartPopup');if(!box){box=document.createElement('div');box.id='chartPopup';box.className='ai-donut-popup';box.setAttribute('role','tooltip');document.body.append(box)}
+  if(!tooltip.opacity||!tooltip.dataPoints?.length||chart.canvas.offsetParent===null){box.style.display='none';box.setAttribute('aria-hidden','true');return}
+  const p=tooltip.dataPoints[0],color=Array.isArray(p.dataset.backgroundColor)?p.dataset.backgroundColor[p.dataIndex]:p.dataset.backgroundColor;
+  const skin=popupSkin(color);box.style.backgroundColor=skin.hue;box.style.backgroundImage=skin.veil?'linear-gradient('+skin.veil+','+skin.veil+')':'none';box.style.color=skin.text;box.style.borderColor=skin.edge;box.replaceChildren();
+  const title=document.createElement('strong');title.textContent=p.label;box.append(title);
+  const line=text=>{const d=document.createElement('div');d.className='stack-popup-row';d.textContent=text;box.append(d)};
+  if(chart.$stacked){
+    const rowTotal=chart.data.datasets.reduce((s,ds)=>s+(ds.data[p.dataIndex]||0),0);
+    chart.data.datasets.forEach((ds,i)=>{
+      const v=ds.data[p.dataIndex]||0;
+      if(!chart.isDatasetVisible(i)||!v)return;
+      line(`${ds.label}: ${mlr(v*1e9)} (${pct(v/rowTotal*100)})`);
+    });
+  }else if(chart.config.type==='doughnut'){
+    line(`${mlr(p.raw)} (${pct(p.raw/chart.$total*100)})`);
+  }else if(chart.canvas.id==='attbBar'){
+    const v=ATTB[p.dataIndex][1];
+    line(v==null?'–':`${mlr(v)} (${pct(v/ATTB_TOTAL*100)})`);
+  }else if(chart.canvas.id==='pdpBar'){
+    const v=p.raw*1e9;
+    line(`${mlr(v)} (${pct(v/PDP_TOTAL*100)})`);
+  }else{
+    line(`${f(p.raw,2)} ${chart.$unit}`);
+  }
+  box.style.display='block';box.setAttribute('aria-hidden','false');
+  const r=chart.canvas.getBoundingClientRect(),vw=document.documentElement.clientWidth,vh=innerHeight;
+  box.style.maxWidth=Math.min(chart.$stacked?310:250,vw-16)+'px';
+  const w=box.offsetWidth,h=box.offsetHeight;
+  let left,top;
+  if(chart.config.type==='doughnut'){
+    const a=chart.getDatasetMeta(0).data[p.dataIndex];
+    const mid=(a.startAngle+a.endAngle)/2;
+    const innerR=a.innerRadius,outerR=a.outerRadius;
+    const ringR=outerR-(outerR-innerR)*0.18;
+    const ax=r.left+a.x+ringR*Math.cos(mid),ay=r.top+a.y+ringR*Math.sin(mid);
+    const side=Math.cos(mid)>=0?1:-1;
+    left=side>0?ax+8:ax-w-8;
+    top=ay-h/2;
+  }else{
+    left=r.left+tooltip.caretX+12;
+    top=r.top+tooltip.caretY-h/2;
+  }
+  box.style.left=Math.max(8,Math.min(vw-w-8,left))+'px';
+  box.style.top=Math.max(8,Math.min(vh-h-8,top))+'px';
+}
+window.addEventListener('scroll',()=>{const p=$('chartPopup');if(p)p.style.display='none'},true);
+const stackedLabels={id:'stackedLabels',afterDatasetsDraw(chart){
+  if(!chart.$stacked)return;const ctx=chart.ctx;ctx.save();ctx.font='700 11px Arial';ctx.fillStyle=C[0];ctx.textAlign='left';ctx.textBaseline='middle';
+  chart.data.labels.forEach((_,row)=>{let total=0,end=chart.scales.x.getPixelForValue(0),y;chart.data.datasets.forEach((ds,i)=>{if(!chart.isDatasetVisible(i))return;total+=ds.data[row];const b=chart.getDatasetMeta(i).data[row];if(b){end=Math.max(end,b.x);y=b.y}});if(y!==undefined)ctx.fillText('Rp'+f(total,2)+' M',end+7,y)});ctx.restore();
+}};
+const avgLine={id:'avgLine',afterDatasetsDraw(chart){
+  const cfg=chart.options.plugins.avgLine;if(!cfg||cfg.value==null)return;
+  const {ctx,chartArea:{top,bottom},scales}=chart,px=scales.x.getPixelForValue(cfg.value);
+  ctx.save();ctx.setLineDash([6,4]);ctx.strokeStyle=cfg.color||C[0];ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(px,top);ctx.lineTo(px,bottom);ctx.stroke();ctx.setLineDash([]);
+  ctx.font='700 11px Arial, Helvetica, sans-serif';ctx.fillStyle=cfg.color||C[0];ctx.textAlign='center';ctx.textBaseline='bottom';ctx.fillText('Rata-rata '+f(cfg.value,2)+' '+cfg.unit,px,top-4);ctx.restore();
+}};
+
+function bar(id,labels,datasets,unit='Rp Miliar',stacked=false,avg=null,color=C[0]){
+  const baseLabels=[...labels],baseData=datasets.map(ds=>[...ds.data]),baseColors=datasets.map(ds=>Array.isArray(ds.backgroundColor)?[...ds.backgroundColor]:ds.backgroundColor);
+  datasets.forEach(ds=>{ds.barThickness=18;ds.maxBarThickness=18;ds.categoryPercentage=.8;ds.barPercentage=.7;if(stacked)ds.borderRadius=0});
+  $(id).parentElement.style.height=(labels.length*32+70)+'px';
+  const chart=new Chart($(id),{type:'bar',data:{labels:[...labels],datasets},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:false,onResize:(c,size)=>{c.options.layout.padding.right=stacked?(size.width<500?85:155):8},layout:{padding:{top:avg==null?0:22,right:stacked?($(id).parentElement.clientWidth<500?85:155):8}},interaction:{mode:'nearest',intersect:true},plugins:{legend:{display:false},avgLine:avg==null?null:{value:avg,unit,color},tooltip:{enabled:false,external:({chart,tooltip})=>popup(chart,tooltip)}},scales:{x:{beginAtZero:true,stacked,grid:{color:'#E7E9EC'},title:{display:true,text:unit}},y:{stacked,grid:{display:false},ticks:{autoSkip:false,font:{size:11},callback:function(v){const s=this.getLabelForValue(v);return this.chart.width<500&&s.length>18?s.match(/.{1,18}(?:\s|$)|.{1,18}/g):s.length>28?s.match(/.{1,26}(?:\s|$)|.{1,26}/g):s}}}}},plugins:[stackedLabels,avgLine]});
+  chart.$stacked=stacked;chart.$unit=unit;charts[id]=chart;
+  const sel=$(id+'Sort'),leg=$(id+'Legend');
+  if(sel)sel.innerHTML=stacked?'<option value="all">Semua parameter</option>'+datasets.map((d,i)=>`<option value="${i}">${esc(d.label)}</option>`).join(''):'<option value="desc">'+esc(datasets[0].label)+' (terbesar)</option><option value="asc">'+esc(datasets[0].label)+' (terkecil)</option><option value="name">Nama (A–Z)</option>';
+  if(leg)leg.innerHTML=datasets.map((d,i)=>`<button type="button" data-i="${i}" aria-pressed="true"><i style="background:${Array.isArray(d.backgroundColor)?C[0]:d.backgroundColor}"></i>${esc(d.label)}</button>`).join('');
+  function sync(){if(!leg)return;leg.querySelectorAll('button').forEach((b,i)=>{const on=chart.isDatasetVisible(i);b.classList.toggle('off',!on);b.setAttribute('aria-pressed',String(on))})}
+  function apply(){const v=sel?sel.value:'source',order=baseLabels.map((_,i)=>i);if(v==='name')order.sort((a,b)=>baseLabels[a].localeCompare(baseLabels[b],'id'));else if(v!=='source')order.sort((a,b)=>{const value=i=>stacked?(v==='all'?baseData.reduce((sum,d)=>sum+d[i],0):baseData[Number(v)][i]):baseData[0][i];return v==='asc'?value(a)-value(b):value(b)-value(a)});
+    chart.data.labels=order.map(i=>baseLabels[i]);chart.data.datasets.forEach((d,j)=>{d.data=order.map(i=>baseData[j][i]);d.backgroundColor=Array.isArray(baseColors[j])?order.map(i=>baseColors[j][i]):baseColors[j]});chart.update('none');sync();
+  }
+  if(sel)sel.addEventListener('change',()=>{if(stacked)datasets.forEach((_,i)=>chart.setDatasetVisibility(i,sel.value==='all'||i===Number(sel.value)));apply()});
+  if(leg)leg.querySelectorAll('button').forEach((b,i)=>b.addEventListener('click',()=>{const on=chart.isDatasetVisible(i);if(on&&datasets.filter((_,j)=>chart.isDatasetVisible(j)).length===1)return;chart.setDatasetVisibility(i,!on);chart.update('none');sync()}));apply();
+}
+const mod2 = a => { a = a % (2*Math.PI); return a < 0 ? a + 2*Math.PI : a; };
+const alphaHex = a => Math.round(Math.max(0,Math.min(1,a))*255).toString(16).padStart(2,'0');
+
+function pulseLoop(chart){
+  if(chart._pulseRaf) return;
+  const step = () => {
+    chart._pulseRaf = null;
+    if(!chart._pulse||chart.canvas.offsetParent===null){chart._pulse=null; try{ chart.draw(); }catch(e){} return; }
+    try{ chart.draw(); }catch(e){ chart._pulse = null; return; }
+    chart._pulseRaf = requestAnimationFrame(step);
+  };
+  chart._pulseRaf = requestAnimationFrame(step);
+}
+
+function setDonutHover(chart,hit,p){
+  const st = chart._dfx;
+  const vis = hit >= 0 && chart.getDataVisibility(hit);
+  const want = (vis && st) ? hit : -1;
+  chart.canvas.style.cursor = want >= 0 ? 'pointer' : 'default';
+  if(want === (chart._dhover ?? -1)){
+    if(want >= 0){
+      chart.setActiveElements([{datasetIndex:0,index:want}]);
+      chart.tooltip.setActiveElements([{datasetIndex:0,index:want}],p || {x:0,y:0});
+      chart.draw();
+    }
+    return;
+  }
+  chart._dhover = want;
+  if(want >= 0){
+    chart.setActiveElements([{datasetIndex:0,index:want}]);
+    chart.tooltip.setActiveElements([{datasetIndex:0,index:want}],p || {x:0,y:0});
+    const ds = chart.data.datasets[0];
+    chart._pulse = {i:want, color:(ds.glowColors || ds.backgroundColor)[want]};
+    if(!matchMedia('(prefers-reduced-motion: reduce)').matches)pulseLoop(chart);
+  } else {
+    chart.setActiveElements([]);
+    chart.tooltip.setActiveElements([],{x:0,y:0});
+    chart._pulse = null;
+    const box=$('chartPopup');if(box){box.style.display='none';box.setAttribute('aria-hidden','true')}
+  }
+  chart.update('none');
+}
+
+function drawDonutGlow(chart,ctx,arcs){
+  const pl = chart._pulse;
+  if(!pl || pl.i === undefined || !arcs[pl.i]) return;
+  const ha = arcs[pl.i], now = performance.now();
+  for(let k = 0; k < 2; k++){
+    const ph = ((now/1400)+k*0.5) % 1, r = ha.outerRadius+3+ph*16, a = 1-ph;
+    ctx.beginPath(); ctx.arc(ha.x,ha.y,r,ha.startAngle,ha.endAngle);
+    ctx.lineWidth = 3; ctx.strokeStyle = pl.color+alphaHex(a*0.9); ctx.stroke();
+    ctx.beginPath(); ctx.arc(ha.x,ha.y,ha.outerRadius+1,ha.startAngle,ha.endAngle);
+    ctx.lineWidth = 1; ctx.strokeStyle = pl.color+alphaHex(a*0.5); ctx.stroke();
+  }
+}
+
+const donutFx = {
+  id:'donutFx',
+  beforeLayout(chart){
+    chart.options.layout.padding = {left:8,right:8,top:8,bottom:8};
+    chart.options.radius = Math.min(chart.width*0.42, chart.height*0.44);
+  },
+  afterEvent(chart,args){
+    const st = chart._dfx; if(!st) return;
+    const e = args.event;
+    if(e.type === 'mouseout'){ setDonutHover(chart,-1,null); return; }
+    if(e.x == null) return;
+    const p = {x:e.x, y:e.y};
+    let hit = -1;
+    const dx = p.x-st.cx, dy = p.y-st.cy, d = Math.hypot(dx,dy);
+    if(d >= st.inner && d <= st.R+8){
+      const a = Math.atan2(dy,dx);
+      for(const A of st.arcs){
+        if(!A.vis) continue;
+        if(mod2(a-A.s) <= A.e-A.s){ hit = A.i; break; }
+      }
+    }
+    if(e.type === 'click' && e.native && e.native.pointerType === 'touch'){
+      setDonutHover(chart, hit, p);
+      return;
+    }
+    if(e.type === 'click'){
+      if(hit >= 0){
+        const box=$('chartPopup');if(box)box.style.display='none';
+        chart.setActiveElements([]);
+        chart.tooltip.setActiveElements([],{x:0,y:0});
+        chart._pulse = null; chart._dhover = -1;
+        chart.toggleDataVisibility(hit);
+        chart.update();
+      }
+      return;
+    }
+    setDonutHover(chart,hit,p);
+  },
+  afterDraw(chart){
+    const arcs = chart.getDatasetMeta(0).data;
+    if(!arcs.length) return;
+    const a0 = arcs[0];
+    chart._dfx = {
+      arcs:arcs.map((a,i)=>({i, s:a.startAngle, e:a.endAngle, vis:chart.getDataVisibility(i) && a.endAngle > a.startAngle})),
+      cx:a0.x, cy:a0.y, R:a0.outerRadius, inner:a0.innerRadius
+    };
+    document.querySelectorAll('#'+chart.canvas.id+'Legend button').forEach(button=>{
+      const visible = chart.getDataVisibility(+button.dataset.i);
+      button.classList.toggle('off',!visible); button.setAttribute('aria-pressed',String(visible));
+    });
+    const ctx = chart.ctx; ctx.save(); drawDonutGlow(chart,ctx,arcs); ctx.restore();
+  }
+};
+
+function donut(id,labels,values,total){
+  const chart=new Chart($(id),{type:'doughnut',plugins:[center,donutFx],data:{labels,datasets:[{data:values,backgroundColor:C.slice(0,values.length),glowColors:C.slice(0,values.length),borderColor:'#FFFFFF',borderWidth:2,hoverOffset:10}]},options:{responsive:true,maintainAspectRatio:false,animation:false,cutout:'62%',layout:{padding:8},plugins:{legend:{display:false},tooltip:{enabled:false,external:({chart,tooltip})=>popup(chart,tooltip)}}}});
+  chart.$total=total;chart.$centerLabel=id==='attbDonut'?'TOTAL SALDO ATTB':'TOTAL SALDO PDP';charts[id]=chart;
+  const legend=$(id+'Legend');legend.setAttribute('aria-label','Legenda '+(id==='attbDonut'?'komposisi saldo ATTB hapus':'komposisi PDP'));
+  legend.innerHTML=labels.map((x,i)=>`<button type="button" aria-pressed="true" data-i="${i}"><i style="background:${C[i]}"></i><span>${esc(x)}</span></button>`).join('');
+  function highlight(i){const a=chart.getDatasetMeta(0).data[i];if(!a)return;const mid=(a.startAngle+a.endAngle)/2;setDonutHover(chart,i,{x:a.x+a.outerRadius*Math.cos(mid),y:a.y+a.outerRadius*Math.sin(mid)})}
+  function clear(){setDonutHover(chart,-1,null)}
+  legend.querySelectorAll('button').forEach((b,i)=>{b.addEventListener('click',()=>{clear();chart.toggleDataVisibility(i);chart.update('none')});b.addEventListener('mouseenter',()=>highlight(i));b.addEventListener('focus',()=>highlight(i));b.addEventListener('blur',clear)});legend.addEventListener('mouseleave',clear);chart.update('none');
+}
+const ds=(label,data,color)=>({label,data,backgroundColor:color,borderRadius:3,barPercentage:.7}),rendered=new Set();
+function draw(tab){if(rendered.has(tab))return;if(!window.Chart){$(tab).querySelectorAll('.chart').forEach(x=>x.innerHTML='<p>Library grafik tidak termuat. Nilai lengkap tetap tersedia pada tabel.</p>');rendered.add(tab);return}
+if(tab==='attb'){const a=ATTB.filter(x=>x[1]!=null);bar('attbBar',ATTB.map(x=>x[0]),[ds('Nilai perolehan',ATTB.map(x=>x[1]==null?0:x[1]/1e9),ATTB.map((x,i)=>i===0?C[0]:i===1?C[1]:i===4?C[2]:'#B9C6D6'))]);donut('attbDonut',a.map(x=>x[0]),a.map(x=>x[1]),ATTB_TOTAL)}
+if(tab==='pdp'){bar('pdpBar',PDP.map(x=>x[0]),[ds('Saldo PDP',PDP.map(x=>x[1]/1e9),PDP.map((x,i)=>i<3?C[0]:C[3]))]);donut('pdpDonut',[...PDP.slice(0,3).map(x=>x[0]),'Unit lainnya'],[...PDP.slice(0,3).map(x=>x[1]),PDP_TOTAL-top3],PDP_TOTAL)}
+if(tab==='ito'){const avgOf=k=>ITO.reduce((s,x)=>s+x[k],0)/ITO.length;const byDoi=[...ITO].sort((a,b)=>b.doi-a.doi),byIto=[...ITO].sort((a,b)=>b.ito-a.ito);bar('doiBar',byDoi.map(x=>x.n),[ds('DOI',byDoi.map(x=>x.doi),C[3])],'hari',false,avgOf('doi'),C[3]);bar('itoBar',byIto.map(x=>x.n),[ds('ITO',byIto.map(x=>x.ito),C[1])],'kali',false,avgOf('ito'),C[1])}
+if(tab==='slowmoving'){
+  const rows=[...MC9.map(x=>x.n),...BURSA.map(x=>x.n)];
+  bar('ageBar',rows,ages.map((x,i)=>ds(x,[...MC9.map(r=>r.k[i]/1e9),...BURSA.map(r=>r.k[i]/1e9)],[C[4],C[3],C[2],C[6]][i])),'Rp Miliar',true);
+  bar('materialAgeBar',ages,[...MC9.map((x,i)=>ds(x.n,x.k.map(v=>v/1e9),C[i])),...BURSA.map((x,j)=>ds(x.n,x.k.map(v=>v/1e9),[C[5],'#8A9BB0'][j]))],'Rp Miliar',true);
+}
+rendered.add(tab)}
+function openTab(id){Object.values(charts).forEach(c=>{if(c.config.type==='doughnut')setDonutHover(c,-1,null)});document.querySelectorAll('.panel').forEach(x=>x.hidden=x.id!==id);document.querySelectorAll('[data-tab]').forEach(x=>{const a=x.dataset.tab===id;x.classList.toggle('active',a);x.setAttribute('aria-selected',String(a));x.tabIndex=a?0:-1});const pop=$('chartPopup');if(pop)pop.style.display='none';requestAnimationFrame(()=>{draw(id);Object.values(charts).forEach(c=>c.resize())})}
+const tabs=[...document.querySelectorAll('[data-tab]')];tabs.forEach((b,i)=>{b.addEventListener('click',()=>openTab(b.dataset.tab));b.addEventListener('keydown',e=>{let j=i;if(e.key==='ArrowRight')j=(i+1)%tabs.length;else if(e.key==='ArrowLeft')j=(i+tabs.length-1)%tabs.length;else if(e.key==='Home')j=0;else if(e.key==='End')j=tabs.length-1;else return;e.preventDefault();tabs[j].focus();openTab(tabs[j].dataset.tab)})});
+function speedometer(label,amount,reference,basis,cls){
+  const percent=reference>0?amount/reference*100:0,max=Math.max(100,Math.ceil(percent/25)*25),fraction=Math.max(0,Math.min(1,percent/max)),angle=Math.PI+Math.PI*fraction,x=80+52*Math.cos(angle),y=78+52*Math.sin(angle),color={teal:C[1],gold:C[2],green:C[4]}[cls]||C[0];
+  const ticks=[0,.25,.5,.75,1].map(t=>{const a=Math.PI+Math.PI*t;return `<line x1="${80+56*Math.cos(a)}" y1="${78+56*Math.sin(a)}" x2="${80+61*Math.cos(a)}" y2="${78+61*Math.sin(a)}" stroke="#8D9AAC" stroke-width="1"/>`}).join('');
+  return `<div class="card-gauge"><svg viewBox="0 0 160 110" role="img" aria-label="${esc(label)}: ${pct(percent)}, ${esc(basis)}"><title>${esc(label)}: ${pct(percent)}, ${esc(basis)}</title><path d="M16 78 A64 64 0 0 1 144 78" fill="none" stroke="#CED8E3" stroke-width="9" stroke-linecap="round"/><path d="M16 78 A64 64 0 0 1 144 78" fill="none" stroke="${color}" stroke-width="9" stroke-linecap="${fraction>0?'round':'butt'}" pathLength="100" stroke-dasharray="${fraction*100} 100"/>${ticks}<line x1="80" y1="78" x2="${x}" y2="${y}" stroke="${C[0]}" stroke-width="2.8" stroke-linecap="round"/><circle cx="80" cy="78" r="4.5" fill="${C[0]}"/><text x="8" y="96" font-size="10" fill="#6B7280">0%</text><text x="153" y="96" text-anchor="end" font-size="10" fill="#6B7280">${max}%</text><text x="80" y="104" text-anchor="middle" font-size="14" font-weight="700" fill="${C[0]}">${pct(percent)}</text></svg><div class="gauge-basis">${esc(basis)}</div></div>`;
+}
+const gaugeGroups={attb:[...ATTB.filter(x=>x[1]!=null).map(x=>[x[1],ATTB_TOTAL,'Dari total saldo ATTB']),null,null],pdp:[[PDP_TOTAL,PDP_TOTAL,'Dari total PDP'],[PDP[0][1],PDP_TOTAL,'Dari total PDP'],[top3,PDP_TOTAL,'Dari total PDP'],[PDP.length,PDP.length,'Dari entitas pada sumber']],ito:[[ITO_TOTAL.awal,ITO_TOTAL.awal,'Basis saldo awal'],[ITO_TOTAL.beli,ITO_TOTAL.beli+ITO_TOTAL.pakai,'Dari pembelian + pemakaian'],[ITO_TOTAL.pakai,ITO_TOTAL.beli+ITO_TOTAL.pakai,'Dari pembelian + pemakaian'],[ITO_TOTAL.akhir,ITO_TOTAL.awal,'Dibanding saldo awal']],slowmoving:MC9_TOTAL.k.map(v=>[v,MC9_TOTAL.t,'Dari total Slow Moving Material'])};
+Object.entries(gaugeGroups).forEach(([id,items])=>document.querySelectorAll('#'+id+' .card').forEach((card,i)=>{if(id==='attb'&&i>=3)return;const value=card.querySelector('.value'),small=card.querySelector('.small');const score=document.createElement('div');score.className='card-score';value.before(score);score.append(value);const g=items[i];if(g)score.insertAdjacentHTML('beforeend',speedometer(card.querySelector('.label').textContent,...g,card.classList.contains('teal')?'teal':card.classList.contains('gold')?'gold':card.classList.contains('green')?'green':''));if(g&&id==='attb'){const delta=document.createElement('div');delta.className='delta';delta.textContent=i<3?pct(g[0]/g[1]*100)+' dari total saldo ATTB':'Nominal sumber · bukan tingkat penyelesaian';small.before(delta)}}));
+
+draw('attb');
+</script></body></html>
