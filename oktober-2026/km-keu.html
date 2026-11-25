@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monitoring Kontrak Manajemen — Indikator 10</title>
+<!-- Kode Favicon -->
+<link rel="icon" type="image/png" href="../gambar/Logo PLN Favicon.png">
+<link rel="icon" type="image/png" href="../gambar/Logo PLN Favicon.png">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+<style>
+:root{
+  --navy:#0B2E4F;--navy-d:#081E36;--navy-soft:#12406B;
+  --gold:#C9A227;--teal:#0E7C7B;--teal2:#159A98;
+  --grey:#6B7280;--lgrey:#E7E9EC;--bg:#FBFBFA;--card:#FFF;
+  --red:#B23A2E;--green:#1E7A4C;--line:#D7DBE1;--blue:#2877A8;--purple:#7656A6;
+  --amber:#A87F12;
+  --text2:#41526B;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;color:#20304A;background:var(--bg);line-height:1.5;font-size:14px}
+button,select,input{font-family:inherit}
+.wrap{max-width:1380px;margin:auto;padding:0 28px 70px}
+
+/* HEADER */
+.hero{background:radial-gradient(circle at 80% 20%,rgba(21,154,152,.18),transparent 32%),linear-gradient(135deg,var(--navy-d),var(--navy) 60%,var(--navy-soft));color:#fff;padding:40px 0 34px}
+.hero-inner{max-width:1380px;margin:auto;padding:0 28px}
+.eyebrow{text-transform:uppercase;letter-spacing:3px;font-size:11px;color:var(--gold);font-weight:700;margin-bottom:13px}
+.hero h1{font-family:Arial,serif;font-size:36px;margin:0 0 10px;line-height:1.2}
+.sub{font-size:14px;color:#CBD6E4;max-width:1000px;margin:0 0 20px}
+.metabar{display:flex;gap:30px;flex-wrap:wrap;border-top:1px solid #ffffff2e;padding-top:14px}
+.metabar div{font-size:11.5px;color:#B9C6D6}
+.metabar strong{display:block;color:#fff;font-family:Arial,serif;font-size:22px;font-weight:700;margin-top:2px}
+
+/* TABS */
+.tabs{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 2px 8px #0000000b}
+.tabbar{max-width:1380px;margin:auto;padding:0 28px;display:flex;gap:3px;overflow-x:auto}
+.tab{border:0;background:transparent;padding:15px 18px;font-weight:700;color:#607086;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:7px;font-size:14px}
+.tab svg{width:15px;height:15px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tab:hover{color:var(--navy-d);background:#D9E9F7}
+.tab.active{background:var(--navy);color:#fff;border-bottom-color:var(--gold)}
+
+/* PANELS & SECTIONS */
+.panel{display:none}
+.panel.active{display:block}
+.section{padding:34px 0 5px}
+.section-title{font-family:Arial,serif;font-size:23px;color:var(--navy-d);margin:0 0 5px;display:flex;align-items:baseline;gap:11px}
+.num{color:var(--gold);font-size:14px}
+.rule{height:3px;width:55px;background:var(--gold);margin:12px 0 20px}
+.intro{color:var(--text2);margin-bottom:20px;max-width:1100px}
+.sub-title{font-family:Arial,serif;font-size:17px;color:var(--navy-d);margin:30px 0 14px}
+.topic-h{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--navy);font-weight:700;margin:20px 0 4px}
+
+/* STRIP KPI */
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:0;background:#fff;border:1px solid var(--line);border-radius:4px;margin:16px 0 22px;overflow:hidden}
+.strip > div{padding:14px 18px;border-right:1px solid var(--lgrey)}
+.strip > div:last-child{border-right:0}
+.strip .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--grey);font-weight:700}
+.strip .big{font-family:Arial,serif;font-size:19px;font-weight:700;color:var(--navy-d);margin-top:4px}
+.strip .small{font-size:11px;color:var(--grey);margin-top:2px}
+
+/* KARTU SKOR */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:20px 0}
+.card{background:#E8EEF5;border:1px solid var(--line);border-top:3px solid var(--navy);border-radius:4px;padding:16px;min-height:132px;box-shadow:0 1px 4px rgba(11,46,79,.03)}
+.card.teal{background:#E3F1F0;border-top-color:var(--teal)}
+.card.gold{background:#F8F1DC;border-top-color:var(--gold)}
+.card.green{background:#E4F1EA;border-top-color:var(--green)}
+.card-score{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0}
+.card-score .value{margin:0;min-width:0;overflow-wrap:anywhere}
+.card-gauge{width:112px;flex:0 0 112px;text-align:center}
+.card-gauge svg{display:block;width:100%;height:auto}
+.gauge-basis{font-size:9px;color:var(--grey);line-height:1.3;margin-top:2px}
+.label{text-transform:uppercase;letter-spacing:.8px;font-size:10.5px;color:var(--grey);font-weight:700}
+.value{font-family:Arial,serif;font-size:22px;font-weight:700;color:var(--navy-d);margin:7px 0}
+.delta{font-size:12px;font-weight:700}
+.pos{color:var(--green)}
+.neg{color:var(--red)}
+.neutral{color:var(--grey)}
+.small{font-size:11px;color:var(--grey)}
+
+/* BOX & GRID */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.box{background:#fff;border:1px solid var(--line);border-radius:4px;padding:17px;margin:16px 0;box-shadow:0 1px 4px rgba(11,46,79,.025);min-width:0}
+.box h3{margin:0 0 4px;font-family:Arial,serif;color:var(--navy-d);font-size:17px}
+.box .chart-sub{font-size:12px;color:var(--grey);margin:0 0 12px;line-height:1.55}
+.box-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.box-head h3{margin:0}
+.chart{height:340px;position:relative}
+.chart.sm{height:280px}
+.chart.donut{height:300px}
+.chart.tall{height:420px}
+
+/* CONTROL, DROPDOWN, LEGEND */
+.ctrl-row{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;margin:2px 0 10px}
+.chart-toolbar{display:flex;align-items:center;gap:8px;margin:0 0 10px;justify-content:flex-start}
+.chart-toolbar label{font-size:12px;font-weight:700;color:var(--grey);white-space:nowrap}
+.chart-toolbar select{width:auto;min-width:200px;padding:7px 10px;font-size:12.5px;border:1px solid #CCD3DB;background:#fff;border-radius:4px;color:var(--navy-d);outline:none}
+.chart-toolbar select:focus{border-color:var(--teal);box-shadow:0 0 0 2px rgba(14,124,123,.10)}
+.leg-wrap{display:flex;flex-direction:column;align-items:flex-end;margin-left:auto;gap:2px}
+.leg{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:11.5px;color:var(--text2);justify-content:flex-end}
+.leg span{display:inline-flex;align-items:center;gap:5px;cursor:pointer;user-select:none;transition:opacity .2s}
+.leg span.off{text-decoration:line-through;opacity:.4}
+.leg i{width:11px;height:10px;border-radius:2px;display:inline-block}
+.leg i.series-line{width:30px;height:0;border-radius:0;background:none!important;flex-shrink:0}
+.summary-cards{grid-template-columns:repeat(4,minmax(0,1fr))}
+.summary-cards .card-score{flex-wrap:wrap}
+.leg-hint{font-size:10.5px;font-style:italic;color:var(--grey)}
+.mode-toggle{display:flex;gap:0;border:1px solid #CCD3DB;border-radius:4px;overflow:hidden;width:fit-content}
+.toggle-btn{font-family:inherit;font-size:11.5px;font-weight:700;padding:8px 16px;border:none;background:#fff;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;cursor:pointer}
+.toggle-btn+.toggle-btn{border-left:1px solid #CCD3DB}
+.toggle-btn:hover{color:var(--navy-d)}
+.toggle-btn.active{background:var(--navy);color:#fff}
+.chart-note{font-size:12px;color:var(--text2);margin-top:12px;padding-top:12px;border-top:1px solid var(--lgrey);line-height:1.6}
+
+/* DONUT LEGEND & POP-UP */
+.ai-donut-legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px 12px;margin:12px 0 6px}
+.ai-donut-legend button{display:flex;align-items:flex-start;gap:7px;border:0;background:none;padding:3px;text-align:left;font:400 10px Arial,sans-serif;color:var(--text2);cursor:pointer}
+.ai-donut-legend button span{min-width:0;overflow-wrap:anywhere}
+.ai-donut-legend i{width:10px;height:10px;flex:0 0 10px;margin-top:1px;border-radius:2px}
+.ai-donut-legend button.off{opacity:.4;text-decoration:line-through}
+.ai-donut-legend button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.ai-donut-popup{position:fixed;z-index:10000;display:none;pointer-events:none;width:max-content;max-width:250px;border-radius:5px;padding:10px 12px;font:12px/1.45 Arial,Helvetica,sans-serif;color:var(--navy-d);background:rgba(255,255,255,.7);border:1px solid var(--line);box-shadow:0 3px 10px rgba(8,30,54,.22)}
+.ai-donut-popup strong{display:block;margin-bottom:4px;font-size:12px}
+.ai-donut-popup .popup-value{display:flex;align-items:center;gap:7px;font-weight:700}
+.ai-donut-popup .popup-swatch{width:10px;height:10px;flex:0 0 10px;border-radius:1px}
+
+/* CALLOUT */
+.callout{padding:15px 18px;background:#F4F0DF;border-left:4px solid var(--gold);border-radius:2px;margin:18px 0;color:#4A3E14;font-size:13px;line-height:1.6}
+.callout b{color:#4A3E14}
+.callout.blue{background:#EAF1F8;border-left-color:var(--navy);color:#1E3350}
+.callout.blue b{color:#1E3350}
+.callout.teal{background:#E8F5F4;border-left-color:var(--teal);color:#164B4A}
+.callout.teal b{color:#164B4A}
+.callout.red{background:#FBEEEC;border-left-color:var(--red);color:#5C2119}
+.callout.red b{color:#5C2119}
+
+/* INSIGHT */
+.insight-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:20px}
+.ins{background:#fff;border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:2px;padding:18px 20px}
+.ins.ok{border-left-color:var(--green)}
+.ins.warn{border-left-color:var(--gold)}
+.ins.danger{border-left-color:var(--red)}
+.ins-title{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;color:var(--navy);margin-bottom:8px}
+.ins.ok .ins-title{color:var(--green)}
+.ins.warn .ins-title{color:#A87F12}
+.ins.danger .ins-title{color:var(--red)}
+.ins-text{font-size:13.5px;color:var(--navy-d);line-height:1.6}
+.ins-text b{color:var(--navy-d)}
+.reco{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0}
+.reco-card{background:var(--navy-d);color:#fff;border-radius:4px;padding:18px}
+.reco-card .k{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--gold);font-weight:700}
+.reco-card p{font-size:12.5px;color:#DCE4EE;margin:8px 0 0}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:4px;background:#fff;margin-bottom:20px}
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px;min-width:640px}
+.tbl th{background:var(--navy-d);color:#fff;text-align:left;padding:10px 12px;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--lgrey);color:var(--text2);vertical-align:top}
+.tbl tbody tr:nth-child(even){background:#F6F8FA}
+
+/* RINCIAN */
+.item-row{background:#fff;border:1px solid var(--line);border-radius:4px;padding:22px 24px;margin-bottom:16px}
+.item-main{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.item-no{font-size:11px;font-weight:700;color:#fff;background:var(--navy);padding:3px 8px;border-radius:3px;letter-spacing:.04em}
+.item-name{font-family:Arial,serif;font-size:16px;font-weight:700;color:var(--navy-d);flex:1;min-width:200px}
+.item-tag{font-size:10px;text-transform:uppercase;letter-spacing:.04em;font-weight:700;padding:3px 9px;border-radius:11px;white-space:nowrap}
+.tag-high{background:#E4F1EA;color:var(--green)}
+.tag-mid{background:#F7EFDC;color:#A87F12}
+.tag-pol{background:#F2F3F6;color:var(--text2)}
+.item-formula{font-size:12px;color:var(--grey);font-style:italic;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--lgrey);line-height:1.55}
+.item-figures{display:flex;gap:30px;margin-bottom:16px;flex-wrap:wrap}
+.fig{display:flex;flex-direction:column}
+.fig-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--grey);margin-bottom:4px;font-weight:700}
+.fig-val{font-size:14px;color:var(--navy-d);font-weight:600;font-variant-numeric:tabular-nums}
+.fig-val.accent{color:var(--navy);font-weight:700}
+
+/* BAR PROGRES (skala dengan label) */
+.bar-block{margin-top:14px}
+.bar-title{font-size:11px;font-weight:700;color:var(--navy-d);margin-bottom:6px}
+.bar-track{position:relative;height:10px;background:#E8EDF1;border-radius:2px}
+.bar-track.sm{height:7px}
+.bar-fill{position:absolute;left:0;top:0;height:100%;border-radius:2px;background:var(--green)}
+.bar-mark{position:absolute;top:-4px;width:2px;height:18px;background:var(--navy);opacity:.5}
+.bar-cap{position:absolute;top:-4px;height:18px;border-left:2px dashed var(--gold)}
+.sr{position:relative;height:16px;margin-top:4px;font-size:10.5px;color:var(--grey);font-variant-numeric:tabular-nums;white-space:nowrap}
+.sr span{position:absolute;top:0;line-height:16px}
+.sr .l{transform:none}
+.sr .c{transform:translateX(-50%)}
+.sr .r{transform:translateX(-100%)}
+.sr .cap{padding-left:6px}
+.sr .val{font-weight:700;color:var(--navy);font-size:11px}
+.sr .amber{color:var(--amber);font-weight:700}
+
+/* RANGE */
+.range-block{margin-top:6px}
+.range-title{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--grey);font-weight:700;margin-bottom:12px}
+.range-track{position:relative;height:30px;background:#E8EDF1;border-radius:2px}
+.range-band{position:absolute;top:0;height:100%;background:#E4F1EA;border-left:2px solid var(--green);border-right:2px solid var(--green)}
+.range-marker{position:absolute;top:-7px;width:3px;height:44px;background:var(--navy);border-radius:1px}
+.range-sr{margin-top:6px}
+
+
+.detail-score-strip > div:nth-child(1){background:#0B2E4F;color:#FFFFFF}
+.detail-score-strip > div:nth-child(2){background:#0E6261;color:#FFFFFF}
+.detail-score-strip > div:nth-child(3){background:#C9A227;color:#081E36}
+.detail-score-strip > div:nth-child(4){background:#1E7148;color:#FFFFFF}
+.detail-score-strip .k,.detail-score-strip .big{color:inherit}
+.progress-heading{position:relative;margin-bottom:12px;min-height:18px}
+.progress-heading .bar-title,.progress-heading .range-title{margin:0;max-width:calc(var(--position) - 46px);line-height:1.5}
+.progress-value{position:absolute;left:var(--position);bottom:0;transform:translateX(-50%);color:var(--navy-d);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1.5}
+.progress-value::after{content:"";position:absolute;left:50%;top:100%;height:8px;border-left:1px solid currentColor}
+.progress-value.end-aligned{transform:translateX(-100%)}
+.progress-value.end-aligned::after{left:100%}
+.bar-fill[data-status="below"]{background:var(--red)}
+.bar-fill[data-status="near"]{background:var(--gold)}
+.bar-fill[data-status="met"]{background:var(--green)}
+.range-target-mark{position:absolute;left:50%;top:0;height:100%;border-left:2px dashed var(--navy);opacity:.65}
+.range-sr .target-tick{font-weight:700;color:var(--navy-d)}
+.range-sr .target-tick::before{content:"";position:absolute;left:50%;top:-6px;height:5px;border-left:2px solid var(--navy)}
+@media(max-width:600px){
+  .progress-heading{padding-bottom:24px}
+  .progress-heading .bar-title,.progress-heading .range-title{max-width:none}
+  .progress-value{font-size:11px}
+}
+
+.criteria-legend{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-start;gap:6px 16px;margin-top:18px;padding-top:12px;border-top:1px solid var(--lgrey);font-size:10.5px;color:var(--text2)}
+.criteria-legend strong{color:var(--navy-d)}
+.criteria-legend span{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.criteria-legend i{display:inline-block;width:11px;height:11px;border-radius:2px;flex-shrink:0}
+
+/* FOOTER */
+.footer{background:var(--navy-d);color:#B9C6D6;padding:25px 0;font-size:11px;margin-top:40px}
+.footer .wrap{padding-bottom:0}
+.fnote{margin-bottom:6px;line-height:1.6}
+.fnote b{color:#fff}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px}
+.legend span{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:#B9C6D6}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.legend i.line{width:14px;height:2px;border-radius:0}
+
+/* RESPONSIVE */
+@media(max-width:1050px){
+  .cards{grid-template-columns:repeat(2,1fr)}
+  .grid{grid-template-columns:1fr}
+  .strip{grid-template-columns:repeat(2,1fr)}
+  .strip > div:nth-child(2n){border-right:0}
+  .reco{grid-template-columns:1fr 1fr}
+}
+@media(max-width:850px){
+  .insight-grid{grid-template-columns:1fr}
+  .hero h1{font-size:28px}
+  .reco{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .wrap,.hero-inner,.tabbar{padding-left:15px;padding-right:15px}
+  .cards{grid-template-columns:1fr}
+  .hero{padding-top:32px}
+  .hero h1{font-size:25px}
+  .section{padding-top:26px}
+  .ai-donut-legend{grid-template-columns:1fr 1fr}
+  .strip{grid-template-columns:1fr}
+  .strip > div{border-right:0;border-bottom:1px solid var(--lgrey)}
+  .strip > div:last-child{border-bottom:0}
+  .item-row{padding:18px 16px}
+  .item-name{min-width:0}
+  .item-figures{gap:18px}
+  .metabar{gap:18px}
+}
+@media print{
+  .tabs{display:none}
+  .panel{display:block!important}
+  .hero{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">Laporan Internal · Kontrak Manajemen (Anaudited) · Strictly Private &amp; Confidential</div>
+    <h1>Indikator 10 — Pengendalian Anggaran &amp; Biaya<br>PLN UID Jawa Tengah</h1>
+    <p class="sub">
+      Monitoring capaian 3 indikator kinerja: pengendalian anggaran investasi (AKI),
+      usulan penghapusan ATTB, dan pengendalian Non Allowable Cost (NAC).
+      Posisi realisasi s.d. Oktober 2026 dibandingkan target s.d. Oktober 2026 dan target penuh tahun 2026.
+    </p>
+    <div class="metabar">
+      <div>Rata-rata Capaian s.d Oktober<strong>158,18%</strong></div>
+      <div>Skor Setelah Cap 110%<strong>99,35%</strong></div>
+      <div>Rata-rata thd Target Tahunan<strong>96,32%</strong></div>
+      <div>Indikator Mencapai atau Melampaui Target<strong>2 / 3</strong></div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="tabbar">
+    <button class="tab active" data-tab="kinerja"><svg viewBox="0 0 24 24"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="3" width="4" height="18"/></svg>Kontrak Kinerja Keuangan</button>
+    <button class="tab" data-tab="analisis"><svg viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg>Analisis &amp; Rekomendasi</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ===================== KINERJA KEUANGAN ===================== -->
+<section id="kinerja" class="panel active">
+  <div class="section">
+    <h2 class="section-title"><span class="num">01</span>Ringkasan Kinerja</h2>
+    <div class="rule"></div>
+
+    <div class="cards summary-cards" id="summaryGrid"></div>
+
+    <div class="callout">
+      <b>Posisi data:</b> Angka ringkasan memakai realisasi AKI 98,78% dan NAC Rp274,05 M.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title"><span class="num">02</span>Capaian per KPI thd Target s.d Oktober 2026</h2>
+    <div class="rule"></div>
+    <p class="intro">Speedometer skala 0 sampai batas atas yang menyesuaikan capaian.</p>
+    <div class="cards" id="gaugeGrid"></div>
+
+    <h3 class="sub-title">Rincian per Indikator</h3>
+    <div class="strip detail-score-strip">
+      <div><div class="k">Jumlah Indikator</div><div class="big">3</div></div>
+      <div><div class="k">Bobot per Indikator</div><div class="big">1,33</div></div>
+      <div><div class="k">Rata-rata Capaian s.d Oktober</div><div class="big">158,18%</div></div>
+      <div><div class="k">Rata-rata Capaian thd Target Tahunan</div><div class="big">96,32%</div></div>
+    </div>
+
+    <!-- 10_1 -->
+    <div class="item-row">
+      <div class="item-main">
+        <span class="item-no">10_1</span>
+        <span class="item-name">a. Pengendalian Penggunaan Anggaran Investasi sesuai RKAP</span>
+        <span class="item-tag tag-pol">Polaritas: Range</span>
+        <span class="item-tag tag-high">Dalam Rentang Target</span>
+      </div>
+      <div class="item-formula">
+        Formula: Kesesuaian Realisasi Anggaran Kas Investasi terhadap BA Komitmen Penyerapan AKI &middot; Satuan % &middot; Bobot 1,33
+      </div>
+      <div class="item-figures">
+        <div class="fig"><span class="fig-label">Target s.d Oktober 2026</span><span class="fig-val">95&ndash;105%</span></div>
+        <div class="fig"><span class="fig-label">Realisasi</span><span class="fig-val accent">98,78%</span></div>
+        <div class="fig"><span class="fig-label">% Capaian s.d Oktober</span><span class="fig-val accent">103,98%</span></div>
+        <div class="fig"><span class="fig-label">Target Tahunan 2026</span><span class="fig-val">95&ndash;105%</span></div>
+        <div class="fig"><span class="fig-label">% Capaian thd Target Tahunan</span><span class="fig-val" style="color:var(--grey)">Belum dapat dihitung</span></div>
+      </div>
+
+      <div class="range-block">
+        <div class="progress-heading" style="--position:45.9%"><div class="range-title">Posisi Realisasi dalam Rentang Target (skala 85%&ndash;115%)</div><span class="progress-value">98,78%</span></div>
+        <div class="range-track">
+          <div class="range-band" style="left:33.33%; width:33.33%"></div>
+          <div class="range-target-mark" aria-label="Titik acuan 100%"></div>
+        </div>
+        <div class="sr range-sr">
+          <span class="l" style="left:0">85%</span>
+          <span class="c" style="left:33.33%">95%</span>
+          <span class="c target-tick" style="left:50%">100%</span>
+          <span class="c" style="left:66.67%">105%</span>
+          <span class="r" style="left:100%">115%</span>
+        </div>
+      </div>
+
+      <div class="bar-block">
+        <div class="progress-heading" style="--position:34.6600%"><div class="bar-title">Skor Capaian s.d Oktober</div><span class="progress-value">103,98%</span></div>
+        <div class="bar-track">
+          <div class="bar-fill" data-status="met" data-value="103.98" style="width:34.6600%"></div>
+          <div class="bar-mark" style="left:33.33%"></div>
+          <div class="bar-cap" style="left:36.67%"></div>
+        </div>
+        <div class="sr">
+          <span class="l" style="left:0">0%</span>
+          <span class="r" style="left:33.33%">100%</span>
+          <span class="l cap" style="left:36.67%">Capping KM 110%</span>
+          <span class="r" style="left:100%">300%</span>
+        </div>
+      </div>
+      <div class="criteria-legend" aria-label="Kriteria warna capaian">
+        <strong>Kriteria capaian:</strong>
+        <span><i style="background:var(--red)"></i>&lt;95%: Merah</span>
+        <span><i style="background:var(--gold)"></i>95%–&lt;100%: Kuning</span>
+        <span><i style="background:var(--green)"></i>≥100%: Hijau</span>
+      </div>
+    </div>
+
+    <!-- 10_2 -->
+    <div class="item-row">
+      <div class="item-main">
+        <span class="item-no">10_2</span>
+        <span class="item-name">b. Usulan Penghapusan ATTB</span>
+        <span class="item-tag tag-pol">Polaritas: Positif</span>
+        <span class="item-tag tag-high">Melampaui Target</span>
+      </div>
+      <div class="item-formula">
+        Formula: Nilai usulan penghapusan ATTB yang selesai diverifikasi oleh DIV AKT &middot; Satuan Rp Juta &middot; Bobot 1,33
+      </div>
+      <div class="item-figures">
+        <div class="fig"><span class="fig-label">Target s.d Oktober 2026</span><span class="fig-val">Rp18.098,94 Jt</span></div>
+        <div class="fig"><span class="fig-label">Realisasi</span><span class="fig-val accent">Rp51.852,50 Jt</span></div>
+        <div class="fig"><span class="fig-label">% capaian s.d Oktober</span><span class="fig-val accent">286,49%</span></div>
+        <div class="fig"><span class="fig-label">Target Tahunan 2026</span><span class="fig-val">Rp60.329,80 Jt</span></div>
+        <div class="fig"><span class="fig-label">% capaian thd Target Tahunan</span><span class="fig-val" style="color:var(--gold)">85,95%</span></div>
+      </div>
+
+      <div class="bar-block">
+        <div class="progress-heading" style="--position:95.4967%"><div class="bar-title">Skor Capaian s.d Oktober</div><span class="progress-value end-aligned">286,49%</span></div>
+        <div class="bar-track">
+          <div class="bar-fill" data-status="met" data-value="286.49" style="width:95.4967%"></div>
+          <div class="bar-mark" style="left:33.33%"></div>
+          <div class="bar-cap" style="left:36.67%"></div>
+        </div>
+        <div class="sr">
+          <span class="l" style="left:0">0%</span>
+          <span class="r" style="left:33.33%">100%</span>
+          <span class="l cap" style="left:36.67%">Capping KM 110%</span>
+          <span class="r" style="left:100%">300%</span>
+        </div>
+      </div>
+
+      <div class="bar-block">
+        <div class="progress-heading" style="--position:57.3000%"><div class="bar-title">Progres thd Target Penuh Tahun (Des 2026)</div><span class="progress-value">85,95%</span></div>
+        <div class="bar-track sm">
+          <div class="bar-fill" data-status="below" data-value="85.95" style="width:57.3000%"></div>
+          <div class="bar-mark" style="left:66.67%"></div>
+        </div>
+        <div class="sr">
+          <span class="l" style="left:0">0%</span>
+          <span class="c" style="left:66.67%">100%</span>
+          <span class="r" style="left:100%">150%</span>
+        </div>
+      </div>
+      <div class="criteria-legend" aria-label="Kriteria warna capaian">
+        <strong>Kriteria capaian:</strong>
+        <span><i style="background:var(--red)"></i>&lt;95%: Merah</span>
+        <span><i style="background:var(--gold)"></i>95%–&lt;100%: Kuning</span>
+        <span><i style="background:var(--green)"></i>≥100%: Hijau</span>
+      </div>
+    </div>
+
+    <!-- 10_3 -->
+    <div class="item-row">
+      <div class="item-main">
+        <span class="item-no">10_3</span>
+        <span class="item-name">c. Pengendalian NAC (Non Allowable Cost)</span>
+        <span class="item-tag tag-pol">Polaritas: Negatif</span>
+        <span class="item-tag tag-mid">Melampaui Target Maksimal</span>
+      </div>
+      <div class="item-formula">
+        Formula: Kesesuaian Realisasi Anggaran NAC terhadap SKAO terbit &middot; Satuan Rp Miliar &middot; Bobot 1,33
+      </div>
+      <div class="item-figures">
+        <div class="fig"><span class="fig-label">Target s.d Oktober 2026</span><span class="fig-val">Rp230,38 M</span></div>
+        <div class="fig"><span class="fig-label">Realisasi</span><span class="fig-val accent">Rp274,05 M</span></div>
+        <div class="fig"><span class="fig-label">% capaian s.d Oktober</span><span class="fig-val" style="color:var(--amber);font-weight:700">84,06%</span></div>
+        <div class="fig"><span class="fig-label">Target Tahunan 2026</span><span class="fig-val">Rp292,39 M</span></div>
+        <div class="fig"><span class="fig-label">% capaian thd Target Tahunan</span><span class="fig-val accent">106,69%</span></div>
+      </div>
+
+      <div class="bar-block">
+        <div class="progress-heading" style="--position:28.0200%"><div class="bar-title">Skor Capaian s.d Oktober</div><span class="progress-value">84,06%</span></div>
+        <div class="bar-track">
+          <div class="bar-fill" data-status="below" data-value="84.06" style="width:28.0200%"></div>
+          <div class="bar-mark" style="left:33.33%"></div>
+          <div class="bar-cap" style="left:36.67%"></div>
+        </div>
+        <div class="sr">
+          <span class="l" style="left:0">0%</span>
+          <span class="r" style="left:33.33%">100%</span>
+          <span class="l cap" style="left:36.67%">Capping KM 110%</span>
+          <span class="r" style="left:100%">300%</span>
+        </div>
+      </div>
+
+      <div class="bar-block">
+        <div class="progress-heading" style="--position:71.1267%"><div class="bar-title">Realisasi 93,73% dari pagu tahunan &middot; sisa pagu Rp18,34 M &middot; waktu berjalan 83% (Oktober/Desember &middot; 10/12)</div><span class="progress-value">106,69%</span></div>
+        <div class="bar-track sm">
+          <div class="bar-fill" data-status="met" data-value="106.69" style="width:71.1267%"></div>
+          <div class="bar-mark" style="left:66.67%"></div>
+        </div>
+        <div class="sr">
+          <span class="l" style="left:0">0%</span>
+          <span class="c" style="left:66.67%">100%</span>
+          <span class="r" style="left:100%">150%</span>
+        </div>
+      </div>
+      <div class="criteria-legend" aria-label="Kriteria warna capaian">
+        <strong>Kriteria capaian:</strong>
+        <span><i style="background:var(--red)"></i>&lt;95%: Merah</span>
+        <span><i style="background:var(--gold)"></i>95%–&lt;100%: Kuning</span>
+        <span><i style="background:var(--green)"></i>≥100%: Hijau</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title"><span class="num">03</span>Perbandingan Capaian: s.d Oktober vs Target Tahunan</h2>
+    <div class="rule"></div>
+
+    <div class="box">
+      <h3>% Capaian thd Target per Indikator</h3>
+      <div class="chart-sub">Indikator a (Range) belum memiliki capaian tahunan karena kolom realisasi tahun 2026 belum terisi.</div>
+      <div class="ctrl-row">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <div class="mode-toggle">
+            <button class="toggle-btn active" data-mode="raw">Nilai Riil</button>
+            <button class="toggle-btn" data-mode="capped">Setelah Cap 110%</button>
+          </div>
+          <div class="chart-toolbar"><label for="cmpSort">Urutkan berdasarkan:</label>
+            <select id="cmpSort">
+              <option value="all" selected>Semua parameter</option>
+              <option value="sep">% thd Target s.d Oktober</option>
+              <option value="annual">% thd Target Tahunan</option>
+            </select></div>
+        </div>
+        <div class="leg-wrap">
+          <div class="leg" id="cmpLeg"></div>
+          <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+        </div>
+      </div>
+      <div class="chart" style="height:320px"><canvas id="barCompare"></canvas></div>
+      <div class="chart-note" id="compareNote"></div>
+    </div>
+
+    <div class="grid">
+      <div class="box">
+        <h3>Selisih Realisasi vs Target s.d Oktober</h3>
+        <div class="chart-sub">Persentase capaian per indikator (target = 100%)</div>
+        <div class="ctrl-row">
+          <div class="chart-toolbar"><label for="trendSort">Urutkan berdasarkan:</label>
+            <select id="trendSort">
+              <option value="all" selected>Semua parameter</option>
+              <option value="sep">% Capaian s.d Oktober</option>
+            </select></div>
+          <div class="leg-wrap">
+            <div class="leg" id="trendLeg"></div>
+            <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+          </div>
+        </div>
+        <div class="chart sm"><canvas id="trendChart"></canvas></div>
+      </div>
+      <div class="box">
+        <h3>Komposisi Capaian Skor per Indikator</h3>
+        <div class="chart-sub">Porsi setiap indikator dalam total capaian setelah cap 110%</div>
+        <div class="chart donut"><canvas id="donutChart"></canvas></div>
+        <div id="donutLegend" class="ai-donut-legend" aria-label="Legend komposisi capaian skor per indikator"></div>
+        <div class="leg-hint" style="text-align:center">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="box">
+        <h3>Tren Bulanan NAC: Target vs Realisasi (Rp Miliar)</h3>
+        <div class="chart-sub">Realisasi NAC kumulatif Jul–Okt 2026 dibandingkan target bulanan. Target November tercatat 0,00 dan tidak ditampilkan.</div>
+        <div class="ctrl-row">
+          <div></div>
+          <div class="leg-wrap">
+            <div class="leg" id="nacTrendLeg"></div>
+            <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+          </div>
+        </div>
+        <div class="chart sm"><canvas id="nacTrend"></canvas></div>
+      </div>
+      <div class="box">
+        <h3>Tren Bulanan AKI: Realisasi vs Batas Rentang (%)</h3>
+        <div class="chart-sub">Capaian realisasi AKI Jul–Okt 2026 terhadap batas rentang 95–105%</div>
+        <div class="ctrl-row">
+          <div></div>
+          <div class="leg-wrap">
+            <div class="leg" id="akiTrendLeg"></div>
+            <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+          </div>
+        </div>
+        <div class="chart sm"><canvas id="akiTrend"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title"><span class="num">04</span>Progress terhadap Target Tahunan</h2>
+    <div class="rule"></div>
+    <p class="intro">Indikator 10_1 belum tersedia capaian tahunannya.</p>
+
+    <div class="grid">
+      <div class="box">
+        <h3>% Capaian terhadap Target Tahun 2026</h3>
+        <div class="chart-sub">
+          Nilai di atas 100% menunjukkan target tahunan tercapai. Untuk indikator 10_3 (polaritas negatif),
+          capaian &gt;100% menunjukkan realisasi biaya masih di bawah pagu tahunan.
+        </div>
+        <div class="ctrl-row">
+          <div class="chart-toolbar"><label for="annualSort">Urutkan berdasarkan:</label>
+            <select id="annualSort">
+              <option value="all" selected>Semua parameter</option>
+              <option value="ann">% thd Target Tahunan</option>
+            </select></div>
+          <div class="leg-wrap">
+            <div class="leg" id="annualLeg"></div>
+            <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+          </div>
+        </div>
+        <div class="chart"><canvas id="annualChart"></canvas></div>
+      </div>
+      <div class="box">
+        <h3>% Terhadap Target Tahunan vs Waktu Berjalan</h3>
+        <div class="chart-sub">
+          Capaian ketiga KPI terhadap target penuh 2026; garis putus menunjukkan 10 dari 12 bulan (83%). Capaian tahunan AKI belum tersedia dan ditampilkan sebagai kategori tanpa batang.
+        </div>
+        <div class="ctrl-row">
+          <div class="chart-toolbar"><label for="paceSort">Urutkan berdasarkan:</label>
+            <select id="paceSort">
+              <option value="all" selected>Semua parameter</option>
+              <option value="ser">% thd Target Tahunan</option>
+            </select></div>
+          <div class="leg-wrap">
+            <div class="leg" id="paceLeg"></div>
+            <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
+          </div>
+        </div>
+        <div class="chart"><canvas id="paceChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ANALISIS & REKOMENDASI ===================== -->
+<section id="analisis" class="panel">
+  <div class="section">
+    <h2 class="section-title"><span class="num">01</span>Analisis &amp; Rekomendasi</h2>
+    <div class="rule"></div>
+    <p class="intro">Temuan, koreksi, rekomendasi, dan tindak lanjut.</p>
+
+    <h3 class="sub-title">Temuan Utama</h3>
+    <div class="insight-grid">
+      <div class="ins danger">
+        <div class="ins-title">NAC Melampaui Target Maksimal s.d Oktober</div>
+        <div class="ins-text">
+          Realisasi NAC <b>Rp274,05 M</b> lebih tinggi dari target <b>Rp230,38 M</b>, selisih <b>Rp43,67 M</b>,
+          sehingga capaian turun ke <b>84,06%</b>. Pada polaritas negatif, capaian dihitung sebagai target dibagi realisasi.
+        </div>
+      </div>
+
+      <div class="ins warn">
+        <div class="ins-title">Koreksi: Pagu NAC Belum Terlampaui</div>
+        <div class="ins-text">
+          Capaian tahunan <b>106,69%</b> berarti realisasi <b>Rp274,05 M</b> baru <b>93,73%</b> dari pagu
+          <b>Rp292,39 M</b>. Sisa pagu <b>Rp18,34 M</b> untuk November–Desember. Versi sebelumnya keliru menyebut pagu sudah terlampaui.
+        </div>
+      </div>
+
+      <div class="ins danger">
+        <div class="ins-title">Laju NAC Oktober Akan Melampaui Sisa Pagu</div>
+        <div class="ins-text">
+          Kenaikan NAC Oktober <b>Rp35,72 M</b> (Agustus Rp25,41 M, September Rp43,02 M). Sisa pagu
+          <b>Rp18,34 M</b> habis dalam sekitar setengah bulan. Jika laju Oktober berlanjut, proyeksi indikatif akhir tahun
+          sekitar <b>Rp345,49 M</b> (lewat pagu <b>Rp53,10 M</b>, capaian tahunan sekitar <b>84,63%</b>).
+        </div>
+      </div>
+
+      <div class="ins warn">
+        <div class="ins-title">Revisi Target NAC Mempersempit Pagu</div>
+        <div class="ins-text">
+          Target NAC tahun 2026 direvisi pada Agustus dari <b>Rp378,108 M</b> menjadi <b>Rp292,394 M</b>
+          (turun <b>Rp85,714 M</b> atau <b>22,67%</b>). Revisi menurunkan pagu, tetapi realisasi tetap naik
+          sehingga ruang pengendalian menjadi sempit.
+        </div>
+      </div>
+
+      <div class="ins warn">
+        <div class="ins-title">Skor KM Bergantung pada Capping Indikator 10_2</div>
+        <div class="ins-text">
+          Tanpa cap, rata-rata capaian <b>158,18%</b>. Cap 110% pada indikator b memangkas <b>58,83 poin</b>
+          rata-rata, sehingga skor menjadi <b>99,35%</b>. Kelebihan capaian ATTB tidak menambah skor, sehingga
+          penurunan NAC langsung menekan skor.
+        </div>
+      </div>
+
+      <div class="ins danger">
+        <div class="ins-title">ATTB Stagnan Empat Bulan, Target Akhir Tahun Melonjak</div>
+        <div class="ins-text">
+          Realisasi ATTB tetap <b>Rp51.852,50 Jt</b> sejak Juli hingga Oktober. Target Desember naik ke
+          <b>Rp60.329,80 Jt</b>, sehingga sisa <b>Rp8.477,30 Jt</b> (<b>14,05%</b> dari target tahunan) harus
+          tuntas dalam satu bulan jika tidak ada pergerakan lebih awal.
+        </div>
+      </div>
+
+      <div class="ins warn">
+        <div class="ins-title">AKI Berada di Dekat Batas Atas Rentang</div>
+        <div class="ins-text">
+          Realisasi AKI Juli <b>104,21%</b>, Agustus <b>104,47%</b>, dan September <b>104,87%</b>, hanya
+          <b>0,13 poin</b> dari batas atas 105%. Oktober turun ke <b>98,78%</b>. Realisasi yang bergerak cepat
+          berisiko keluar dari rentang.
+        </div>
+      </div>
+
+      <div class="ins ok">
+        <div class="ins-title">Pengendalian AKI Dalam Rentang Target</div>
+        <div class="ins-text">
+          Seluruh bulan Juli–Oktober berada dalam rentang <b>95–105%</b>. Capaian s.d. Oktober dihitung sebagai
+          realisasi dibagi batas bawah (98,78 ÷ 95 = <b>103,98%</b>).
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub-title">Rekomendasi</h3>
+    <div class="insight-grid">
+      <div class="ins danger">
+        <div class="ins-title">Rekomendasi 1 · Batas Laju NAC November–Desember</div>
+        <div class="ins-text">
+          Agar realisasi tidak melewati pagu, laju NAC maksimal <b>Rp9,17 M per bulan</b> (sisa pagu Rp18,34 M dibagi dua bulan).
+          Itu berarti penurunan sekitar <b>74%</b> dari laju Oktober. Tinjau pos NAC dan tunda komitmen yang tidak mendesak.
+        </div>
+      </div>
+      <div class="ins danger">
+        <div class="ins-title">Rekomendasi 2 · Proyeksi Akhir Tahun NAC</div>
+        <div class="ins-text">
+          Susun proyeksi NAC akhir tahun beserta dua opsi: (a) pengendalian ketat sesuai batas laju, atau (b) reviu pagu
+          dan permohonan tambahan pagu yang didukung data realisasi. Sampaikan kepada manajemen sebelum akhir November.
+        </div>
+      </div>
+      <div class="ins warn">
+        <div class="ins-title">Rekomendasi 3 · Percepat Penyelesaian ATTB</div>
+        <div class="ins-text">
+          Sisa ATTB <b>Rp8.477,30 Jt</b> setara sekitar <b>Rp4.238,65 Jt per bulan</b> jika dibagi November dan Desember.
+          Tetapkan daftar usulan penghapusan per bulan yang diverifikasi DIV AKT, dan pantau progres mingguan.
+        </div>
+      </div>
+      <div class="ins warn">
+        <div class="ins-title">Rekomendasi 4 · Early Warning Rentang AKI</div>
+        <div class="ins-text">
+          Pertahankan realisasi AKI dalam rentang 95–105%. Tetapkan ambang peringatan dini di <b>103%</b> agar pergerakan
+          mendekati batas atas terdeteksi sebelum keluar dari rentang.
+        </div>
+      </div>
+      <div class="ins ok">
+        <div class="ins-title">Rekomendasi 5 · Tata Kelola Data Indikator</div>
+        <div class="ins-text">
+          Lengkapi target NAC November yang tercatat 0,00, dan dokumentasikan rumus indikator Range (basis batas bawah)
+          serta polaritas negatif pada NAC.
+        </div>
+      </div>
+      <div class="ins ok">
+        <div class="ins-title">Rekomendasi 6 · Pelaporan Skor Dua Basis</div>
+        <div class="ins-text">
+          Tampilkan skor riil (158,18%) dan skor setelah cap (99,35%) berdampingan, disertai analisis sensitivitas
+          agar pembaca memahami ketergantungan skor pada capping indikator 10_2.
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub-title">Tindak Lanjut</h3>
+    <div class="table-wrap">
+      <table class="tbl">
+        <thead>
+          <tr><th>No</th><th>Aksi</th><th>Indikator</th><th>Batas Waktu</th><th>Usulan Penanggung Jawab</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>Tetapkan batas laju NAC Rp9,17 M per bulan dan evaluasi pos biaya</td><td>10_3</td><td>Segera (November 2026)</td><td>Unit pengelola NAC</td></tr>
+          <tr><td>2</td><td>Susun proyeksi akhir tahun NAC beserta opsi mitigasi</td><td>10_3</td><td>30 November 2026</td><td>Perencanaan &amp; Keuangan</td></tr>
+          <tr><td>3</td><td>Verifikasi usulan penghapusan ATTB senilai Rp8.477,30 Jt</td><td>10_2</td><td>Bulanan, tuntas Desember 2026</td><td>DIV AKT</td></tr>
+          <tr><td>4</td><td>Konfirmasi target NAC November (tercatat 0,00)</td><td>10_3</td><td>Segera</td><td>Perencanaan</td></tr>
+          <tr><td>5</td><td>Pantau realisasi AKI bulanan dengan ambang peringatan 103%</td><td>10_1</td><td>Bulanan</td><td>Unit pengelola AKI</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="fnote">
+      <b>Sumber data:</b>
+      Rekap Indikator Kinerja Kontrak Manajemen No. 10 — posisi realisasi s.d. Oktober 2026.
+    </div>
+    <div class="fnote">
+      <b>Catatan:</b>
+      Jika % capaian terhadap target &gt; 110%, maka persentase yang digunakan dalam perhitungan Kontrak Manajemen adalah 110% (capping).
+      Rata-rata 3 indikator dihitung dari capaian riil; rata-rata tahunan hanya dari indikator yang tersedia data tahunannya.
+      Revisi target NAC Agustus 2026: Rp378,108 M menjadi Rp292,394 M.
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--green)"></i>Capaian &ge; 100% (target tercapai/terlampaui)</span>
+      <span><i style="background:var(--gold)"></i>Capaian 90&ndash;99% (mendekati target)</span>
+      <span><i class="line" style="background:var(--navy)"></i>Garis 100% &mdash; target tercapai</span>
+      <span><i class="line" style="background:none; border-top:2px dashed var(--gold)"></i>Garis 110% &mdash; ambang cap Kontrak Manajemen</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* =========================================================
+     DATA (sumber: Excel, posisi s.d. Oktober 2026)
+     ========================================================= */
+  var DATA = {
+    labels: ['a. Pengendalian AKI', 'b. Penghapusan ATTB', 'c. Pengendalian NAC'],
+    capaianSep:      [103.98, 286.49, 84.06],
+    capaianSepCap:   [103.98, 110,    84.06],
+    capaianTahun:    [null,   85.95,  106.69],
+    capaianTahunCap: [null,   85.95,  106.69]
+  };
+
+  var TREND = {
+    labels:['Juli','Agustus','September','Oktober'],
+    nacTarget:[226.87,252.07,230.38,243.66],
+    nacReal:[169.90,195.31,238.33,274.05],
+    akiReal:[104.21,104.47,104.87,98.78]
+  };
+
+  var C = {
+    pln:'#0B2E4F', blue:'#2877A8', gold:'#C9A227', green:'#1E7A4C', teal:'#0E7C7B',
+    amber:'#A87F12', turmericLight:'#E5C65C', red:'#B23A2E', grey:'#6B7280', ink2:'#41526B',
+    grid:'#E7E9EC', greenL:'#159A98', purple:'#7656A6'
+  };
+
+  var chartFont = "Arial, Helvetica, sans-serif";
+  Chart.defaults.font.family = chartFont;
+  Chart.defaults.color = C.ink2;
+  Chart.defaults.font.size = 11;
+
+  Chart.register({
+    id:'edgeReferences',
+    beforeDatasetDraw:function(chart,args){
+      if(chart.data.datasets[args.index].edgeReference) return false;
+    },
+    afterDatasetsDraw:function(chart){
+      var ctx = chart.ctx, area = chart.chartArea;
+      chart.data.datasets.forEach(function(ds,i){
+        if(!ds.edgeReference || !chart.isDatasetVisible(i)) return;
+        var y = chart.scales.y.getPixelForValue(ds.data[0]);
+        if(y < area.top || y > area.bottom) return;
+        ctx.save();
+        ctx.strokeStyle = ds.borderColor;
+        ctx.lineWidth = ds.borderWidth;
+        ctx.setLineDash(ds.borderDash || []);
+        ctx.beginPath(); ctx.moveTo(area.left,y); ctx.lineTo(area.right,y); ctx.stroke();
+        ctx.restore();
+      });
+    }
+  });
+
+  Chart.register({
+    id:'trendPointPulse',
+    afterEvent:function(chart){
+      if(chart.canvas.id !== 'nacTrend' && chart.canvas.id !== 'akiTrend') return;
+      var active = chart.getActiveElements().filter(function(a){
+        return chart.data.datasets[a.datasetIndex].pointRadius > 0;
+      });
+      chart._pointPulse = active;
+      chart.canvas.style.cursor = active.length ? 'pointer' : 'default';
+      if(!active.length || chart._pointRaf) return;
+      var tick = function(){
+        chart._pointRaf = null;
+        if(!chart._pointPulse || !chart._pointPulse.length || !chart.canvas.isConnected) return;
+        chart.draw();
+        chart._pointRaf = requestAnimationFrame(tick);
+      };
+      chart._pointRaf = requestAnimationFrame(tick);
+    },
+    afterDatasetsDraw:function(chart){
+      (chart._pointPulse || []).forEach(function(a){
+        var point = chart.getDatasetMeta(a.datasetIndex).data[a.index];
+        if(!point || point.skip || !chart.isDatasetVisible(a.datasetIndex)) return;
+        var ctx = chart.ctx, now = performance.now();
+        var color = point.options.borderColor;
+        var radius = 9+2*Math.sin(now/200);
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 12+4*Math.sin(now/200);
+        ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.arc(point.x,point.y,radius,0,Math.PI*2);
+        ctx.fillStyle = trendTransparentColor(color,.25);
+        ctx.fill(); ctx.stroke();
+        ctx.shadowBlur = 0;
+        for(var ring=0;ring<3;ring++){
+          var phase = (now/1500+ring/3)%1;
+          ctx.beginPath(); ctx.arc(point.x,point.y,radius+4+phase*25,0,Math.PI*2);
+          ctx.strokeStyle = trendTransparentColor(color,(1-phase)*.6);
+          ctx.lineWidth = 2*(1-phase)+.5;
+          ctx.stroke();
+        }
+        ctx.restore();
+      });
+    },
+    beforeDestroy:function(chart){
+      if(chart._pointRaf) cancelAnimationFrame(chart._pointRaf);
+      chart._pointPulse = [];
+    }
+  });
+
+  /* ---------- HELPERS ---------- */
+  function fmtPct(n, d){
+    d = (d === undefined) ? 1 : d;
+    if (n === null || n === undefined) { return '\u2014'; }
+    return n.toLocaleString('id-ID', {minimumFractionDigits:d, maximumFractionDigits:d}) + '%';
+  }
+  function fmtN1(v){ return v.toLocaleString('id-ID',{minimumFractionDigits:1,maximumFractionDigits:1}); }
+  function fmtN2(v){ return v.toLocaleString('id-ID',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function pctOf(a,b){ return b>0 ? (a/b*100) : 0; }
+  function sumArr(a){ return a.reduce(function(s,x){ return s+x; },0); }
+  function tooltipLabel(c){
+    if (c.parsed.y === null) { return ' ' + c.dataset.label + ': belum dapat dihitung'; }
+    return ' ' + c.dataset.label + ': ' + fmtN2(c.parsed.y) + '%';
+  }
+
+  var yPctScale = {
+    grid:{ color:C.grid },
+    ticks:{ color:C.ink2, font:{family:chartFont, size:11}, callback:function(v){ return v + '%'; } }
+  };
+  var xLabelScale = {
+    grid:{ display:false },
+    ticks:{ color:C.pln, font:{family:chartFont, size:12, weight:'600'} }
+  };
+  function barOpts(){
+    return {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:tooltipLabel } } },
+      scales:{ y:Object.assign({min:0}, yPctScale), x:xLabelScale }
+    };
+  }
+
+  /* ---------- LEGEND (klik untuk tampil/sembunyi) ---------- */
+  var charts = {};
+  var LEGDEF = {};
+  var LEGVIS = {};
+  function togArr(a,i){
+    if(a[i] && a.filter(Boolean).length===1) return false;
+    a[i] = !a[i]; return true;
+  }
+  function defLegend(key, el, series){
+    LEGDEF[key] = {el:el, series:series};
+    if(!LEGVIS[el]) LEGVIS[el] = series.map(function(){ return true; });
+  }
+  function legParam(key, map, val){
+    var d = LEGDEF[key]; if(!d) return;
+    var only = map[val];
+    LEGVIS[d.el] = d.series.map(function(x,i){
+      return only === -1 || only.indexOf(i) > -1;
+    });
+  }
+  function legVis(key){
+    var d = LEGDEF[key];
+    return (d && LEGVIS[d.el]) || [];
+  }
+  function legSet(key){
+    var d = LEGDEF[key]; if(!d) return;
+    var c = charts[key]; if(!c) return;
+    var el = document.getElementById(d.el);
+    var v = LEGVIS[d.el];
+    el.innerHTML = d.series.map(function(x,i){
+      var ds = c.data.datasets[i];
+      var line = ds.type === 'line' || c.config.type === 'line';
+      var icon = line ? '<i class="series-line" style="border-top:'+ds.borderWidth+'px '+(ds.borderDash && ds.borderDash.length ? 'dashed' : 'solid')+' '+ds.borderColor+'"></i>' : '<i style="background:'+x.color+'"></i>';
+      return '<span data-i="'+i+'" class="'+(v[i]?'':'off')+'">'+icon+x.label+'</span>';
+    }).join('');
+    el.onclick = function(e){
+      var t = e.target.closest('span[data-i]'); if(!t) return;
+      if(!togArr(v, +t.dataset.i)) return;
+      legSet(key);
+    };
+    v.forEach(function(on,i){ c.setDatasetVisibility(i,on); });
+    c.update('none');
+  }
+
+  defLegend('cmp','cmpLeg',[
+    {label:'% thd Target s.d Oktober 2026', color:C.pln},
+    {label:'% thd Target Tahunan 2026', color:C.gold},
+    {label:'Target 100%', color:C.red}
+  ]);
+  defLegend('trend','trendLeg',[
+    {label:'% Capaian s.d Oktober', color:C.pln},
+    {label:'Target 100%', color:C.red}
+  ]);
+  defLegend('pace','paceLeg',[
+    {label:'% thd Target Tahunan', color:C.gold},
+    {label:'Waktu berjalan (10/12 bulan)', color:C.pln}
+  ]);
+  defLegend('annual','annualLeg',[
+    {label:'% thd Target Tahunan 2026', color:C.gold},
+    {label:'Target 100% (Tanpa Capping)', color:C.red},
+    {label:'Cap KM 110%', color:C.amber}
+  ]);
+  defLegend('nacTrend','nacTrendLeg',[
+    {label:'Target NAC (Rp M)', color:C.amber},
+    {label:'Realisasi NAC (Rp M)', color:C.green}
+  ]);
+  defLegend('akiTrend','akiTrendLeg',[
+    {label:'Realisasi AKI (%)', color:C.green},
+    {label:'Batas atas 105%', color:C.amber},
+    {label:'Batas bawah 95%', color:C.turmericLight}
+  ]);
+
+  /* ---------- GENERIC BAR DRAWER (urutan + visibilitas seri) ---------- */
+  function drawBar(key, canvasId, cfg){
+    var v = legVis(key);
+    var n = cfg.labels.length;
+    var order = [];
+    for(var i=0;i<n;i++){ order.push(i); }
+    if(cfg.sortVals){
+      order.sort(function(a,b){
+        var av = cfg.sortVals[a] == null ? -1e9 : cfg.sortVals[a];
+        var bv = cfg.sortVals[b] == null ? -1e9 : cfg.sortVals[b];
+        return bv - av;
+      });
+    }
+    var datasets = cfg.datasets.map(function(ds,di){
+      var o = {};
+      for(var k in ds){ if(ds.hasOwnProperty(k)) o[k] = ds[k]; }
+      o.data = order.map(function(idx){ return ds.data[idx]; });
+      o.hidden = !v[di];
+      return o;
+    });
+    if(charts[key]) charts[key].destroy();
+    charts[key] = new Chart(document.getElementById(canvasId).getContext('2d'), {
+      type:'bar',
+      data:{ labels: order.map(function(idx){ return cfg.labels[idx]; }), datasets: datasets },
+      options: cfg.options
+    });
+    legSet(key);
+  }
+
+  /* ---------- MODE & STATE ---------- */
+  var ST = { cmp:{mode:'raw', sort:'all'}, trend:{sort:'all'}, pace:{sort:'all'}, annual:{sort:'all'} };
+  var NOTES = {
+    raw:'Nilai riil menampilkan capaian apa adanya. Indikator b (286,49%) ditampilkan tanpa batas cap.',
+    capped:'Mode cap 110% menampilkan nilai yang dipakai dalam perhitungan skor Kontrak Manajemen. Skor rata-rata s.d Oktober menjadi 99,35%.'
+  };
+  var compareNote = document.getElementById('compareNote');
+
+  function renderCompare(){
+    var m = ST.cmp.mode, s = ST.cmp.sort;
+    var sep = m==='raw' ? DATA.capaianSep : DATA.capaianSepCap;
+    var ann = m==='raw' ? DATA.capaianTahun : DATA.capaianTahunCap;
+    legParam('cmp', {all:-1, sep:[0,2], annual:[1,2]}, s);
+    drawBar('cmp', 'barCompare', {
+      labels: DATA.labels,
+      sortVals: s==='sep' ? sep : (s==='annual' ? ann : null),
+      datasets:[
+        {type:'bar', label:'% thd Target s.d Oktober 2026', data:sep, backgroundColor:C.pln, borderRadius:2, maxBarThickness:72, categoryPercentage:.9, barPercentage:.95},
+        {type:'bar', label:'% thd Target Tahunan 2026', data:ann, backgroundColor:C.gold, borderRadius:2, maxBarThickness:72, categoryPercentage:.9, barPercentage:.95},
+        {type:'line', edgeReference:true, label:'Target 100%', data:[100,100,100], borderColor:C.red, borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false}
+      ],
+      options: barOpts()
+    });
+    compareNote.textContent = NOTES[m];
+    document.querySelectorAll('.toggle-btn').forEach(function(btn){
+      btn.classList.toggle('active', btn.getAttribute('data-mode') === m);
+    });
+  }
+
+  function renderTrend(){
+    var s = ST.trend.sort;
+    legParam('trend', {all:-1, sep:[0,1]}, s);
+    drawBar('trend', 'trendChart', {
+      labels: DATA.labels,
+      sortVals: s==='sep' ? DATA.capaianSep : null,
+      datasets:[
+        {type:'bar', label:'% Capaian s.d Oktober', data:DATA.capaianSep, backgroundColor:C.pln, borderRadius:2, maxBarThickness:44},
+        {type:'line', edgeReference:true, label:'Target 100%', data:[100,100,100], borderColor:C.red, borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false}
+      ],
+      options: barOpts()
+    });
+  }
+
+  function renderPace(){
+    var s = ST.pace.sort;
+    var vals = DATA.capaianTahun;
+    legParam('pace', {all:-1, ser:-1}, s);
+    drawBar('pace', 'paceChart', {
+      labels: DATA.labels,
+      sortVals: s==='ser' ? vals : null,
+      datasets:[
+        {type:'bar', label:'% thd Target Tahunan', data:vals, backgroundColor:C.gold, borderRadius:2, maxBarThickness:56},
+        {type:'line', edgeReference:true, label:'Waktu berjalan (10/12 bulan)', data:[83,83,83], borderColor:C.pln, borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false}
+      ],
+      options: barOpts()
+    });
+  }
+
+  function renderAnnual(){
+    var s = ST.annual.sort;
+    legParam('annual', {all:-1, ann:-1}, s);
+    drawBar('annual', 'annualChart', {
+      labels: DATA.labels,
+      sortVals: s==='ann' ? DATA.capaianTahun : null,
+      datasets:[
+        {type:'bar', label:'% thd Target Tahunan 2026', data:DATA.capaianTahun, backgroundColor:C.gold, borderRadius:2, maxBarThickness:50},
+        {type:'line', edgeReference:true, label:'Target 100% (Tanpa Capping)', data:[100,100,100], borderColor:C.red, borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false},
+        {type:'line', edgeReference:true, label:'Cap KM 110%', data:[110,110,110], borderColor:C.amber, borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false}
+      ],
+      options: barOpts()
+    });
+  }
+
+  function trendTransparentColor(color, opacity){
+    var hex = color.replace('#','');
+    return 'rgba('+parseInt(hex.slice(0,2),16)+','+parseInt(hex.slice(2,4),16)+','+parseInt(hex.slice(4,6),16)+','+opacity+')';
+  }
+
+  function trendTooltipPoint(){
+    return {pointStyle:'circle', rotation:0};
+  }
+
+  function trendTooltipColor(context){
+    var colors = context.dataset.pointBorderColor;
+    var color = (Array.isArray(colors) ? colors[context.dataIndex] : colors) || context.dataset.borderColor;
+    return {borderColor:color, backgroundColor:trendTransparentColor(color,.25), borderWidth:2};
+  }
+
+  function trendPointFill(context){
+    var colors = context.dataset.pointBorderColor;
+    var color = Array.isArray(colors) ? colors[context.dataIndex] : colors;
+    return trendTransparentColor(color || context.dataset.borderColor, .25);
+  }
+
+  var trendPointStyle = {
+    tension:.3, borderWidth:2.5, fill:false,
+    pointStyle:'circle', pointRadius:7, pointHoverRadius:0,
+    pointHitRadius:12, pointBackgroundColor:trendPointFill,
+    pointHoverBackgroundColor:trendPointFill, pointBorderWidth:3,
+    pointHoverBorderWidth:3
+  };
+
+  /* ---------- TREN BULANAN ---------- */
+  function renderNacTrend(){
+    charts.nacTrend = new Chart(document.getElementById('nacTrend').getContext('2d'), {
+      data:{
+        labels:TREND.labels,
+        datasets:[
+          Object.assign({type:'line', label:'Target NAC (Rp M)', data:TREND.nacTarget, borderColor:C.amber, pointBorderColor:C.amber}, trendPointStyle),
+          Object.assign({type:'line', label:'Realisasi NAC (Rp M)', data:TREND.nacReal, borderColor:C.green, pointBorderColor:TREND.nacReal.map(function(v,i){ return v >= TREND.nacTarget[i] ? C.green : C.red; })}, trendPointStyle)
+        ]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{
+          legend:{display:false},
+          tooltip:{ usePointStyle:true, boxWidth:12, boxHeight:12, callbacks:{ labelPointStyle:trendTooltipPoint, labelColor:trendTooltipColor, label:function(c){ return ' ' + c.dataset.label + ': Rp' + fmtN2(c.parsed.y) + ' M'; } } }
+        },
+        scales:{
+          y:{ min:0, grid:{color:C.grid}, ticks:{ callback:function(v){ return 'Rp' + v + ' M'; } } },
+          x:Object.assign({},xLabelScale,{ticks:Object.assign({},xLabelScale.ticks,{autoSkip:false,maxRotation:45})})
+        }
+      }
+    });
+    legSet('nacTrend');
+  }
+
+  function renderAkiTrend(){
+    charts.akiTrend = new Chart(document.getElementById('akiTrend').getContext('2d'), {
+      type:'line',
+      data:{
+        labels:TREND.labels,
+        datasets:[
+          Object.assign({label:'Realisasi AKI (%)', data:TREND.akiReal, borderColor:C.green, pointBorderColor:TREND.akiReal.map(function(v){ return v >= 95 && v <= 105 ? C.green : C.red; })}, trendPointStyle),
+          {label:'Batas atas 105%', data:[105,105,105,105], borderColor:C.amber, borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false},
+          {label:'Batas bawah 95%', data:[95,95,95,95], borderColor:C.turmericLight, borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false}
+        ]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{
+          legend:{display:false},
+          tooltip:{ usePointStyle:true, boxWidth:12, boxHeight:12, callbacks:{ labelPointStyle:trendTooltipPoint, labelColor:trendTooltipColor, label:function(c){ return ' ' + c.dataset.label + ': ' + fmtN2(c.parsed.y) + '%'; } } }
+        },
+        scales:{
+          y:{ min:90, max:110, grid:{color:C.grid}, ticks:{ callback:function(v){ return v + '%'; } } },
+          x:Object.assign({},xLabelScale,{ticks:Object.assign({},xLabelScale.ticks,{autoSkip:false,maxRotation:45})})
+        }
+      }
+    });
+    legSet('akiTrend');
+  }
+
+  /* ---------- KARTU SKOR (speedometer, mengikuti anggaran-investasi) ---------- */
+  function speedo(percent, color){
+    var max = Math.max(100, Math.ceil(percent/25)*25);
+    var fraction = Math.max(0, Math.min(1, percent/max));
+    var angle = Math.PI + Math.PI*fraction;
+    var x = 80 + 52*Math.cos(angle), y = 78 + 52*Math.sin(angle);
+    var ticks = [0,.25,.5,.75,1].map(function(t){
+      var a = Math.PI + Math.PI*t;
+      return '<line x1="'+(80+56*Math.cos(a)).toFixed(1)+'" y1="'+(78+56*Math.sin(a)).toFixed(1)+
+             '" x2="'+(80+61*Math.cos(a)).toFixed(1)+'" y2="'+(78+61*Math.sin(a)).toFixed(1)+
+             '" stroke="#8D9AAC" stroke-width="1"/>';
+    }).join('');
+    return '<div class="card-gauge">' +
+      '<svg viewBox="0 0 160 110" role="img" aria-label="Speedometer '+fmtPct(percent,2)+'">' +
+        '<path d="M16 78 A64 64 0 0 1 144 78" fill="none" stroke="#CED8E3" stroke-width="9" stroke-linecap="round"/>' +
+        '<path d="M16 78 A64 64 0 0 1 144 78" fill="none" stroke="'+color+'" stroke-width="9" stroke-linecap="'+(fraction>0?'round':'butt')+'" pathLength="100" stroke-dasharray="'+(fraction*100)+' 100"/>' +
+        ticks +
+        '<line x1="80" y1="78" x2="'+x.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="'+C.pln+'" stroke-width="2.8" stroke-linecap="round"/>' +
+        '<circle cx="80" cy="78" r="4.5" fill="'+C.pln+'"/>' +
+        '<text x="8" y="96" font-size="10" fill="#6B7280">0%</text>' +
+        '<text x="153" y="96" text-anchor="end" font-size="10" fill="#6B7280">'+max+'%</text>' +
+        '<text x="80" y="104" text-anchor="middle" font-size="14" font-weight="700" fill="'+C.pln+'">'+fmtPct(percent,2)+'</text>' +
+      '</svg><div class="gauge-basis">Skala 0&ndash;'+max+'%</div></div>';
+  }
+
+  var SUMMARY = [
+    {cls:'', label:'Rata-rata Capaian s.d Oktober', value:158.18, basis:'Rata-rata dari 3 indikator (nilai riil)'},
+    {cls:'gold', label:'Indikator Tertinggi', value:286.49, basis:'b. Usulan Penghapusan ATTB'},
+    {cls:'teal', label:'Indikator Terendah', value:84.06, basis:'c. Pengendalian NAC (polaritas negatif)'},
+    {cls:'green', label:'Skor Kontrak Manajemen', value:99.35, basis:'Setelah capping 110% pada indikator b'}
+  ];
+  document.getElementById('summaryGrid').innerHTML = SUMMARY.map(function(s){
+    return '<div class="card '+s.cls+'"><div class="label">'+s.label+'</div>' +
+      '<div class="card-score"><div class="value">'+fmtPct(s.value,2)+'</div>'+speedo(s.value,s.value>=100?C.green:C.amber)+'</div>' +
+      '<div class="small">'+s.basis+'</div></div>';
+  }).join('');
+
+  var SCORE = [
+    {cls:'', label:'A. PENGENDALIAN AKI', value:DATA.capaianSep[0],
+     delta:'Dalam rentang target · realisasi 98,78%', deltaCls:'pos',
+     basis:'Capaian s.d Oktober 2026 · target 100%'},
+    {cls:'gold', label:'B. USULAN PENGHAPUSAN ATTB', value:DATA.capaianSep[1],
+     delta:'Jauh melampaui target', deltaCls:'pos',
+     basis:'Realisasi Rp51.852,50 Jt · target Rp18.098,94 Jt'},
+    {cls:'teal', label:'C. PENGENDALIAN NAC', value:DATA.capaianSep[2],
+     delta:'NAC melebihi target maksimal', deltaCls:'neg',
+     basis:'Realisasi Rp274,05 M · target Rp230,38 M'}
+  ];
+  document.getElementById('gaugeGrid').innerHTML = SCORE.map(function(s){
+    var color = s.value >= 100 ? C.green : C.amber;
+    return '<div class="card '+s.cls+'">' +
+      '<div class="label">'+s.label+'</div>' +
+      '<div class="card-score"><div class="value">'+fmtPct(s.value,2)+'</div>'+speedo(s.value, color)+'</div>' +
+      '<div class="delta '+s.deltaCls+'">'+s.delta+'</div>' +
+      '<div class="small">'+s.basis+'</div>' +
+    '</div>';
+  }).join('');
+
+  /* ---------- DONUT: KOMPOSISI CAPAIAN SKOR ---------- */
+  var DONUT = [
+    {code:'10_1', name:'a. Pengendalian AKI', color:C.pln,  val:DATA.capaianSepCap[0]},
+    {code:'10_2', name:'b. Usulan Penghapusan ATTB', color:C.gold, val:DATA.capaianSepCap[1]},
+    {code:'10_3', name:'c. Pengendalian NAC', color:C.teal, val:DATA.capaianSepCap[2]}
+  ];
+  var DONUT_TOTAL = sumArr(DONUT.map(function(p){ return p.val; }));
+  var DONUT_AVG = DONUT_TOTAL / DONUT.length;
+
+  var mod2 = function(a){ a = a % (2*Math.PI); return a < 0 ? a + 2*Math.PI : a; };
+  var alphaHex = function(a){ return Math.round(Math.max(0,Math.min(1,a))*255).toString(16).padStart(2,'0'); };
+
+  function pulseLoop(chart){
+    if(chart._pulseRaf) return;
+    var step = function(){
+      chart._pulseRaf = null;
+      if(!chart._pulse){ try{ chart.draw(); }catch(e){} return; }
+      try{ chart.draw(); }catch(e){ chart._pulse = null; return; }
+      chart._pulseRaf = requestAnimationFrame(step);
+    };
+    chart._pulseRaf = requestAnimationFrame(step);
+  }
+
+  function hideDonutPopup(){
+    var box = document.getElementById('aiDonutPopup');
+    if(box){ box.style.display = 'none'; box.setAttribute('aria-hidden','true'); }
+  }
+
+  function setDonutHover(chart,hit,p){
+    var st = chart._dfx;
+    var vis = hit >= 0 && chart.getDataVisibility(hit);
+    var want = (vis && st) ? hit : -1;
+    chart.canvas.style.cursor = want >= 0 ? 'pointer' : 'default';
+    if(want === (chart._dhover == null ? -1 : chart._dhover)){
+      if(want >= 0){
+        chart.setActiveElements([{datasetIndex:0,index:want}]);
+        chart.tooltip.setActiveElements([{datasetIndex:0,index:want}],p || {x:0,y:0});
+        chart.draw();
+      }
+      return;
+    }
+    chart._dhover = want;
+    if(want >= 0){
+      chart.setActiveElements([{datasetIndex:0,index:want}]);
+      chart.tooltip.setActiveElements([{datasetIndex:0,index:want}],p || {x:0,y:0});
+      var ds = chart.data.datasets[0];
+      chart._pulse = {i:want, color:(ds.glowColors || ds.backgroundColor)[want]};
+      pulseLoop(chart);
+    } else {
+      chart.setActiveElements([]);
+      chart.tooltip.setActiveElements([],{x:0,y:0});
+      chart._pulse = null;
+      if(chart.canvas.id === 'donutChart') hideDonutPopup();
+    }
+    chart.update('none');
+  }
+
+  function drawDonutGlow(chart,ctx,arcs){
+    var pl = chart._pulse;
+    if(!pl || pl.i === undefined || !arcs[pl.i]) return;
+    var ha = arcs[pl.i], now = performance.now();
+    for(var k = 0; k < 2; k++){
+      var ph = ((now/1400)+k*0.5) % 1, r = ha.outerRadius+3+ph*16, a = 1-ph;
+      ctx.beginPath(); ctx.arc(ha.x,ha.y,r,ha.startAngle,ha.endAngle);
+      ctx.lineWidth = 3; ctx.strokeStyle = pl.color+alphaHex(a*0.9); ctx.stroke();
+      ctx.beginPath(); ctx.arc(ha.x,ha.y,ha.outerRadius+1,ha.startAngle,ha.endAngle);
+      ctx.lineWidth = 1; ctx.strokeStyle = pl.color+alphaHex(a*0.5); ctx.stroke();
+    }
+  }
+
+  var centerTextPlugin = {
+    id:'centerText',
+    afterDraw:function(chart){
+      var cv = chart.canvas;
+      var val = cv.dataset.center;
+      if(!val) return;
+      var el = chart.getDatasetMeta(0).data[0];
+      if(!el) return;
+      var x = el.x, y = el.y, innerRadius = el.innerRadius;
+      var ctx = chart.ctx;
+      var maxW = innerRadius*1.8;
+      ctx.save();
+      var fs = Math.round(innerRadius*0.5);
+      ctx.font = '700 '+fs+'px Arial, Helvetica, sans-serif';
+      while(ctx.measureText(val).width > maxW && fs > 8){ fs--; ctx.font = '700 '+fs+'px Arial, Helvetica, sans-serif'; }
+      ctx.fillStyle = C.pln; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(val,x,y+fs*0.35);
+      var lab = cv.dataset.label;
+      if(lab){
+        var fl = Math.max(9,Math.round(fs*0.42));
+        ctx.font = '600 '+fl+'px Arial, Helvetica, sans-serif';
+        ctx.fillStyle = '#6B7280';
+        ctx.fillText(lab.toUpperCase(),x,y-fs*0.85);
+      }
+      ctx.restore();
+    }
+  };
+
+  var donutFx = {
+    id:'donutFx',
+    beforeLayout:function(chart){
+      chart.options.layout.padding = {left:8,right:8,top:8,bottom:8};
+      chart.options.radius = Math.min(chart.width*0.42, chart.height*0.44);
+    },
+    afterEvent:function(chart,args){
+      var st = chart._dfx; if(!st) return;
+      var e = args.event;
+      if(e.type === 'mouseout'){ setDonutHover(chart,-1,null); return; }
+      if(e.x == null) return;
+      var p = {x:e.x, y:e.y};
+      var hit = -1;
+      var dx = p.x-st.cx, dy = p.y-st.cy, d = Math.hypot(dx,dy);
+      if(d >= st.inner && d <= st.R+8){
+        var a = Math.atan2(dy,dx);
+        for(var j=0;j<st.arcs.length;j++){
+          var A = st.arcs[j];
+          if(!A.vis) continue;
+          if(mod2(a-A.s) <= A.e-A.s){ hit = A.i; break; }
+        }
+      }
+      if(e.type === 'click' && e.native && e.native.pointerType === 'touch'){
+        setDonutHover(chart, hit, p);
+        return;
+      }
+      if(e.type === 'click'){
+        if(hit >= 0){
+          hideDonutPopup();
+          chart.setActiveElements([]);
+          chart.tooltip.setActiveElements([],{x:0,y:0});
+          chart._pulse = null; chart._dhover = -1;
+          chart.toggleDataVisibility(hit);
+          chart.update();
+        }
+        return;
+      }
+      setDonutHover(chart,hit,p);
+    },
+    afterDraw:function(chart){
+      var arcs = chart.getDatasetMeta(0).data;
+      if(!arcs.length) return;
+      var a0 = arcs[0];
+      chart._dfx = {
+        arcs:arcs.map(function(a,i){
+          return {i:i, s:a.startAngle, e:a.endAngle, vis:chart.getDataVisibility(i) && a.endAngle > a.startAngle};
+        }),
+        cx:a0.x, cy:a0.y, R:a0.outerRadius, inner:a0.innerRadius
+      };
+      document.querySelectorAll('#donutLegend button').forEach(function(button){
+        var visible = chart.getDataVisibility(+button.dataset.i);
+        button.classList.toggle('off',!visible);
+        button.setAttribute('aria-pressed',String(visible));
+      });
+      var ctx = chart.ctx; ctx.save(); drawDonutGlow(chart,ctx,arcs); ctx.restore();
+    }
+  };
+
+  /* warna pop-up & kontras teks */
+  var ALPHA_POPUP = 0.75;
+  var hexRgb = function(h){ h = String(h).replace('#','');
+    if(h.length === 3) h = h.split('').map(function(c){ return c+c; }).join('');
+    var n = parseInt(h.slice(0,6),16); return [(n>>16)&255,(n>>8)&255,n&255]; };
+  var rgbHex = function(a){ return '#' + a.map(function(v){ return Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0'); }).join(''); };
+  var mixHex = function(a,b,t){ var A = hexRgb(a), B = hexRgb(b); return rgbHex(A.map(function(v,i){ return v+(B[i]-v)*t; })); };
+  var rgbaStr = function(h,a){ var c = hexRgb(h); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; };
+  var lumHex = function(h){ var c = hexRgb(h).map(function(v){ v /= 255; return v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4); });
+    return 0.2126*c[0] + 0.7152*c[1] + 0.0722*c[2]; };
+  var contrastHex = function(a,b){ var l1 = lumHex(a), l2 = lumHex(b); return (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05); };
+  var VEILS = [0,0.06,0.12,0.18,0.24,0.30,0.36,0.42];
+  var BACKDROPS = ['#FFFFFF','#E8EEF5','#000000','#20304A'].concat(DONUT.map(function(p){ return p.color; }));
+  function popupSkin(color){
+    var white = '#FFFFFF', ink = '#081E36';
+    var wajah = function(veil, veilHex, bg){ var dasar = mixHex(bg, color, ALPHA_POPUP); return veil ? mixHex(dasar, veilHex, veil) : dasar; };
+    var out = null;
+    [[ink, white], [white, ink]].forEach(function(pair){
+      var txt = pair[0], veilHex = pair[1];
+      for(var q=0;q<VEILS.length;q++){
+        var v = VEILS[q];
+        var min = Math.min.apply(null, BACKDROPS.map(function(bg){ return contrastHex(wajah(v, veilHex, bg), txt); }));
+        if(min >= 4.5){
+          if(!out || v < out.veil || (v === out.veil && min > out.gain)) out = { text:txt, veilHex:veilHex, veil:v, gain:min };
+          break;
+        }
+      }
+    });
+    if(!out) out = { text:white, veilHex:ink, veil:0.42, gain:0 };
+    return { hue: rgbaStr(color, ALPHA_POPUP), text: out.text,
+             veil: out.veil ? rgbaStr(out.veilHex, out.veil) : null,
+             edge: mixHex(wajah(out.veil, out.veilHex, '#FFFFFF'), out.text, 0.65),
+             swatch: mixHex(wajah(out.veil, out.veilHex, '#FFFFFF'), out.text, 0.8) };
+  }
+
+  function externalDonutTooltip(args){
+    var chart = args.chart, tooltip = args.tooltip;
+    var box = document.getElementById('aiDonutPopup');
+    if(!box){
+      box = document.createElement('div'); box.id = 'aiDonutPopup'; box.className = 'ai-donut-popup';
+      box.setAttribute('role','tooltip'); document.body.appendChild(box);
+      var reposition = function(){ var active = box._chartRef; if(active) externalDonutTooltip({chart:active, tooltip:active.tooltip}); };
+      window.addEventListener('scroll', reposition, true); window.addEventListener('resize', reposition);
+    }
+    box._chartRef = chart;
+    var point = tooltip.dataPoints && tooltip.dataPoints[0];
+    if((chart._dhover == null ? -1 : chart._dhover) < 0 || !point || chart.canvas.offsetParent === null){
+      box.style.display = 'none'; box.setAttribute('aria-hidden','true'); return;
+    }
+    var color = chart.data.datasets[0].backgroundColor[point.dataIndex] || C.pln;
+    var skin = popupSkin(color);
+    var title = document.createElement('strong');
+    title.textContent = point.label + ' — ' + DONUT[point.dataIndex].name;
+    var row = document.createElement('div'); row.className = 'popup-value';
+    var swatch = document.createElement('i'); swatch.className = 'popup-swatch';
+    var value = document.createElement('span');
+    /* format label: nilai data (%) */
+    value.textContent = 'Capaian: ' + fmtPct(point.raw,2) + ' (' + fmtN1(pctOf(point.raw, DONUT_TOTAL)) + '%)';
+    swatch.style.background = skin.swatch;
+    swatch.style.boxShadow = 'inset 0 0 0 1px ' + skin.edge;
+    row.append(swatch, value); box.replaceChildren(title, row);
+    box.style.backgroundColor = skin.hue;
+    box.style.backgroundImage = skin.veil ? 'linear-gradient(' + skin.veil + ',' + skin.veil + ')' : 'none';
+    box.style.color = skin.text;
+    box.style.borderColor = skin.edge;
+    box.style.display = 'block'; box.setAttribute('aria-hidden','false');
+    var r = chart.canvas.getBoundingClientRect(), vw = document.documentElement.clientWidth, vh = window.innerHeight;
+    box.style.maxWidth = Math.max(120, Math.min(250, vw-16)) + 'px';
+    var w = box.offsetWidth, h = box.offsetHeight, gap = 12;
+    var clampN = function(n,max){ return Math.max(8, Math.min(max, n)); };
+    var cx = r.left + tooltip.caretX, cy = r.top + tooltip.caretY;
+    var choices = [
+      {side:'above', x:clampN(cx-w/2, vw-w-8), y:clampN(cy-h-gap, vh-h-8)},
+      {side:'below', x:clampN(cx-w/2, vw-w-8), y:clampN(cy+gap, vh-h-8)},
+      {side:'right', x:clampN(cx+gap, vw-w-8), y:clampN(cy-h/2, vh-h-8)},
+      {side:'left',  x:clampN(cx-w-gap, vw-w-8), y:clampN(cy-h/2, vh-h-8)}
+    ];
+    var fits = function(q){ return q.x>=8 && q.y>=8 && q.x+w<=vw-8 && q.y+h<=vh-8; };
+    var position = choices.filter(fits)[0] || choices[0];
+    box.style.left = position.x + 'px'; box.style.top = position.y + 'px'; box.dataset.side = position.side;
+  }
+
+  var donutEl = document.getElementById('donutChart');
+  donutEl.dataset.center = fmtPct(DONUT_AVG,2);
+  donutEl.dataset.label = 'Rata-rata Skor';
+  charts.donut = new Chart(donutEl, {
+    type:'doughnut',
+    data:{
+      labels:DONUT.map(function(p){ return p.name; }),
+      datasets:[{
+        data:DONUT.map(function(p){ return p.val; }),
+        backgroundColor:DONUT.map(function(p){ return p.color; }),
+        glowColors:DONUT.map(function(p){ return p.color; }),
+        borderColor:'#FFFFFF', borderWidth:2, hoverOffset:10
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false, animation:false, cutout:'62%',
+      layout:{padding:8},
+      plugins:{legend:{display:false}, tooltip:{enabled:false, external:externalDonutTooltip}}
+    },
+    plugins:[centerTextPlugin, donutFx]
+  });
+
+  var donutLegend = document.getElementById('donutLegend');
+  donutLegend.innerHTML = DONUT.map(function(p,i){
+    return '<button type="button" data-i="'+i+'" aria-pressed="true"><i style="background:'+p.color+'"></i><span>'+p.name+'</span></button>';
+  }).join('');
+  donutLegend.onclick = function(e){
+    var button = e.target.closest('button[data-i]'); if(!button) return;
+    setDonutHover(charts.donut,-1,null);
+    charts.donut.toggleDataVisibility(+button.dataset.i);
+    charts.donut.update('none');
+  };
+  var donutHighlight = function(e){
+    var button = e.target.closest('button[data-i]'); if(!button) return;
+    var i = +button.dataset.i, a = charts.donut.getDatasetMeta(0).data[i];
+    if(!a) return;
+    var mid = (a.startAngle+a.endAngle)/2;
+    setDonutHover(charts.donut,i,{x:a.x+a.outerRadius*Math.cos(mid),y:a.y+a.outerRadius*Math.sin(mid)});
+  };
+  donutLegend.onmouseover = donutHighlight;
+  donutLegend.onmouseleave = function(){ setDonutHover(charts.donut,-1,null); };
+  donutLegend.addEventListener('focusin', donutHighlight);
+  donutLegend.addEventListener('focusout', function(e){ if(!donutLegend.contains(e.relatedTarget)) setDonutHover(charts.donut,-1,null); });
+
+  /* ---------- INIT ---------- */
+  renderCompare();
+  renderTrend();
+  renderPace();
+  renderAnnual();
+  renderNacTrend();
+  renderAkiTrend();
+
+  /* ---------- EVENT: mode toggle & dropdown urutkan ---------- */
+  document.querySelectorAll('.toggle-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      ST.cmp.mode = btn.getAttribute('data-mode');
+      renderCompare();
+    });
+  });
+  document.getElementById('cmpSort').addEventListener('change', function(){ ST.cmp.sort = this.value; renderCompare(); });
+  document.getElementById('trendSort').addEventListener('change', function(){ ST.trend.sort = this.value; renderTrend(); });
+  document.getElementById('paceSort').addEventListener('change', function(){ ST.pace.sort = this.value; renderPace(); });
+  document.getElementById('annualSort').addEventListener('change', function(){ ST.annual.sort = this.value; renderAnnual(); });
+
+  /* ---------- TAB: pindah panel ---------- */
+  var tabBtns = document.querySelectorAll('.tab[data-tab]');
+  function activateTab(name){
+    var btn = document.querySelector('.tab[data-tab="'+name+'"]');
+    var panel = document.getElementById(name);
+    if(!btn || !panel) return;
+    tabBtns.forEach(function(b){ b.classList.remove('active'); });
+    document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
+    btn.classList.add('active');
+    panel.classList.add('active');
+    setTimeout(function(){
+      Object.keys(charts).forEach(function(k){ if(charts[k]) charts[k].resize(); });
+    },100);
+  }
+  tabBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      activateTab(btn.getAttribute('data-tab'));
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+  });
+
+})();
+</script>
+</body>
+</html>
