@@ -1144,9 +1144,11 @@ const done={};
 function open(t){if(init[t]&&!done[t]){done[t]=1;init[t]()}}
 
 /* ---------- TAB SWITCH & POSISI HALAMAN ----------
-   refresh halaman = tetap pada tab aktif terakhir beserta bagian halaman yang sedang dilihat;
-   pindah tab      = kembali menampilkan halaman dari atas.                            */
+   1. Buka file / kembali ke halaman (tombol back, tutup & buka lagi, link) = tab paling kiri, dari atas.
+   2. Refresh halaman = tetap pada tab dan bagian halaman yang sedang tampil.
+   3. Pindah tab      = halaman tab tujuan tampil dari atas.                               */
 const POS_KEY='lrNeraca.position';
+const FIRST_TAB=(document.querySelector('.tab')||{dataset:{tab:'lr'}}).dataset.tab;
 function isReload(){
   try{
     const nav=performance.getEntriesByType&&performance.getEntriesByType('navigation')[0];
@@ -1155,15 +1157,18 @@ function isReload(){
   }catch(e){}
   return false;
 }
-function activePanel(){const p=document.querySelector('.panel.active');return p?p.id:'lr';}
-function savePos(y){try{localStorage.setItem(POS_KEY,JSON.stringify({tab:activePanel(),y:y}))}catch(e){}}
-function readPos(){try{return JSON.parse(localStorage.getItem(POS_KEY)||'null')}catch(e){return null}}
+function activePanel(){const p=document.querySelector('.panel.active');return p?p.id:FIRST_TAB;}
+function savePos(y){try{sessionStorage.setItem(POS_KEY,JSON.stringify({tab:activePanel(),y:y}))}catch(e){}}
+function readPos(){try{return JSON.parse(sessionStorage.getItem(POS_KEY)||'null')}catch(e){return null}}
+function clearPos(){try{sessionStorage.removeItem(POS_KEY)}catch(e){}}
 let restoring=false, saveTimer=null;
 window.addEventListener('scroll',()=>{
   if(restoring) return;
   clearTimeout(saveTimer);
-  saveTimer=setTimeout(()=>savePos(window.scrollY),200);
+  saveTimer=setTimeout(()=>savePos(window.scrollY),150);
 },{passive:true});
+/* simpan posisi terakhir tepat sebelum halaman ditinggalkan / direfresh */
+window.addEventListener('pagehide',()=>{ if(!restoring) savePos(window.scrollY); });
 if(history.scrollRestoration) history.scrollRestoration='manual';
 
 function activateTab(name){
@@ -1178,24 +1183,39 @@ function activateTab(name){
   setTimeout(()=>Object.values(charts).forEach(c=>c&&c.resize()),100);
   return true;
 }
+function scrollTopNow(){
+  const de=document.documentElement, prev=de.style.scrollBehavior;
+  de.style.scrollBehavior='auto';
+  window.scrollTo(0,0);
+  de.style.scrollBehavior=prev;
+}
 document.querySelectorAll('.tab').forEach(btn=>{
   btn.addEventListener('click',function(){
     restoring=false;
     if(!activateTab(this.dataset.tab)) return;
-    window.scrollTo({top:0,left:0,behavior:'auto'});
+    scrollTopNow();
     savePos(0);
   });
 });
+/* reset ke tab paling kiri, dari atas */
+function resetToFirstTab(){
+  restoring=false;
+  activateTab(FIRST_TAB);
+  scrollTopNow();
+  clearPos();
+}
 (function restorePosition(){
   const pos=isReload()?readPos():null;
-  const tab=pos&&pos.tab;
-  if(tab&&tab!=='lr') activateTab(tab); else open('lr');
-  if(!pos||!pos.y) return;
+  if(!pos){ resetToFirstTab(); return; }          // bukan refresh -> tab paling kiri
+  if(!activateTab(pos.tab)) activateTab(FIRST_TAB);
+  if(!pos.y) return;
   const y=pos.y, go=()=>window.scrollTo(0,y);
   restoring=true;
   go(); setTimeout(go,150);
   setTimeout(()=>{go();restoring=false;},600);
 })();
+/* tombol back/forward dengan bfcache: halaman dipulihkan apa adanya -> paksa kembali ke tab paling kiri */
+window.addEventListener('pageshow',e=>{ if(e.persisted) resetToFirstTab(); });
 open('lr');
 </script>
 </body>

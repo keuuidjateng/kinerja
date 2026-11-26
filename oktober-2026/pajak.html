@@ -233,13 +233,20 @@ function csv(name,rows){const text='\uFEFF'+rows.map(r=>r.map(v=>'"'+String(v??'
 const PAGE_STATE_KEY='pln-pajak-view:'+location.pathname;
 const isReload=performance.getEntriesByType('navigation')[0]?.type==='reload';
 let restoredView=null;
-try{restoredView=isReload?JSON.parse(sessionStorage.getItem(PAGE_STATE_KEY)):null;}catch(e){}
+const FIRST_TAB=document.querySelector('[role=tab]')?.dataset.panel||'pay';
+const RELOAD_MAX_AGE=10000; // ms: refresh happens right after pagehide; reopening a closed window/tab takes longer
+try{
+  const saved=JSON.parse(sessionStorage.getItem(PAGE_STATE_KEY)||'null');
+  restoredView=(isReload&&saved&&Date.now()-(saved.t||0)<RELOAD_MAX_AGE)?saved:null;
+  // Anything other than a fresh refresh (new visit, back/forward, reopened window) starts clean
+  if(!restoredView)sessionStorage.removeItem(PAGE_STATE_KEY);
+}catch(e){}
 if('scrollRestoration' in history)history.scrollRestoration='manual';
 let restoringView=true;
 function savePageView(){
   if(restoringView)return;
-  const tab=document.querySelector('[role=tab][aria-selected="true"]')?.dataset.panel||'pay';
-  try{sessionStorage.setItem(PAGE_STATE_KEY,JSON.stringify({tab,y:window.scrollY}));}catch(e){}
+  const tab=document.querySelector('[role=tab][aria-selected="true"]')?.dataset.panel||FIRST_TAB;
+  try{sessionStorage.setItem(PAGE_STATE_KEY,JSON.stringify({tab,y:window.scrollY,t:Date.now()}));}catch(e){}
 }
 function activate(id,{restore=false,y=0}={}){
   if(!document.querySelector('[role=tab][data-panel="'+id+'"]'))return;
@@ -255,6 +262,12 @@ function activate(id,{restore=false,y=0}={}){
 }
 window.addEventListener('scroll',savePageView,{passive:true});
 window.addEventListener('pagehide',savePageView);
+// Returning via Back/Forward (bfcache): open the leftmost tab from the top
+window.addEventListener('pageshow',e=>{
+  if(!e.persisted)return;
+  try{sessionStorage.removeItem(PAGE_STATE_KEY);}catch(err){}
+  activate(FIRST_TAB);
+});
 document.querySelectorAll('[role=tab]').forEach((b,i,list)=>{b.addEventListener('click',()=>activate(b.dataset.panel));b.addEventListener('keydown',e=>{let j;if(e.key==='ArrowRight')j=(i+1)%list.length;else if(e.key==='ArrowLeft')j=(i+list.length-1)%list.length;else if(e.key==='Home')j=0;else if(e.key==='End')j=list.length-1;else return;e.preventDefault();list[j].focus();activate(list[j].dataset.panel);});});
 $('export-month').addEventListener('click',()=>csv('rekap-pajak-bulanan-2026.csv',[['Masa','PPN_Rp','PPh_Rp','Total_Rp','Kumulatif_YTD_Rp','Status'],...months.slice(opts.from,opts.to+1).map(x=>[x.name,...[x.ppn,x.pph,x.total,x.cum].map(v=>v===null?'':rp(v)),x.total===null?'Belum tersedia':'Tersedia'])]));
 function speedometer(label,amount,reference,basis,cls){
@@ -631,7 +644,7 @@ if(window.gsap&&window.ScrollTrigger&&!matchMedia('(prefers-reduced-motion: redu
 function restorePageView(){
   const tab=restoredView?.tab;
   const valid=tab&&document.querySelector('[role=tab][data-panel="'+tab+'"]');
-  activate(valid?tab:'pay',{restore:true,y:valid?restoredView.y:0});
+  activate(valid?tab:FIRST_TAB,{restore:true,y:valid?restoredView.y:0});
   requestAnimationFrame(()=>requestAnimationFrame(()=>{restoringView=false;savePageView();}));
 }
 if(document.readyState==='complete')restorePageView();

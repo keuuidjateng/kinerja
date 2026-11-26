@@ -1650,11 +1650,18 @@ function makeTableSortable(table){
 
 /* ==========================================================
    TAB NAVIGATION
-   - Refresh halaman  : tab aktif terakhir tetap ditampilkan
-     (disimpan di localStorage; buka baru tanpa refresh = Overview)
-   - Pindah tab       : konten tab ditampilkan dari atas bagian
+   1. Buka baru / kembali lewat tombol back / jendela ditutup lalu
+      dibuka lagi  -> selalu tab paling kiri (Overview), posisi paling atas
+   2. Refresh halaman -> tetap di tab yang sedang tampil, posisi gulir dipertahankan
+   3. Pindah tab      -> konten tab baru ditampilkan dari atas
+   (status disimpan di sessionStorage: hanya bertahan saat refresh)
  ========================================================== */
 const TAB_KEY='neracaUnit.activeTab';
+const SCROLL_KEY='neracaUnit.scrollY';
+const FIRST_TAB=(document.querySelector('.tab')||{dataset:{}}).dataset.tab;
+function ssGet(k){ try{ return sessionStorage.getItem(k); }catch(e){ return null; } }
+function ssSet(k,v){ try{ sessionStorage.setItem(k,v); }catch(e){} }
+function ssDel(k){ try{ sessionStorage.removeItem(k); }catch(e){} }
 function activateTab(name){
   const btn = document.querySelector('.tab[data-tab="'+name+'"]');
   const panel = document.getElementById(name);
@@ -1677,24 +1684,54 @@ function scrollTabTop(){
 document.querySelectorAll('.tab').forEach(btn=>{
   btn.addEventListener('click',function(){
     if(activateTab(this.dataset.tab)){
-      try{ localStorage.setItem(TAB_KEY,this.dataset.tab); }catch(e){}
+      ssSet(TAB_KEY,this.dataset.tab);
+      ssDel(SCROLL_KEY);
       scrollTabTop();
     }
   });
 });
-/* Saat reload, pulihkan tab terakhir; saat buka baru, tetap Overview */
-(function restoreTab(){
-  let isReload=false;
+/* Simpan posisi gulir agar bisa dipulihkan saat refresh */
+let _scrollTick=null;
+function saveScroll(){ ssSet(SCROLL_KEY,String(window.scrollY||0)); }
+window.addEventListener('scroll',function(){
+  if(_scrollTick) return;
+  _scrollTick=setTimeout(function(){ _scrollTick=null; saveScroll(); },150);
+},{passive:true});
+window.addEventListener('pagehide',saveScroll);
+
+function resetToFirstTab(){
+  if(FIRST_TAB) activateTab(FIRST_TAB);
+  ssDel(TAB_KEY); ssDel(SCROLL_KEY);
+  window.scrollTo(0,0);
+}
+function isReloadNav(){
   try{
     const nav=performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
-    if(nav) isReload=nav.type==='reload';
-    else if(performance.navigation) isReload=performance.navigation.type===1;
+    if(nav) return nav.type==='reload';
+    if(performance.navigation) return performance.navigation.type===1;
   }catch(e){}
-  if(!isReload) return;
-  let saved=null;
-  try{ saved=localStorage.getItem(TAB_KEY); }catch(e){}
-  if(saved) activateTab(saved);
+  return false;
+}
+/* Kendalikan sendiri pemulihan gulir bawaan browser */
+try{ if('scrollRestoration' in history) history.scrollRestoration='manual'; }catch(e){}
+(function restoreTab(){
+  if(!isReloadNav()){ resetToFirstTab(); return; }       /* buka baru / back / forward */
+  const saved=ssGet(TAB_KEY);
+  if(saved && activateTab(saved)){
+    const y=parseFloat(ssGet(SCROLL_KEY));
+    if(!isNaN(y)){
+      const go=()=>window.scrollTo(0,y);
+      go();
+      window.addEventListener('load',()=>{ go(); setTimeout(go,150); });
+    }
+  } else {
+    resetToFirstTab();
+  }
 })();
+/* Tombol back/forward yang memulihkan halaman dari cache (bfcache): kembali ke tab paling kiri */
+window.addEventListener('pageshow',function(e){
+  if(e.persisted) resetToFirstTab();
+});
 
 /* ==========================================================
    INIT

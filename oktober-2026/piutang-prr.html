@@ -574,27 +574,78 @@ function activateTab(name){
   setTimeout(()=>Object.values(charts).forEach(c=>c && c.resize()),100);
   return true;
 }
+/* ---------- PERILAKU TAB, REFRESH & KELUAR HALAMAN ----------
+   1. Buka file / kembali ke halaman (tutup window, tombol back, pindah file) -> tab paling kiri, posisi paling atas.
+   2. Refresh (F5 / reload) -> tetap di tab yang sedang tampil dan di posisi scroll yang sama.
+   3. Pindah tab -> halaman tab tujuan tampil dari atas.
+   sessionStorage dipakai (bukan localStorage) agar state tidak terbawa ke kunjungan berikutnya. */
+const DEFAULT_TAB = 'piutang';
+const SS_TAB = 'piutangPRR.activeTab';
+const SS_Y   = 'piutangPRR.scrollY';
+
+function ssGet(k){ try{ return sessionStorage.getItem(k); }catch(e){ return null; } }
+function ssSet(k,v){ try{ sessionStorage.setItem(k,v); }catch(e){} }
+function ssDel(k){ try{ sessionStorage.removeItem(k); }catch(e){} }
+
+/* Scroll dikelola manual agar browser tidak memulihkan posisi lama saat back/forward */
+if('scrollRestoration' in history){ history.scrollRestoration = 'manual'; }
+
+function currentTab(){
+  const b = document.querySelector('.tab.active');
+  return b ? b.dataset.tab : DEFAULT_TAB;
+}
+function saveScroll(){
+  ssSet(SS_TAB, currentTab());
+  ssSet(SS_Y, String(window.pageYOffset || document.documentElement.scrollTop || 0));
+}
+function resetToDefault(){
+  activateTab(DEFAULT_TAB);
+  ssDel(SS_TAB); ssDel(SS_Y);
+  window.scrollTo(0,0);
+}
+
 document.querySelectorAll('.tab').forEach(btn=>{
   btn.addEventListener('click',function(){
-    /* pindah tab: tampilkan halaman dari atas */
     activateTab(this.dataset.tab);
-    window.scrollTo(0,0);
-    try{ localStorage.setItem(TAB_KEY, this.dataset.tab); }catch(e){}
+    window.scrollTo(0,0);               /* pindah tab: tampil dari atas */
+    ssSet(SS_TAB, this.dataset.tab);
+    ssSet(SS_Y, '0');
   });
 });
-(function restoreTab(){
-  /* refresh: tetap tampilkan tab aktif terakhir, posisi scroll dipertahankan browser */
+
+let scrollTick = null;
+window.addEventListener('scroll',function(){
+  if(scrollTick) return;
+  scrollTick = setTimeout(()=>{ scrollTick = null; saveScroll(); }, 120);
+},{passive:true});
+window.addEventListener('pagehide', saveScroll);
+
+(function initTabState(){
   let isReload = false;
   try{
     const nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
     if(nav) isReload = nav.type === 'reload';
     else if(performance.navigation) isReload = performance.navigation.type === 1;
   }catch(e){}
-  if(!isReload) return;
-  let saved = null;
-  try{ saved = localStorage.getItem(TAB_KEY); }catch(e){}
-  if(saved) activateTab(saved);
+
+  const savedTab = ssGet(SS_TAB);
+  if(isReload && savedTab && activateTab(savedTab)){
+    /* refresh: kembali ke tab & posisi scroll yang sama */
+    const y = parseInt(ssGet(SS_Y),10) || 0;
+    const restore = ()=>window.scrollTo(0,y);
+    restore();
+    requestAnimationFrame(restore);
+    window.addEventListener('load', ()=>{ restore(); setTimeout(restore,150); });
+  }else{
+    /* buka pertama kali / kembali dari halaman lain: tab paling kiri, dari atas */
+    resetToDefault();
+  }
 })();
+
+/* Kembali lewat tombol back dengan bfcache (halaman dipulihkan utuh): paksa ke tab paling kiri */
+window.addEventListener('pageshow', function(e){
+  if(e.persisted){ resetToDefault(); }
+});
 
 /* ---------- SORTABLE TABLES ---------- */
 const parseCell = t => {

@@ -574,7 +574,7 @@ function activateTab(name){
 document.querySelectorAll('.tab').forEach(btn=>{
   btn.addEventListener('click',function(){
     if(!activateTab(this.dataset.tab)) return;
-    try{ sessionStorage.setItem(TAB_KEY, this.dataset.tab); }catch(e){}
+    try{ sessionStorage.setItem(TAB_KEY, this.dataset.tab); sessionStorage.setItem('bppAnalysis.scrollY','0'); }catch(e){}
     fromTop();
   });
 });
@@ -1032,25 +1032,63 @@ document.querySelectorAll('.card[data-g]').forEach(card=>{
 });
 
 /* ---------- RESTORE TAB ----------
-   Refresh halaman (F5, Ctrl+R, tombol reload, buka kembali tab yang ditutup):
-   tab yang sedang aktif terakhir tetap ditampilkan.
-   Membuka halaman baru (URL/link/menu Baru): selalu mulai dari tab Overview. */
-function isRestoringLoad(){
+   1. Refresh (F5, Ctrl+R, tombol reload): tetap di tab yang sedang tampil
+      (beserta posisi scroll-nya).
+   2. Buka file, kembali lewat tombol Back, atau jendela ditutup lalu dibuka
+      lagi: selalu mulai dari tab paling kiri, dari atas halaman.
+   3. Pindah tab: selalu tampil dari atas (lihat fromTop). */
+const SCROLL_KEY = 'bppAnalysis.scrollY';
+const firstTab = () => { const t = document.querySelector('.tab'); return t ? t.dataset.tab : null; };
+function isReloadLoad(){
   try{
     const nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
-    if(nav && nav.type) return nav.type === 'reload' || nav.type === 'back_forward';
+    if(nav && nav.type) return nav.type === 'reload';
     if(performance.navigation) return performance.navigation.type === 1;   // fallback lama
   }catch(e){}
   return false;
 }
+function resetToFirstTab(){
+  try{ sessionStorage.removeItem(TAB_KEY); sessionStorage.removeItem(SCROLL_KEY); }catch(e){}
+  activateTab(firstTab());
+  fromTop();
+}
+try{ if('scrollRestoration' in history) history.scrollRestoration = 'manual'; }catch(e){}
+
+/* simpan posisi scroll tab yang sedang tampil */
+let _scT = null;
+function saveScroll(){
+  try{ sessionStorage.setItem(SCROLL_KEY, String(window.scrollY||document.documentElement.scrollTop||0)); }catch(e){}
+}
+window.addEventListener('scroll', ()=>{ clearTimeout(_scT); _scT = setTimeout(saveScroll,150); }, {passive:true});
+window.addEventListener('pagehide', saveScroll);
+
 (function restoreTab(){
-  let saved = null;
+  let saved = null, y = 0;
+  const reload = isReloadLoad();
   try{
-    if(isRestoringLoad()) saved = sessionStorage.getItem(TAB_KEY);
-    else sessionStorage.removeItem(TAB_KEY);
+    if(reload){
+      saved = sessionStorage.getItem(TAB_KEY);
+      y = parseFloat(sessionStorage.getItem(SCROLL_KEY)) || 0;
+    }else{
+      sessionStorage.removeItem(TAB_KEY);
+      sessionStorage.removeItem(SCROLL_KEY);
+    }
   }catch(e){}
-  activateTab(saved || 'rincian');
+  if(!(saved && activateTab(saved))){ activateTab(firstTab()); saved = null; y = 0; }
+  if(saved && y > 0){
+    const go = ()=>window.scrollTo({top:y,left:0,behavior:'auto'});
+    go(); requestAnimationFrame(go); setTimeout(go,150); setTimeout(go,500);
+  }else{
+    fromTop();
+  }
 })();
+
+/* Kembali lewat tombol Back/Forward (termasuk dari cache browser): mulai dari tab paling kiri */
+window.addEventListener('pageshow', e=>{
+  let t = null;
+  try{ t = performance.getEntriesByType('navigation')[0]; }catch(_){}
+  if(e.persisted || (t && t.type === 'back_forward')) resetToFirstTab();
+});
 </script>
 </body>
 </html>
