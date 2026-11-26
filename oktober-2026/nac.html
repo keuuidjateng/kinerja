@@ -65,7 +65,7 @@ section{padding:34px 0 5px}
 .card-gauge svg{display:block;width:100%;height:auto}
 .gauge-basis{font-size:9px;color:var(--grey);line-height:1.3;margin-top:2px}
 .label{text-transform:uppercase;letter-spacing:.8px;font-size:10.5px;color:var(--grey);font-weight:700}
-.value{font-family:Arial,serif;font-size:22px;font-weight:700;color:var(--navy-d);margin:7px 0}
+.value{font-size:22px;font-weight:700;color:var(--navy-d);margin:7px 0}
 .small{font-size:11px;color:var(--grey)}
 
 /* GAUGES */
@@ -1782,11 +1782,10 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
   initScoreGauges();
 
   /* ===================== TAB SWITCHING =====================
-     Refresh  : tab aktif terakhir DAN bagian halaman yang sedang dibaca tetap ditampilkan
-                (tab diingat lewat localStorage dan hash URL, posisi lewat localStorage)
-     Ganti tab: halaman selalu mulai dari atas                                */
-  var TAB_KEY = 'nac.activeTab.v4';
-  var POS_KEY = 'nac.scrollPos.v4';
+     Refresh  : kembali ke tab yang terakhir aktif
+     Ganti tab: tampilkan tab baru dan gulir ke bagian paling atas halaman
+     Buka halaman baru / lewat tautan: tab Overview                        */
+  var TAB_KEY = 'nac.activeTab.v2';
   var VALID_TABS = ['overview', 'rincian', 'kpi', 'insight'];
   var inited = {};
   var inits = {
@@ -1795,66 +1794,8 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
     kpi: initKpi,
     insight: function(){}
   };
-  var current = 'overview';
 
-  // Posisi scroll tidak dipulihkan peramban; dikendalikan sendiri
-  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-
-  function read(key){
-    var v = null;
-    try { v = localStorage.getItem(key); } catch(e) {}
-    return v;
-  }
-  function write(key, val){
-    try { localStorage.setItem(key, val); } catch(e) {}
-  }
-
-  function validTab(n){
-    return VALID_TABS.indexOf(n) >= 0 ? n : null;
-  }
-  function hashTab(){
-    return validTab(String(location.hash || '').replace(/^#\/?/, ''));
-  }
-  function writeHash(name){
-    try { history.replaceState(null, '', '#/' + name); }
-    catch(e) { try { location.hash = '/' + name; } catch(e2) {} }
-  }
-
-  function savedTab(){
-    return validTab(read(TAB_KEY)) || hashTab() || 'overview';
-  }
-  function savedPos(){
-    var n = parseInt(read(POS_KEY), 10);
-    return n > 0 ? n : 0;
-  }
-  function savePos(){
-    write(POS_KEY, String(Math.round(window.scrollY || (document.scrollingElement ? document.scrollingElement.scrollTop : 0))));
-  }
-
-  function toTop(){
-    window.scrollTo(0, 0);
-    if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
-    savePos();
-  }
-
-  // Panel baru punya tinggi penuh setelah grafik ter-render, jadi posisi dipasang ulang beberapa kali
-  function restorePos(y){
-    if (y <= 0) return;
-    [0, 120, 400, 900].forEach(function(delay){
-      setTimeout(function(){ window.scrollTo(0, y); }, delay);
-    });
-  }
-
-  var posPending = false;
-  window.addEventListener('scroll', function(){
-    if (posPending) return;
-    posPending = true;
-    requestAnimationFrame(function(){ posPending = false; savePos(); });
-  }, {passive:true});
-  window.addEventListener('pagehide', savePos);
-
-  function activate(name, restore){
-    current = name;
+  function activate(name, opts){
     document.querySelectorAll('.tab').forEach(function(t){
       t.classList.toggle('active', t.getAttribute('data-tab') === name);
     });
@@ -1865,38 +1806,30 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
       inits[name]();
       inited[name] = true;
     }
-    if (restore) window.scrollTo(0, restore);
-    else toTop();
+    if (opts && opts.scrollTop) window.scrollTo({top:0, behavior:'auto'});
     setTimeout(function(){
       Object.values(charts).forEach(function(c){ c && c.resize(); });
-      if (restore) window.scrollTo(0, restore);
-      else toTop();
     }, 100);
-  }
-
-  function goTab(name){
-    write(TAB_KEY, name);
-    writeHash(name);
-    activate(name, 0);          // pindah tab = mulai dari atas
   }
 
   document.querySelectorAll('.tab').forEach(function(t){
     t.addEventListener('click', function(){
-      goTab(t.getAttribute('data-tab'));
+      activate(t.getAttribute('data-tab'), {scrollTop:true});
+      try { localStorage.setItem(TAB_KEY, t.getAttribute('data-tab')); } catch(e) {}
     });
   });
 
-  // Tab boleh dipilih lewat URL (berbagi tautan / tombol kembali peramban)
-  window.addEventListener('hashchange', function(){
-    var h = hashTab();
-    if (h && h !== current) goTab(h);
-  });
-
-  (function start(){
-    var tab = savedTab(), pos = savedPos();
-    writeHash(tab);
-    activate(tab, pos);
-    restorePos(pos);
+  (function restoreTab(){
+    var isReload = false;
+    try {
+      var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+      if (nav) isReload = nav.type === 'reload';
+      else if (performance.navigation) isReload = performance.navigation.type === 1;
+    } catch(e) {}
+    if (!isReload) { activate('overview'); return; }
+    var saved = null;
+    try { saved = localStorage.getItem(TAB_KEY); } catch(e) {}
+    activate(VALID_TABS.indexOf(saved) >= 0 ? saved : 'overview');
   })();
 
 })();

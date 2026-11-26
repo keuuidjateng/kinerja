@@ -1333,17 +1333,15 @@ function bubbleSelIndex(){
 }
 
 /* ============================================================
-   TAB SWITCH & POSISI TAMPILAN
-   - halaman di-refresh  : tab aktif terakhir + bagian halaman yang sedang
-                           dilihat (posisi gulir) dipertahankan
-   - pindah tab (klik)   : halaman selalu mulai dari bagian atas
+   TAB SWITCH (format mengikuti anggaran-investasi.html)
+   - refresh halaman      : kembali ke tab terakhir yang aktif
+   - pindah tab (klik)    : tampilkan tab baru, gulir ke bagian paling atas
+   - buka halaman baru    : tab Overview
 ============================================================ */
 const TAB_KEY = 'lrUnit2.activeTab';
-const POS_KEY = 'lrUnit2.scrollY';
-const SEEN_KEY = 'lrUnit2.seenInTab';
 let currentTab = 'infografis';
 
-function activateTab(name){
+function activateTab(name, opts){
   const btn = document.querySelector('.tab[data-tab="'+name+'"]');
   const panel = document.getElementById(name);
   if(!btn || !panel) return false;
@@ -1352,22 +1350,28 @@ function activateTab(name){
   btn.classList.add('active');
   panel.classList.add('active');
   currentTab = name;
+  if(opts && opts.scrollTop) window.scrollTo({top:0, behavior:'auto'});
   setTimeout(()=>Object.values(charts).forEach(c=>c && c.resize()),100);
   return true;
 }
-function saveView(y){
-  try{
-    localStorage.setItem(TAB_KEY, currentTab);
-    localStorage.setItem(POS_KEY, String(Math.round(y === undefined ? (window.scrollY||0) : y)));
-  }catch(e){}
-}
 document.querySelectorAll('.tab').forEach(btn=>{
   btn.addEventListener('click',function(){
-    if(!activateTab(this.dataset.tab)) return;
-    saveView(0);                 // tab baru disimpan, posisi kembali ke atas
-    window.scrollTo(0,0);
+    activateTab(this.dataset.tab, {scrollTop:true});
+    try{ localStorage.setItem(TAB_KEY, this.dataset.tab); }catch(e){}
   });
 });
+(function restoreTab(){
+  let isReload = false;
+  try{
+    const nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+    if(nav) isReload = nav.type === 'reload';
+    else if(performance.navigation) isReload = performance.navigation.type === 1;
+  }catch(e){}
+  if(!isReload) return;
+  let saved = null;
+  try{ saved = localStorage.getItem(TAB_KEY); }catch(e){}
+  if(saved) activateTab(saved);
+})();
 
 /* simpan posisi gulir seperlunya (debounce) dan terakhir saat halaman ditutup/di-refresh */
 let posTimer = null;
