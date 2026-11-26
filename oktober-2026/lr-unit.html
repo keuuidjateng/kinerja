@@ -1256,27 +1256,27 @@ const radarPlugin = {
       if(mode === 'sel'){
         const t = (performance.now() % 1600) / 1600;
         const s = 0.5 - 0.5*Math.cos(2*Math.PI*t);
-        const rr = r0*(1.35 + 0.45*s);
+        const rr = r0*(1.5 + 0.7*s);
         for(let k=0;k<2;k++){
           const p = (t+k*0.5) % 1;
-          ctx.beginPath(); ctx.arc(x,y,r0+p*18,0,Math.PI*2);
-          ctx.strokeStyle = `rgba(${rgb},${0.55*(1-p)})`; ctx.lineWidth = 2; ctx.stroke();
+          ctx.beginPath(); ctx.arc(x,y,r0+p*30,0,Math.PI*2);
+          ctx.strokeStyle = `rgba(${rgb},${0.6*(1-p)})`; ctx.lineWidth = 3; ctx.stroke();
         }
         ctx.beginPath(); ctx.arc(x,y,rr,0,Math.PI*2);
-        ctx.shadowColor = `rgba(${rgb},.9)`; ctx.shadowBlur = 10 + 12*s;
+        ctx.shadowColor = `rgba(${rgb},.95)`; ctx.shadowBlur = 16 + 18*s;
         ctx.fillStyle = col; ctx.fill();
-        ctx.lineWidth = 1.5; ctx.strokeStyle = '#fff'; ctx.stroke();
+        ctx.lineWidth = 2; ctx.strokeStyle = '#fff'; ctx.stroke();
       } else {
         const t = ((performance.now()-radarStart) % 1600) / 1600;
         for(let k=0;k<2;k++){
           const p = (t+k*0.5) % 1;
-          ctx.beginPath(); ctx.arc(x,y,r0+p*16,0,Math.PI*2);
-          ctx.strokeStyle = `rgba(${rgb},${0.6*(1-p)})`; ctx.lineWidth = 2; ctx.stroke();
+          ctx.beginPath(); ctx.arc(x,y,r0+p*26,0,Math.PI*2);
+          ctx.strokeStyle = `rgba(${rgb},${0.65*(1-p)})`; ctx.lineWidth = 3; ctx.stroke();
         }
-        ctx.beginPath(); ctx.arc(x,y,r0*1.7,0,Math.PI*2);
-        ctx.shadowColor = `rgba(${rgb},.9)`; ctx.shadowBlur = 18;
+        ctx.beginPath(); ctx.arc(x,y,r0*1.9,0,Math.PI*2);
+        ctx.shadowColor = `rgba(${rgb},.95)`; ctx.shadowBlur = 26;
         ctx.fillStyle = col; ctx.fill();
-        ctx.lineWidth = 1.5; ctx.strokeStyle = '#fff'; ctx.stroke();
+        ctx.lineWidth = 2; ctx.strokeStyle = '#fff'; ctx.stroke();
       }
       ctx.restore();
     };
@@ -1284,6 +1284,32 @@ const radarPlugin = {
     if(radarIdx !== null) draw(radarIdx, 'hover');
   }
 };
+/* Area berwarna Peta Posisi UP3 mengikuti legend, transparansi 10%.
+   Efisien (< 90%) teal, Waspada (90–100%) gold, Rugi bersih (< 0) merah. */
+const bubbleZones = {
+  id:'bubbleZones',
+  beforeDatasetsDraw(chart){
+    if(chart.canvas.id!=='bubbleChart') return;
+    const {ctx, chartArea:a, scales:{x,y}} = chart;
+    if(!a) return;
+    const X = v => x.getPixelForValue(v), Y = v => y.getPixelForValue(v);
+    const fill = (x1,x2,y1,y2,c) => { ctx.fillStyle = c; ctx.fillRect(x1,y1,x2-x1,y2-y1); };
+    ctx.save();
+    fill(a.left, a.right, Y(0), a.bottom, 'rgba(178,58,46,.10)');
+    fill(a.left, X(90), a.top, Y(0), 'rgba(14,124,123,.10)');
+    fill(X(90), X(100), a.top, Y(0), 'rgba(201,162,39,.10)');
+    ctx.lineWidth = 1.2;
+    ctx.setLineDash([5,4]);
+    ctx.strokeStyle = '#0E7C7B';
+    ctx.beginPath(); ctx.moveTo(X(90), a.top); ctx.lineTo(X(90), Y(0)); ctx.stroke();
+    ctx.strokeStyle = '#C9A227';
+    ctx.beginPath(); ctx.moveTo(X(100), a.top); ctx.lineTo(X(100), Y(0)); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.strokeStyle = '#B23A2E';
+    ctx.beginPath(); ctx.moveTo(a.left, Y(0)); ctx.lineTo(a.right, Y(0)); ctx.stroke();
+    ctx.restore();
+  }
+};renderBubble()
 function animLoop(){
   if(!radarChart){ radarRaf = null; return; }
   radarChart.draw();
@@ -1496,7 +1522,7 @@ function renderBubble(){
       borderColor:"#fff",
       borderWidth:1
     }]},
-    plugins:[radarPlugin, bubbleLabelPlugin],
+    plugins:[bubbleZones, radarPlugin, bubbleLabelPlugin],
     options:{
       responsive:true,
       maintainAspectRatio:false,
@@ -1616,7 +1642,11 @@ function renderRanking(){
     fmt:formatCompact,
     axisFmt:formatCompact,
     label:metricLabels[metric],
-    tip:c=>formatCompact(c.raw)
+    tip:c=>{
+      const g = financial[metric][0];
+      const share = g ? c.raw/g*100 : 0;
+      return formatCompact(c.raw) + " (" + percent(share) + ")";
+    }
   }));
   const max = Math.max(...ranking.map(x=>Math.abs(x.value)));
   document.getElementById("rankList").innerHTML = ranking.map((x,i)=>{
