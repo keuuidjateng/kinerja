@@ -1631,8 +1631,13 @@ button,select,input{font-family:inherit}
   document.getElementById('paceSort').addEventListener('change', function(){ ST.pace.sort = this.value; renderPace(); });
   document.getElementById('annualSort').addEventListener('change', function(){ ST.annual.sort = this.value; renderAnnual(); });
 
-  /* ---------- TAB: pindah panel ---------- */
+  /* ---------- TAB & POSISI SCROLL ----------
+     - Buka halaman baru (termasuk setelah window ditutup / tombol back): tab paling kiri, scroll dari atas.
+     - Refresh: tetap di tab aktif dan posisi scroll terakhir.
+     - Pindah tab: tab tujuan tampil dari bagian atas.
+     Disimpan di sessionStorage (hilang saat tab/window browser ditutup). */
   var TAB_KEY = 'kmKeu.activeTab';
+  var SCROLL_KEY = 'kmKeu.scrollY';
   var tabBtns = document.querySelectorAll('.tab[data-tab]');
   function activateTab(name){
     var btn = document.querySelector('.tab[data-tab="'+name+'"]');
@@ -1647,15 +1652,25 @@ button,select,input{font-family:inherit}
     },100);
     return true;
   }
+  function storeSet(k,v){ try{ sessionStorage.setItem(k,v); }catch(e){} }
+  function storeGet(k){ try{ return sessionStorage.getItem(k); }catch(e){ return null; } }
+
   tabBtns.forEach(function(btn){
     btn.addEventListener('click', function(){
       activateTab(btn.getAttribute('data-tab'));
-      try{ localStorage.setItem(TAB_KEY, btn.getAttribute('data-tab')); }catch(e){}
+      storeSet(TAB_KEY, btn.getAttribute('data-tab'));
+      storeSet(SCROLL_KEY, '0');
       window.scrollTo({top:0, behavior:'auto'});
     });
   });
-  /* Refresh: pulihkan tab aktif terakhir. Buka baru/navigasi biasa: mulai dari tab pertama. */
-  (function restoreTab(){
+
+  var saveScrollTimer = null;
+  window.addEventListener('scroll', function(){
+    clearTimeout(saveScrollTimer);
+    saveScrollTimer = setTimeout(function(){ storeSet(SCROLL_KEY, String(Math.round(window.scrollY))); }, 120);
+  }, {passive:true});
+
+  (function restoreOnReload(){
     var isReload = false;
     try{
       var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
@@ -1663,9 +1678,11 @@ button,select,input{font-family:inherit}
       else if(performance.navigation) isReload = performance.navigation.type === 1;
     }catch(e){}
     if(!isReload) return;
-    var saved = null;
-    try{ saved = localStorage.getItem(TAB_KEY); }catch(e){}
+    var saved = storeGet(TAB_KEY);
+    var y = parseInt(storeGet(SCROLL_KEY) || '0', 10) || 0;
     if(saved) activateTab(saved);
+    requestAnimationFrame(function(){ window.scrollTo({top:y, behavior:'auto'}); });
+    setTimeout(function(){ window.scrollTo({top:y, behavior:'auto'}); }, 250);
   })();
 
 })();
