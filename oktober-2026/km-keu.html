@@ -6,7 +6,6 @@
 <title>Laporan Internal · Kontrak Manajemen (Anaudited) · Strictly Private &amp; Confidential</title>
 <!-- Kode Favicon -->
 <link rel="icon" type="image/png" href="../gambar/Logo PLN Favicon.png">
-<link rel="icon" type="image/png" href="../gambar/Logo PLN Favicon.png">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
 <style>
 :root{
@@ -553,7 +552,7 @@ button,select,input{font-family:inherit}
     <div class="grid">
       <div class="box">
         <h3>Tren Bulanan NAC: Target vs Realisasi (Rp Miliar)</h3>
-        <div class="chart-sub">Realisasi NAC kumulatif Jul–Okt 2026 dibandingkan target bulanan. Target November tercatat 0,00 dan tidak ditampilkan.</div>
+        <div class="chart-sub">Polaritas negatif (target &divide realisasi). Target bulanan dibandingkan realisasi NAC kumulatif Jul–Okt 2026. Target November tercatat 0,00 dan tidak ditampilkan.</div>
         <div class="ctrl-row">
           <div></div>
           <div class="leg-wrap">
@@ -1128,14 +1127,106 @@ button,select,input{font-family:inherit}
     pointHoverBorderWidth:3
   };
 
+  /* Area antara garis target dan realisasi NAC:
+     hijau transparan 25% saat realisasi di bawah target, merah transparan 25% saat di atas. */
+  var NAC_FILL_BELOW = 'rgba(30,122,76,.25)';
+  var NAC_FILL_ABOVE = 'rgba(178,58,46,.25)';
+  var nacAreaFill = {
+    id:'nacAreaFill',
+    beforeDatasetsDraw:function(chart){
+      if(!chart.isDatasetVisible(0) || !chart.isDatasetVisible(1)) return;
+      var mT = chart.getDatasetMeta(0).data, mR = chart.getDatasetMeta(1).data;
+      if(!mT.length || !mR.length) return;
+      var ctx = chart.ctx, tv = TREND.nacTarget, rv = TREND.nacReal;
+      var fillPoly = function(pts, color){
+        ctx.beginPath();
+        pts.forEach(function(p,k){ if(k) ctx.lineTo(p[0],p[1]); else ctx.moveTo(p[0],p[1]); });
+        ctx.closePath();
+        ctx.fillStyle = color; ctx.fill();
+      };
+      var colorOf = function(d){ return d <= 0 ? NAC_FILL_BELOW : NAC_FILL_ABOVE; };
+      ctx.save();
+      for(var i=0;i<tv.length-1;i++){
+        var xa = mT[i].x, ya = mT[i].y, xb = mT[i+1].x, yb = mT[i+1].y;
+        var ra = mR[i].y, rb = mR[i+1].y;
+        var da = rv[i]-tv[i], db = rv[i+1]-tv[i+1];
+        if((da<=0 && db<=0) || (da>0 && db>0)){
+          fillPoly([[xa,ya],[xb,yb],[xb,rb],[xa,ra]], colorOf(da+db));
+        } else {
+          var t = da/(da-db);
+          var xm = xa + t*(xb-xa), ym = ya + t*(yb-ya);
+          fillPoly([[xa,ya],[xm,ym],[xa,ra]], colorOf(da));
+          fillPoly([[xm,ym],[xb,yb],[xb,rb]], colorOf(db));
+        }
+      }
+      ctx.restore();
+    }
+  };
+
+  /* Garis realisasi NAC per segmen: hijau saat di bawah target, merah saat di atas.
+     Pada segmen yang memotong garis target, warna berganti tepat di titik perpotongan. */
+  var nacRealLineColor = {
+    id:'nacRealLineColor',
+    afterDatasetsDraw:function(chart){
+      if(!chart.isDatasetVisible(1)) return;
+      var mR = chart.getDatasetMeta(1).data;
+      if(!mR.length) return;
+      var ctx = chart.ctx, tv = TREND.nacTarget, rv = TREND.nacReal;
+      var segColor = function(d){ return d <= 0 ? C.green : C.red; };
+      ctx.save();
+      ctx.lineWidth = 2.5;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      for(var i=0;i<tv.length-1;i++){
+        var xa = mR[i].x, ya = mR[i].y, xb = mR[i+1].x, yb = mR[i+1].y;
+        var da = rv[i]-tv[i], db = rv[i+1]-tv[i+1];
+        if((da<=0 && db<=0) || (da>0 && db>0)){
+          ctx.strokeStyle = segColor(da+db);
+          ctx.beginPath(); ctx.moveTo(xa,ya); ctx.lineTo(xb,yb); ctx.stroke();
+        } else {
+          /* titik perpotongan garis realisasi dengan garis target (kedua garis dilinearkan per segmen) */
+          var mT = chart.getDatasetMeta(0).data;
+          var txa = mT[i].x, tya = mT[i].y, txb = mT[i+1].x, tyb = mT[i+1].y;
+          var t = da/(da-db);
+          var xm = xa + t*(xb-xa), ym = ya + t*(yb-ya);
+          ctx.strokeStyle = segColor(da);
+          ctx.beginPath(); ctx.moveTo(xa,ya); ctx.lineTo(xm,ym); ctx.stroke();
+          ctx.strokeStyle = segColor(db);
+          ctx.beginPath(); ctx.moveTo(xm,ym); ctx.lineTo(xb,yb); ctx.stroke();
+        }
+      }
+      ctx.restore();
+    }
+  };
+
+  /* Pita batas AKI: hijau di dalam 95–105%, kunyit tua di atas 105%, kunyit muda di bawah 95%. */
+  var akiBandFill = {
+    id:'akiBandFill',
+    beforeDatasetsDraw:function(chart){
+      var a = chart.chartArea, y = chart.scales.y;
+      if(!a || !y) return;
+      var yU = y.getPixelForValue(105), yL = y.getPixelForValue(95);
+      var ctx = chart.ctx;
+      ctx.save();
+      ctx.fillStyle = 'rgba(168,127,18,.25)';
+      ctx.fillRect(a.left, a.top, a.right-a.left, yU-a.top);
+      ctx.fillStyle = 'rgba(30,122,76,.25)';
+      ctx.fillRect(a.left, yU, a.right-a.left, yL-yU);
+      ctx.fillStyle = 'rgba(229,198,92,.25)';
+      ctx.fillRect(a.left, yL, a.right-a.left, a.bottom-yL);
+      ctx.restore();
+    }
+  };
+
   /* ---------- TREN BULANAN ---------- */
   function renderNacTrend(){
     charts.nacTrend = new Chart(document.getElementById('nacTrend').getContext('2d'), {
+      plugins:[nacAreaFill, nacRealLineColor],
       data:{
         labels:TREND.labels,
         datasets:[
           Object.assign({type:'line', label:'Target NAC (Rp M)', data:TREND.nacTarget, borderColor:C.amber, pointBorderColor:C.amber}, trendPointStyle),
-          Object.assign({type:'line', label:'Realisasi NAC (Rp M)', data:TREND.nacReal, borderColor:C.green, pointBorderColor:TREND.nacReal.map(function(v,i){ return v >= TREND.nacTarget[i] ? C.green : C.red; })}, trendPointStyle)
+          Object.assign({type:'line', label:'Realisasi NAC (Rp M)', data:TREND.nacReal, borderColor:C.green, pointBorderColor:TREND.nacReal.map(function(v,i){ return v <= TREND.nacTarget[i] ? C.green : C.red; })}, trendPointStyle)
         ]
       },
       options:{
@@ -1156,6 +1247,7 @@ button,select,input{font-family:inherit}
   function renderAkiTrend(){
     charts.akiTrend = new Chart(document.getElementById('akiTrend').getContext('2d'), {
       type:'line',
+      plugins:[akiBandFill],
       data:{
         labels:TREND.labels,
         datasets:[
@@ -1540,11 +1632,12 @@ button,select,input{font-family:inherit}
   document.getElementById('annualSort').addEventListener('change', function(){ ST.annual.sort = this.value; renderAnnual(); });
 
   /* ---------- TAB: pindah panel ---------- */
+  var TAB_KEY = 'kmKeu.activeTab';
   var tabBtns = document.querySelectorAll('.tab[data-tab]');
   function activateTab(name){
     var btn = document.querySelector('.tab[data-tab="'+name+'"]');
     var panel = document.getElementById(name);
-    if(!btn || !panel) return;
+    if(!btn || !panel) return false;
     tabBtns.forEach(function(b){ b.classList.remove('active'); });
     document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
     btn.classList.add('active');
@@ -1552,13 +1645,28 @@ button,select,input{font-family:inherit}
     setTimeout(function(){
       Object.keys(charts).forEach(function(k){ if(charts[k]) charts[k].resize(); });
     },100);
+    return true;
   }
   tabBtns.forEach(function(btn){
     btn.addEventListener('click', function(){
       activateTab(btn.getAttribute('data-tab'));
-      window.scrollTo({top:0, behavior:'smooth'});
+      try{ localStorage.setItem(TAB_KEY, btn.getAttribute('data-tab')); }catch(e){}
+      window.scrollTo({top:0, behavior:'auto'});
     });
   });
+  /* Refresh: pulihkan tab aktif terakhir. Buka baru/navigasi biasa: mulai dari tab pertama. */
+  (function restoreTab(){
+    var isReload = false;
+    try{
+      var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+      if(nav) isReload = nav.type === 'reload';
+      else if(performance.navigation) isReload = performance.navigation.type === 1;
+    }catch(e){}
+    if(!isReload) return;
+    var saved = null;
+    try{ saved = localStorage.getItem(TAB_KEY); }catch(e){}
+    if(saved) activateTab(saved);
+  })();
 
 })();
 </script>

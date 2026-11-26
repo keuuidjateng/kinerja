@@ -1143,8 +1143,29 @@ document.querySelectorAll('.card[data-g]').forEach(card=>{
 const done={};
 function open(t){if(init[t]&&!done[t]){done[t]=1;init[t]()}}
 
-/* ---------- TAB SWITCH ---------- */
-const TAB_KEY='lrNeraca.activeTab';
+/* ---------- TAB SWITCH & POSISI HALAMAN ----------
+   refresh halaman = tetap pada tab aktif terakhir beserta bagian halaman yang sedang dilihat;
+   pindah tab      = kembali menampilkan halaman dari atas.                            */
+const POS_KEY='lrNeraca.position';
+function isReload(){
+  try{
+    const nav=performance.getEntriesByType&&performance.getEntriesByType('navigation')[0];
+    if(nav) return nav.type==='reload';
+    if(performance.navigation) return performance.navigation.type===1;
+  }catch(e){}
+  return false;
+}
+function activePanel(){const p=document.querySelector('.panel.active');return p?p.id:'lr';}
+function savePos(y){try{localStorage.setItem(POS_KEY,JSON.stringify({tab:activePanel(),y:y}))}catch(e){}}
+function readPos(){try{return JSON.parse(localStorage.getItem(POS_KEY)||'null')}catch(e){return null}}
+let restoring=false, saveTimer=null;
+window.addEventListener('scroll',()=>{
+  if(restoring) return;
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>savePos(window.scrollY),200);
+},{passive:true});
+if(history.scrollRestoration) history.scrollRestoration='manual';
+
 function activateTab(name){
   const btn=document.querySelector('.tab[data-tab="'+name+'"]');
   const panel=document.getElementById(name);
@@ -1159,21 +1180,21 @@ function activateTab(name){
 }
 document.querySelectorAll('.tab').forEach(btn=>{
   btn.addEventListener('click',function(){
-    activateTab(this.dataset.tab);
-    try{localStorage.setItem(TAB_KEY,this.dataset.tab)}catch(e){}
+    restoring=false;
+    if(!activateTab(this.dataset.tab)) return;
+    window.scrollTo({top:0,left:0,behavior:'auto'});
+    savePos(0);
   });
 });
-(function restoreTab(){
-  let isReload=false;
-  try{
-    const nav=performance.getEntriesByType&&performance.getEntriesByType('navigation')[0];
-    if(nav) isReload=nav.type==='reload';
-    else if(performance.navigation) isReload=performance.navigation.type===1;
-  }catch(e){}
-  if(!isReload) return;
-  let saved=null;
-  try{saved=localStorage.getItem(TAB_KEY)}catch(e){}
-  if(saved) activateTab(saved); else open('lr');
+(function restorePosition(){
+  const pos=isReload()?readPos():null;
+  const tab=pos&&pos.tab;
+  if(tab&&tab!=='lr') activateTab(tab); else open('lr');
+  if(!pos||!pos.y) return;
+  const y=pos.y, go=()=>window.scrollTo(0,y);
+  restoring=true;
+  go(); setTimeout(go,150);
+  setTimeout(()=>{go();restoring=false;},600);
 })();
 open('lr');
 </script>

@@ -230,7 +230,31 @@ function renderAnalysis(){
 
 }
 function csv(name,rows){const text='\uFEFF'+rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n'),url=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
-function activate(id){document.querySelectorAll('[role=tab]').forEach(b=>{const on=b.dataset.panel===id;b.classList.toggle('active',on);b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1;$(b.dataset.panel).hidden=!on;});requestAnimationFrame(()=>{charts.forEach(c=>c.resize());if(window.ScrollTrigger)ScrollTrigger.refresh();});}
+const PAGE_STATE_KEY='pln-pajak-view:'+location.pathname;
+const isReload=performance.getEntriesByType('navigation')[0]?.type==='reload';
+let restoredView=null;
+try{restoredView=isReload?JSON.parse(sessionStorage.getItem(PAGE_STATE_KEY)):null;}catch(e){}
+if('scrollRestoration' in history)history.scrollRestoration='manual';
+let restoringView=true;
+function savePageView(){
+  if(restoringView)return;
+  const tab=document.querySelector('[role=tab][aria-selected="true"]')?.dataset.panel||'pay';
+  try{sessionStorage.setItem(PAGE_STATE_KEY,JSON.stringify({tab,y:window.scrollY}));}catch(e){}
+}
+function activate(id,{restore=false,y=0}={}){
+  if(!document.querySelector('[role=tab][data-panel="'+id+'"]'))return;
+  document.querySelectorAll('[role=tab]').forEach(b=>{const on=b.dataset.panel===id;b.classList.toggle('active',on);b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1;$(b.dataset.panel).hidden=!on;});
+  const top=restore?Math.max(0,Number(y)||0):0;
+  window.scrollTo({top,behavior:'instant'});
+  requestAnimationFrame(()=>{
+    charts.forEach(c=>c.resize());
+    if(window.ScrollTrigger)ScrollTrigger.refresh();
+    window.scrollTo({top,behavior:'instant'});
+    if(!restore)savePageView();
+  });
+}
+window.addEventListener('scroll',savePageView,{passive:true});
+window.addEventListener('pagehide',savePageView);
 document.querySelectorAll('[role=tab]').forEach((b,i,list)=>{b.addEventListener('click',()=>activate(b.dataset.panel));b.addEventListener('keydown',e=>{let j;if(e.key==='ArrowRight')j=(i+1)%list.length;else if(e.key==='ArrowLeft')j=(i+list.length-1)%list.length;else if(e.key==='Home')j=0;else if(e.key==='End')j=list.length-1;else return;e.preventDefault();list[j].focus();activate(list[j].dataset.panel);});});
 $('export-month').addEventListener('click',()=>csv('rekap-pajak-bulanan-2026.csv',[['Masa','PPN_Rp','PPh_Rp','Total_Rp','Kumulatif_YTD_Rp','Status'],...months.slice(opts.from,opts.to+1).map(x=>[x.name,...[x.ppn,x.pph,x.total,x.cum].map(v=>v===null?'':rp(v)),x.total===null?'Belum tersedia':'Tersedia'])]));
 function speedometer(label,amount,reference,basis,cls){
@@ -604,6 +628,14 @@ $('hero-total').textContent=bn(T.total);renderMonthly();renderUnits();renderComp
 makeTableSortable('monthly-table');
 window.addEventListener('resize',()=>charts.forEach(c=>c.resize()));
 if(window.gsap&&window.ScrollTrigger&&!matchMedia('(prefers-reduced-motion: reduce)').matches){gsap.registerPlugin(ScrollTrigger);document.querySelectorAll('#pay .box').forEach(el=>gsap.from(el,{y:12,duration:.45,scrollTrigger:{trigger:el,start:'top 94%',once:true}}));}
+function restorePageView(){
+  const tab=restoredView?.tab;
+  const valid=tab&&document.querySelector('[role=tab][data-panel="'+tab+'"]');
+  activate(valid?tab:'pay',{restore:true,y:valid?restoredView.y:0});
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{restoringView=false;savePageView();}));
+}
+if(document.readyState==='complete')restorePageView();
+else window.addEventListener('load',restorePageView,{once:true});
 </script>
 </body>
 </html>

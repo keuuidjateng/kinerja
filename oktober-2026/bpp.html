@@ -573,10 +573,16 @@ function activateTab(name){
 }
 document.querySelectorAll('.tab').forEach(btn=>{
   btn.addEventListener('click',function(){
-    activateTab(this.dataset.tab);
+    if(!activateTab(this.dataset.tab)) return;
     try{ sessionStorage.setItem(TAB_KEY, this.dataset.tab); }catch(e){}
+    fromTop();
   });
 });
+/* Pindah tab: tampilkan halaman dari atas */
+function fromTop(){
+  window.scrollTo({top:0,left:0,behavior:'auto'});
+  document.querySelector('.tabbar').scrollLeft = 0;
+}
 
 /* =====================================================
    DATA 01 — UNSUR BIAYA OPERASI (Rupiah penuh)
@@ -1026,14 +1032,21 @@ document.querySelectorAll('.card[data-g]').forEach(card=>{
 });
 
 /* ---------- RESTORE TAB ----------
-   Refresh halaman: kembali ke tab terakhir.
-   Membuka halaman baru: selalu mulai dari Overview. */
+   Refresh halaman (F5, Ctrl+R, tombol reload, buka kembali tab yang ditutup):
+   tab yang sedang aktif terakhir tetap ditampilkan.
+   Membuka halaman baru (URL/link/menu Baru): selalu mulai dari tab Overview. */
+function isRestoringLoad(){
+  try{
+    const nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+    if(nav && nav.type) return nav.type === 'reload' || nav.type === 'back_forward';
+    if(performance.navigation) return performance.navigation.type === 1;   // fallback lama
+  }catch(e){}
+  return false;
+}
 (function restoreTab(){
-  const nav = (performance.getEntriesByType && performance.getEntriesByType('navigation')[0]) || {};
-  const isReload = nav.type === 'reload';
   let saved = null;
   try{
-    if(isReload) saved = sessionStorage.getItem(TAB_KEY);
+    if(isRestoringLoad()) saved = sessionStorage.getItem(TAB_KEY);
     else sessionStorage.removeItem(TAB_KEY);
   }catch(e){}
   activateTab(saved || 'rincian');

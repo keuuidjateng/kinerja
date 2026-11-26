@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Laporan Internal · Non Allowable Cost (Anaudited) · Strictly Private &amp; Confidential</title>
+<title>Laporan Internal · Non Allowable Cost (Unaudited) · Strictly Private &amp; Confidential</title>
 <!-- Kode Favicon -->
 <link rel="icon" type="image/png" href="../gambar/Logo PLN Favicon.png">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
@@ -279,7 +279,7 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
 
 <header class="hero">
   <div class="hero-inner">
-    <div class="eyebrow">Laporan Internal · Non Allowable Cost (Anaudited) · Strictly Private &amp; Confidential</div>
+    <div class="eyebrow">Laporan Internal · Non Allowable Cost (Unaudited) · Strictly Private &amp; Confidential</div>
     <h1>Non Allowable Cost — UID Jawa Tengah</h1>
     <p class="sub">Analisis realisasi NAC s.d. Oktober 2026 berdasarkan 2 kategori biaya, 14 unit pelaksana, serta pencapaian KPI terhadap target revisi Tahun 2026.</p>
     <div class="metabar">
@@ -1651,7 +1651,7 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
               label: function(c){
                 if (c.datasetIndex === 1) {
                   var r = kpiSorted[c.dataIndex];
-                  return ' Realisasi: Rp' + n2(c.parsed.x / 1000, 2) + ' M (% realisasi ' + fmtPct(r.pct) + ')';
+                  return ' Realisasi: Rp' + n2(c.parsed.x / 1000, 2) + ' M (' + fmtPct(r.pct) + ')';
                 }
                 return ' Target: Rp' + n2(c.parsed.x / 1000, 2) + ' M';
               }
@@ -1781,8 +1781,12 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
   }
   initScoreGauges();
 
-  /* ===================== TAB SWITCHING ===================== */
-  var TAB_KEY = 'nac.activeTab.v2';
+  /* ===================== TAB SWITCHING =====================
+     Refresh  : tab aktif terakhir DAN bagian halaman yang sedang dibaca tetap ditampilkan
+                (tab diingat lewat localStorage dan hash URL, posisi lewat localStorage)
+     Ganti tab: halaman selalu mulai dari atas                                */
+  var TAB_KEY = 'nac.activeTab.v4';
+  var POS_KEY = 'nac.scrollPos.v4';
   var VALID_TABS = ['overview', 'rincian', 'kpi', 'insight'];
   var inited = {};
   var inits = {
@@ -1791,8 +1795,66 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
     kpi: initKpi,
     insight: function(){}
   };
+  var current = 'overview';
 
-  function activate(name){
+  // Posisi scroll tidak dipulihkan peramban; dikendalikan sendiri
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
+  function read(key){
+    var v = null;
+    try { v = localStorage.getItem(key); } catch(e) {}
+    return v;
+  }
+  function write(key, val){
+    try { localStorage.setItem(key, val); } catch(e) {}
+  }
+
+  function validTab(n){
+    return VALID_TABS.indexOf(n) >= 0 ? n : null;
+  }
+  function hashTab(){
+    return validTab(String(location.hash || '').replace(/^#\/?/, ''));
+  }
+  function writeHash(name){
+    try { history.replaceState(null, '', '#/' + name); }
+    catch(e) { try { location.hash = '/' + name; } catch(e2) {} }
+  }
+
+  function savedTab(){
+    return validTab(read(TAB_KEY)) || hashTab() || 'overview';
+  }
+  function savedPos(){
+    var n = parseInt(read(POS_KEY), 10);
+    return n > 0 ? n : 0;
+  }
+  function savePos(){
+    write(POS_KEY, String(Math.round(window.scrollY || (document.scrollingElement ? document.scrollingElement.scrollTop : 0))));
+  }
+
+  function toTop(){
+    window.scrollTo(0, 0);
+    if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
+    savePos();
+  }
+
+  // Panel baru punya tinggi penuh setelah grafik ter-render, jadi posisi dipasang ulang beberapa kali
+  function restorePos(y){
+    if (y <= 0) return;
+    [0, 120, 400, 900].forEach(function(delay){
+      setTimeout(function(){ window.scrollTo(0, y); }, delay);
+    });
+  }
+
+  var posPending = false;
+  window.addEventListener('scroll', function(){
+    if (posPending) return;
+    posPending = true;
+    requestAnimationFrame(function(){ posPending = false; savePos(); });
+  }, {passive:true});
+  window.addEventListener('pagehide', savePos);
+
+  function activate(name, restore){
+    current = name;
     document.querySelectorAll('.tab').forEach(function(t){
       t.classList.toggle('active', t.getAttribute('data-tab') === name);
     });
@@ -1803,29 +1865,38 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
       inits[name]();
       inited[name] = true;
     }
+    if (restore) window.scrollTo(0, restore);
+    else toTop();
     setTimeout(function(){
       Object.values(charts).forEach(function(c){ c && c.resize(); });
+      if (restore) window.scrollTo(0, restore);
+      else toTop();
     }, 100);
+  }
+
+  function goTab(name){
+    write(TAB_KEY, name);
+    writeHash(name);
+    activate(name, 0);          // pindah tab = mulai dari atas
   }
 
   document.querySelectorAll('.tab').forEach(function(t){
     t.addEventListener('click', function(){
-      activate(t.getAttribute('data-tab'));
-      try { localStorage.setItem(TAB_KEY, t.getAttribute('data-tab')); } catch(e) {}
+      goTab(t.getAttribute('data-tab'));
     });
   });
 
-  (function restoreTab(){
-    var isReload = false;
-    try {
-      var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
-      if (nav) isReload = nav.type === 'reload';
-      else if (performance.navigation) isReload = performance.navigation.type === 1;
-    } catch(e) {}
-    if (!isReload) { activate('overview'); return; }
-    var saved = null;
-    try { saved = localStorage.getItem(TAB_KEY); } catch(e) {}
-    activate(VALID_TABS.indexOf(saved) >= 0 ? saved : 'overview');
+  // Tab boleh dipilih lewat URL (berbagi tautan / tombol kembali peramban)
+  window.addEventListener('hashchange', function(){
+    var h = hashTab();
+    if (h && h !== current) goTab(h);
+  });
+
+  (function start(){
+    var tab = savedTab(), pos = savedPos();
+    writeHash(tab);
+    activate(tab, pos);
+    restorePos(pos);
   })();
 
 })();
