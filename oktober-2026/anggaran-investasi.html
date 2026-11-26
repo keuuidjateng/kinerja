@@ -1057,7 +1057,11 @@ charts.trend = new Chart(document.getElementById('trendChart'), {
     interaction:{mode:'index', intersect:false},
     transitions:{active:{animation:{duration:180, easing:'easeOutBack'}}},
     plugins:{legend:{display:false}, tooltip:{position:'nearest', displayColors:false,
-      callbacks:{label:c=>c.dataset.label+': '+fmtM(c.raw)}}},
+      callbacks:{label:c=>{
+        let t=c.dataset.label+': '+fmtM(c.raw);
+        if(c.datasetIndex===1){ const m=monthly[c.dataIndex]; if(m && m.aki>0 && m.real!==null) t+=' ('+fmtPct(pct(m.real,m.aki))+')'; }
+        return t;
+      }}}},
     scales:{x:{grid:{display:false}}, y:gridY}
   },
   plugins:[trendGuidePlugin]
