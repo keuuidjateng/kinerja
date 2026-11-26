@@ -2,6 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<script>if("scrollRestoration" in history)history.scrollRestoration="manual";</script>
 <title>Laporan Internal · AT, PDP, ITO, DOI (Anaudited) · Strictly Private &amp; Confidential</title>
 <!-- Kode Favicon -->
 <link rel="icon" type="image/png" href="../gambar/Logo PLN Favicon.png">
@@ -453,13 +454,14 @@ if(tab==='slowmoving'){
   bar('materialAgeBar',ages,[...MC9.map((x,i)=>ds(x.n,x.k.map(v=>v/1e9),C[i])),...BURSA.map((x,j)=>ds(x.n,x.k.map(v=>v/1e9),[C[5],'#8A9BB0'][j]))],'Rp Miliar',true);
 }
 rendered.add(tab)}
-/* ---------- TAB SWITCH ----------
-   - Refresh halaman: kembali ke tab yang terakhir aktif.
-   - Berpindah tab: tampilkan tab baru dan gulir ke bagian paling atas halaman.
-   - Membuka halaman baru / lewat tautan: tab Analisis default (Penghapusan ATTB). */
-const TAB_KEY='attbPdpIto.activeTab';
-let activeTab=null;
-function openTab(id){if(!$(id)||!$(id).classList.contains('panel')||id===activeTab)return;activeTab=id;try{localStorage.setItem(TAB_KEY,id)}catch(e){}Object.values(charts).forEach(c=>{if(c.config.type==='doughnut')setDonutHover(c,-1,null)});document.querySelectorAll('.panel').forEach(x=>x.hidden=x.id!==id);document.querySelectorAll('[data-tab]').forEach(x=>{const a=x.dataset.tab===id;x.classList.toggle('active',a);x.setAttribute('aria-selected',String(a));x.tabIndex=a?0:-1});const pop=$('chartPopup');if(pop)pop.style.display='none';requestAnimationFrame(()=>{if(activeTab!==id)return;draw(id);Object.values(charts).forEach(c=>c.resize());window.scrollTo({top:0,behavior:'auto'})})}
+const VIEW_KEY='attbPdpIto.reloadView:'+location.pathname;
+const firstTab=document.querySelector('[data-tab]').dataset.tab;
+let activeTab=null,viewReady=false;
+function saveView(){if(!viewReady)return;try{sessionStorage.setItem(VIEW_KEY,JSON.stringify({tab:activeTab,x:window.scrollX,y:window.scrollY}))}catch(e){}}
+function openTab(id,position={x:0,y:0},force=false){if(!$(id)||!$(id).classList.contains('panel')||(!force&&id===activeTab))return;activeTab=id;viewReady=false;Object.values(charts).forEach(c=>{if(c.config.type==='doughnut')setDonutHover(c,-1,null)});document.querySelectorAll('.panel').forEach(x=>x.hidden=x.id!==id);document.querySelectorAll('[data-tab]').forEach(x=>{const a=x.dataset.tab===id;x.classList.toggle('active',a);x.setAttribute('aria-selected',String(a));x.tabIndex=a?0:-1});const pop=$('chartPopup');if(pop)pop.style.display='none';requestAnimationFrame(()=>{if(activeTab!==id)return;draw(id);Object.values(charts).forEach(c=>c.resize());window.scrollTo({left:position.x,top:position.y,behavior:'instant'});viewReady=true;saveView()})}
+window.addEventListener('pagehide',saveView);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveView()});
+window.addEventListener('pageshow',event=>{if(event.persisted)openTab(firstTab,{x:0,y:0},true)});
 const tabs=[...document.querySelectorAll('[data-tab]')];tabs.forEach((b,i)=>{b.addEventListener('click',()=>openTab(b.dataset.tab));b.addEventListener('keydown',e=>{let j=i;if(e.key==='ArrowRight')j=(i+1)%tabs.length;else if(e.key==='ArrowLeft')j=(i+tabs.length-1)%tabs.length;else if(e.key==='Home')j=0;else if(e.key==='End')j=tabs.length-1;else return;e.preventDefault();tabs[j].focus();openTab(tabs[j].dataset.tab)})});
 function speedometer(label,amount,reference,basis,cls){
   const percent=reference>0?amount/reference*100:0,max=Math.max(100,Math.ceil(percent/25)*25),fraction=Math.max(0,Math.min(1,percent/max)),angle=Math.PI+Math.PI*fraction,x=80+52*Math.cos(angle),y=78+52*Math.sin(angle),color={teal:C[1],gold:C[2],green:C[4]}[cls]||C[0];
@@ -470,7 +472,9 @@ const gaugeGroups={attb:[...ATTB.filter(x=>x[1]!=null).map(x=>[x[1],ATTB_TOTAL,'
 Object.entries(gaugeGroups).forEach(([id,items])=>document.querySelectorAll('#'+id+' .card').forEach((card,i)=>{if(id==='attb'&&i>=3)return;const value=card.querySelector('.value'),small=card.querySelector('.small');const score=document.createElement('div');score.className='card-score';value.before(score);score.append(value);const g=items[i];if(g)score.insertAdjacentHTML('beforeend',speedometer(card.querySelector('.label').textContent,...g,card.classList.contains('teal')?'teal':card.classList.contains('gold')?'gold':card.classList.contains('green')?'green':''));if(g&&id==='attb'){const delta=document.createElement('div');delta.className='delta';delta.textContent=i<3?pct(g[0]/g[1]*100)+' dari total saldo ATTB':'Nominal sumber · bukan tingkat penyelesaian';small.before(delta)}}));
 
 function isReload(){try{const nav=performance.getEntriesByType&&performance.getEntriesByType('navigation')[0];if(nav)return nav.type==='reload';if(performance.navigation)return performance.navigation.type===1}catch(e){}return false}
-let startTab='attb';
-if(isReload()){try{const saved=localStorage.getItem(TAB_KEY);if(saved&&$(saved)&&$(saved).classList.contains('panel'))startTab=saved}catch(e){}}
-openTab(startTab);
+let savedView=null;
+if(isReload()){try{savedView=JSON.parse(sessionStorage.getItem(VIEW_KEY))}catch(e){}}
+const savedPanel=savedView&&typeof savedView.tab==='string'?$(savedView.tab):null;
+if(savedPanel&&savedPanel.classList.contains('panel'))openTab(savedView.tab,{x:Number.isFinite(savedView.x)?Math.max(0,savedView.x):0,y:Number.isFinite(savedView.y)?Math.max(0,savedView.y):0});
+else openTab(firstTab);
 </script></body></html>

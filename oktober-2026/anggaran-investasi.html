@@ -793,10 +793,36 @@ const gridY = {grid:{color:C.grid},ticks:{callback:v=>v.toLocaleString('id-ID')}
 const MONTH_ORDER = ['jan','feb','mar','apr','mei','jun','jul','agu','sep','okt','nov','des'];
 
 /* ---------- TAB SWITCH ----------
-   - Refresh halaman: kembali ke tab yang terakhir aktif.
-   - Berpindah tab: tampilkan tab baru dan gulir ke bagian paling atas halaman.
-   - Membuka halaman baru / lewat tautan: tab Overview. */
+   1. Tab yang terbuka saat file dibuka = tab paling kiri (Overview).
+      Jendela ditutup lalu dibuka lagi, atau kembali lewat tombol back
+      (termasuk pemulihan dari bfcache) → kembali ke tab paling kiri, dari atas.
+   2. Refresh halaman (F5) → tetap di tab yang sedang tampil, posisi halaman dipertahankan.
+   3. Berpindah tab → tab baru ditampilkan mulai dari bagian paling atas halaman. */
 const TAB_KEY = 'anggaranInvestasi.activeTab';
+const FIRST_TAB = (()=>{ const t = document.querySelector('.tab'); return t ? t.dataset.tab : null; })();
+function navType(){
+  try{
+    const n = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+    if(n && n.type) return n.type;                                   // navigate | reload | back_forward | prerender
+    if(performance.navigation) return performance.navigation.type === 1 ? 'reload'
+                              : performance.navigation.type === 2 ? 'back_forward' : 'navigate';
+  }catch(e){}
+  return 'navigate';
+}
+/* Ingatan tab disimpan per-tab (sessionStorage): bertahan saat refresh, hilang saat jendela
+   ditutup, dan tab baru selalu mulai dari tab paling kiri. */
+const TAB_STORE = (()=>{
+  try{ sessionStorage.setItem(TAB_KEY+'#probe','1'); sessionStorage.removeItem(TAB_KEY+'#probe'); return sessionStorage; }
+  catch(e){ return { getItem(){ return null; }, setItem(){}, removeItem(){} }; }
+})();
+function readTab(){ try{ return TAB_STORE.getItem(TAB_KEY); }catch(e){ return null; } }
+function writeTab(v){ try{ v ? TAB_STORE.setItem(TAB_KEY, v) : TAB_STORE.removeItem(TAB_KEY); }catch(e){} }
+
+function toTop(){                                        // mulai tampil dari bagian paling atas halaman
+  window.scrollTo({top:0, behavior:'auto'});
+  requestAnimationFrame(()=>window.scrollTo({top:0, behavior:'auto'}));
+  setTimeout(()=>window.scrollTo({top:0, behavior:'auto'}), 120);
+}
 function activateTab(name, opts){
   const btn = document.querySelector('.tab[data-tab="'+name+'"]');
   const panel = document.getElementById(name);
@@ -805,28 +831,35 @@ function activateTab(name, opts){
   document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
   btn.classList.add('active');
   panel.classList.add('active');
-  if(opts && opts.scrollTop) window.scrollTo({top:0, behavior:'auto'});
+  if(!opts || opts.scrollTop !== false) toTop();         // pindah tab → tampilkan dari atas
   setTimeout(()=>Object.values(charts).forEach(c=>c && c.resize()),100);
   return true;
 }
 document.querySelectorAll('.tab').forEach(btn=>{
   btn.addEventListener('click',function(){
-    activateTab(this.dataset.tab, {scrollTop:true});
-    try{ localStorage.setItem(TAB_KEY, this.dataset.tab); }catch(e){}
+    activateTab(this.dataset.tab);                       // pindah tab → mulai dari atas
+    writeTab(this.dataset.tab);
   });
 });
-(function restoreTab(){
-  let isReload = false;
-  try{
-    const nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
-    if(nav) isReload = nav.type === 'reload';
-    else if(performance.navigation) isReload = performance.navigation.type === 1;
-  }catch(e){}
-  if(!isReload) return;
-  let saved = null;
-  try{ saved = localStorage.getItem(TAB_KEY); }catch(e){}
-  if(saved) activateTab(saved);
+(function initTab(){
+  const tipe = navType();
+  // 'reload' → biarkan peramban mengembalikan posisi halaman; selain itu mulai dari atas.
+  try{ history.scrollRestoration = (tipe === 'reload') ? 'auto' : 'manual'; }catch(e){}
+  if(tipe !== 'reload') window.addEventListener('load', toTop, {once:true});
+  if(tipe === 'reload'){                                 // refresh → pertahankan tab & posisi halaman
+    const saved = readTab();
+    if(saved) activateTab(saved, {scrollTop:false});
+    return;
+  }
+  writeTab(null);                                        // buka jendela/tab baru: mulai bersih di tab paling kiri
+  if(tipe === 'back_forward'){ activateTab(FIRST_TAB); toTop(); }          // tombol back → tab paling kiri, dari atas
 })();
+window.addEventListener('pageshow', e=>{                 // halaman dipulihkan dari bfcache (tombol back/keluar)
+  if(!e.persisted) return;
+  writeTab(null);
+  if(FIRST_TAB) activateTab(FIRST_TAB);
+  toTop();
+});
 
 /* ---------- SORTABLE TABLES (dengan tanda sort) ---------- */
 function makeTableSortable(table, skipFirst){
@@ -973,20 +1006,61 @@ charts.monthlyBar = new Chart(document.getElementById('monthlyBarChart'), {
 });
 legSet('monthlyBar');
 
+/* ---------- GARIS PANDU & EFEK HOVER GRAFIK TREN BULANAN ----------
+   Titik data diperbesar saat kursor di atasnya (efek zoom-in) + garis putus-putus
+   tegak berwarna hijau dari titik data turun ke sumbu mendatar sebagai pandu baca. */
+const trendGuidePlugin = {
+  id:'trendGuide',
+  afterDatasetsDraw(chart){
+    if(chart.canvas.id !== 'trendChart') return;
+    const act = (chart.tooltip && chart.tooltip.getActiveElements ? chart.tooltip.getActiveElements() : [])
+      .filter(e => chart.isDatasetVisible(e.datasetIndex) && e.element && e.element.y !== undefined);
+    if(!act.length) return;
+    const {ctx, chartArea:a} = chart;
+    const titik = e => e.element.options.radius || 5;
+    // halo lembut di sekeliling titik aktif (efek zoom-in)
+    ctx.save();
+    act.forEach(e=>{
+      const pt = e.element, col = chart.data.datasets[e.datasetIndex].borderColor, r = titik(e);
+      ctx.beginPath(); ctx.arc(pt.x, pt.y, r + 6, 0, Math.PI*2);
+      ctx.fillStyle = col + '24'; ctx.fill();
+      ctx.lineWidth = 1.2; ctx.strokeStyle = col + '70'; ctx.stroke();
+    });
+    ctx.restore();
+    // garis putus-putus hijau tegak: dari tepi bawah titik data sampai sumbu mendatar
+    ctx.save();
+    ctx.setLineDash([5,4]); ctx.lineWidth = 1.6; ctx.strokeStyle = C.green;
+    [...new Set(act.map(e => Math.round(e.element.x)))].forEach(x=>{
+      const gugus = act.filter(e => Math.abs(Math.round(e.element.x) - x) < 1);
+      const atas = Math.min(...gugus.map(e => e.element.y + titik(e) + 2));
+      ctx.beginPath(); ctx.moveTo(x, atas); ctx.lineTo(x, a.bottom); ctx.stroke();
+      ctx.save(); ctx.setLineDash([]); ctx.fillStyle = C.green;
+      ctx.beginPath(); ctx.arc(x, a.bottom, 2.8, 0, Math.PI*2); ctx.fill(); ctx.restore();
+    });
+    ctx.restore();
+  }
+};
+
 charts.trend = new Chart(document.getElementById('trendChart'), {
   type:'line',
   data:{
     labels: monthly.map(m=>m.b),
     datasets:[
-      {label:'AKI / eBudget', data:monthly.map(m=>m.aki!==null?M(m.aki):null), borderColor:C.pln, backgroundColor:C.pln+'22', fill:true, tension:.35, pointRadius:3, spanGaps:false},
-      {label:'Realisasi Bayar', data:monthly.map(m=>m.real!==null?M(m.real):null), borderColor:C.greenL, backgroundColor:C.greenL+'22', fill:true, tension:.35, pointRadius:3, spanGaps:false}
+      {label:'AKI / eBudget', data:monthly.map(m=>m.aki!==null?M(m.aki):null), borderColor:C.pln, backgroundColor:C.pln+'22', pointBackgroundColor:'#FFFFFF', borderWidth:2,
+       fill:true, tension:.35, pointRadius:5, pointHoverRadius:11, pointHitRadius:18, pointBorderColor:C.pln, pointBorderWidth:2, pointHoverBorderWidth:3, spanGaps:false},
+      {label:'Realisasi Bayar', data:monthly.map(m=>m.real!==null?M(m.real):null), borderColor:C.greenL, backgroundColor:C.greenL+'22', pointBackgroundColor:'#FFFFFF', borderWidth:2,
+       fill:true, tension:.35, pointRadius:5, pointHoverRadius:11, pointHitRadius:18, pointBorderColor:C.greenL, pointBorderWidth:2, pointHoverBorderWidth:3, spanGaps:false}
     ]
   },
   options:{
     responsive:true, maintainAspectRatio:false,
-    plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtM(c.raw)}}},
+    interaction:{mode:'index', intersect:false},
+    transitions:{active:{animation:{duration:180, easing:'easeOutBack'}}},
+    plugins:{legend:{display:false}, tooltip:{position:'nearest', displayColors:false,
+      callbacks:{label:c=>c.dataset.label+': '+fmtM(c.raw)}}},
     scales:{x:{grid:{display:false}}, y:gridY}
-  }
+  },
+  plugins:[trendGuidePlugin]
 });
 legSet('trend');
 

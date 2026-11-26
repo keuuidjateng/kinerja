@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+try{history.scrollRestoration='manual';}catch(e){}
+</script>
 <title>Laporan Internal · Anggaran Operasi (Anaudited) · Strictly Private &amp; Confidential</title>
 <!-- Kode Favicon -->
 <link rel="icon" type="image/png" href="../gambar/Logo PLN Favicon.png">
@@ -1770,7 +1773,10 @@ function makeTableSortable(table){
 
 /* ================= TAB SWITCH ================= */
 /* Refresh: tampilkan tab terakhir. Pindah tab: mulai dari atas. Buka baru: Overview. */
-const TAB_KEY='anggaranOperasi.activeTab';
+const PAGE_STATE_KEY='anggaranOperasi.pageState';
+const firstTab=document.querySelector('.tab[data-tab]').dataset.tab;
+let pageReady=false;
+let scrollSaveFrame=0;
 function activateTab(name){
   const btn=document.querySelector('.tab[data-tab="'+name+'"]');
   const panel=document.getElementById(name);
@@ -1790,22 +1796,57 @@ function isReload(){
   }catch(e){}
   return false;
 }
+function savePageState(){
+  if(!pageReady) return;
+  const active=document.querySelector('.tab.active');
+  if(!active) return;
+  try{
+    history.replaceState({...history.state,[PAGE_STATE_KEY]:{
+      tab:active.dataset.tab,x:window.scrollX,y:window.scrollY
+    }},'');
+  }catch(e){}
+}
+let reloadState=null;
+try{if(isReload()) reloadState=history.state&&history.state[PAGE_STATE_KEY];}catch(e){}
+if(!reloadState||!activateTab(reloadState.tab)){
+  reloadState=null;
+  activateTab(firstTab);
+}
 document.querySelectorAll('.tab').forEach(btn=>{
   btn.addEventListener('click',function(){
-    activateTab(this.dataset.tab);
-    try{sessionStorage.setItem(TAB_KEY,this.dataset.tab);}catch(e){}
-    window.scrollTo(0,0);
+    if(this.classList.contains('active')) return;
+    if(!activateTab(this.dataset.tab)) return;
+    window.scrollTo({left:0,top:0,behavior:'instant'});
+    savePageState();
   });
 });
-(function restoreTab(){
-  let saved=null;
-  try{saved=sessionStorage.getItem(TAB_KEY);}catch(e){}
-  if(!isReload()){
-    try{sessionStorage.removeItem(TAB_KEY);}catch(e){}
-    return;
-  }
-  if(saved) activateTab(saved);
-})();
+window.addEventListener('scroll',()=>{
+  if(!pageReady||scrollSaveFrame) return;
+  scrollSaveFrame=requestAnimationFrame(()=>{
+    scrollSaveFrame=0;
+    savePageState();
+  });
+},{passive:true});
+window.addEventListener('pagehide',()=>{
+  savePageState();
+  pageReady=false;
+  if(scrollSaveFrame){cancelAnimationFrame(scrollSaveFrame);scrollSaveFrame=0;}
+});
+window.addEventListener('pageshow',event=>{
+  pageReady=false;
+  const state=!event.persisted?reloadState:null;
+  activateTab(state?state.tab:firstTab);
+  requestAnimationFrame(()=>{
+    Object.values(charts).forEach(c=>c&&c.resize());
+    requestAnimationFrame(()=>{
+      window.scrollTo({left:state?Math.max(0,Number(state.x)||0):0,
+        top:state?Math.max(0,Number(state.y)||0):0,behavior:'instant'});
+      pageReady=true;
+      savePageState();
+      reloadState=null;
+    });
+  });
+});
 
 /* ================= INIT ================= */
 renderHeader();

@@ -1782,11 +1782,15 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
   initScoreGauges();
 
   /* ===================== TAB SWITCHING =====================
-     Refresh  : kembali ke tab yang terakhir aktif
-     Ganti tab: tampilkan tab baru dan gulir ke bagian paling atas halaman
-     Buka halaman baru / lewat tautan: tab Overview                        */
-  var TAB_KEY = 'nac.activeTab.v2';
+     1) Kunjungan baru (jendela/tab ditutup lalu halaman dibuka lagi, atau keluar dari
+        halaman ini lewat tombol back lalu kembali) -> tab paling kiri, dari atas
+     2) Refresh / muat ulang -> tetap pada tab DAN bagian halaman yang sedang tampil
+     3) Pindah tab -> tab tujuan selalu ditampilkan dari bagian paling atas
+     Ingatan tab & posisi hanya hidup selama tab ini terbuka (sessionStorage).       */
+  var TAB_KEY = 'nac.tab.v5';
+  var POS_KEY = 'nac.pos.v5';
   var VALID_TABS = ['overview', 'rincian', 'kpi', 'insight'];
+  var FIRST_TAB = VALID_TABS[0];
   var inited = {};
   var inits = {
     overview: initOverview,
@@ -1795,41 +1799,110 @@ table.unit-table td.rank{color:var(--navy);font-weight:700}
     insight: function(){}
   };
 
-  function activate(name, opts){
+  // Gulir dikendalikan sendiri, tidak dipulihkan otomatis oleh peramban
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
+  function sess(){
+    try { return window.sessionStorage; } catch(e) { return null; }   // bisa ditolak peramban
+  }
+  function readSS(key){
+    var s = sess();
+    try { return s && s.getItem(key); } catch(e) { return null; }
+  }
+  function writeSS(key, val){
+    var s = sess();
+    try { if (s) s.setItem(key, val); } catch(e) {}
+  }
+  function forgetTab(){
+    var s = sess();
+    try { if (s) { s.removeItem(TAB_KEY); s.removeItem(POS_KEY); } } catch(e) {}
+  }
+
+  function tabFromStore(){
+    var t = readSS(TAB_KEY);
+    return VALID_TABS.indexOf(t) >= 0 ? t : FIRST_TAB;
+  }
+  function posFromStore(){
+    var n = parseInt(readSS(POS_KEY), 10);
+    return n > 0 ? n : 0;
+  }
+  // 'reload' = halaman disegarkan ulang; 'navigate' / 'back_forward' = masuk halaman baru
+  function navType(){
+    try {
+      var e = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+      if (e && e.type) return e.type;
+      if (performance.navigation) return performance.navigation.type === 1 ? 'reload' : 'navigate';
+    } catch(e) {}
+    return 'navigate';
+  }
+
+  var wantPos = 0;
+  var retry = [];
+  function stopRetry(){
+    retry.forEach(clearTimeout); retry = [];
+  }
+  // Tinggi panel masih bertambah setelah grafik ter-render, jadi posisi ditata ulang
+  // beberapa kali, dan dibatalkan begitu pengguna menggulir sendiri.
+  function showPos(y){
+    stopRetry();
+    wantPos = y > 0 ? y : 0;
+    writeSS(POS_KEY, String(wantPos));
+    window.scrollTo(0, wantPos);
+    if (wantPos > 0) [120, 400, 900].forEach(function(d){
+      retry.push(setTimeout(function(){ window.scrollTo(0, wantPos); }, d));
+    });
+  }
+
+  var queued = false;
+  window.addEventListener('scroll', function(){
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(function(){
+      queued = false;
+      var y = Math.round(window.scrollY || (document.scrollingElement ? document.scrollingElement.scrollTop : 0));
+      if (Math.abs(y - wantPos) > 4) stopRetry();
+      wantPos = y;
+      writeSS(POS_KEY, String(y));
+    });
+  }, {passive: true});
+  window.addEventListener('pagehide', function(){ writeSS(POS_KEY, String(wantPos)); });
+
+  function activate(name, y){
+    var tab = VALID_TABS.indexOf(name) >= 0 ? name : FIRST_TAB;
     document.querySelectorAll('.tab').forEach(function(t){
-      t.classList.toggle('active', t.getAttribute('data-tab') === name);
+      t.classList.toggle('active', t.getAttribute('data-tab') === tab);
     });
     document.querySelectorAll('.panel').forEach(function(p){
-      p.classList.toggle('active', p.id === 'tab-' + name);
+      p.classList.toggle('active', p.id === 'tab-' + tab);
     });
-    if (!inited[name]) {
-      inits[name]();
-      inited[name] = true;
+    if (!inited[tab]) {
+      inits[tab]();
+      inited[tab] = true;
     }
-    if (opts && opts.scrollTop) window.scrollTo({top:0, behavior:'auto'});
+    writeSS(TAB_KEY, tab);
+    showPos(y || 0);
     setTimeout(function(){
       Object.values(charts).forEach(function(c){ c && c.resize(); });
+      window.scrollTo(0, wantPos);
     }, 100);
   }
 
+  // (3) pindah tab = mulai dari atas halaman
   document.querySelectorAll('.tab').forEach(function(t){
     t.addEventListener('click', function(){
-      activate(t.getAttribute('data-tab'), {scrollTop:true});
-      try { localStorage.setItem(TAB_KEY, t.getAttribute('data-tab')); } catch(e) {}
+      activate(t.getAttribute('data-tab'), 0);
     });
   });
 
-  (function restoreTab(){
-    var isReload = false;
-    try {
-      var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
-      if (nav) isReload = nav.type === 'reload';
-      else if (performance.navigation) isReload = performance.navigation.type === 1;
-    } catch(e) {}
-    if (!isReload) { activate('overview'); return; }
-    var saved = null;
-    try { saved = localStorage.getItem(TAB_KEY); } catch(e) {}
-    activate(VALID_TABS.indexOf(saved) >= 0 ? saved : 'overview');
+  // (1) kembali ke halaman ini dari riwayat (back/forward, termasuk dari bfcache) = kunjungan baru
+  window.addEventListener('pageshow', function(e){
+    if (e.persisted) { forgetTab(); activate(FIRST_TAB, 0); }
+  });
+
+  // (2) saat disegarkan ulang tetap di tab & posisi terakhir; masuk baru -> tab paling kiri
+  (function start(){
+    if (navType() === 'reload') activate(tabFromStore(), posFromStore());
+    else { forgetTab(); activate(FIRST_TAB, 0); }
   })();
 
 })();
