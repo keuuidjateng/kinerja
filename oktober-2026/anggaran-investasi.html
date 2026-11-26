@@ -104,6 +104,7 @@ select:focus,input[type="search"]:focus{border-color:var(--teal);box-shadow:0 0 
 .leg span{display:inline-flex;align-items:center;gap:5px;cursor:pointer;user-select:none;transition:opacity .2s}
 .leg span.off{text-decoration:line-through;opacity:.4}
 .leg i{width:11px;height:10px;border-radius:2px;display:inline-block}
+.leg i.dot{width:10px;height:10px;border-radius:50%;box-sizing:border-box}
 .leg-hint{font-size:10.5px;font-style:italic;color:var(--grey)}
 .leg-left{display:flex;flex-direction:column;align-items:flex-start;gap:2px;margin-top:10px}
 .leg-left .leg{justify-content:flex-start}
@@ -350,7 +351,7 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     </div>
 
     <div class="box">
-      <h3>Grafik AKI vs Realisasi per Bulan (Rp Miliar)</h3>
+      <h3>AKI vs Realisasi per Bulan (Rp Miliar)</h3>
       <div class="leg-wrap">
         <div class="leg" id="mBarLeg"></div>
         <div class="leg-hint">(Klik legend untuk menampilkan atau menyembunyikan grafik)</div>
@@ -770,7 +771,7 @@ function legSet(chartKey){
   const c = charts[chartKey]; if(!c) return;
   const el = document.getElementById(d.el);
   const v = LEGVIS[d.el];
-  el.innerHTML = d.series.map((x,i)=>`<span data-i="${i}" class="${v[i]?'':'off'}"><i style="background:${x.color}"></i>${x.label}</span>`).join('');
+  el.innerHTML = d.series.map((x,i)=>`<span data-i="${i}" class="${v[i]?'':'off'}"><i class="${x.dot?'dot':''}" style="${x.dot?`background:#FFFFFF;border:2px solid ${x.color}`:`background:${x.color}`}"></i>${x.label}</span>`).join('');
   el.onclick = e=>{
     const t = e.target.closest('span[data-i]'); if(!t) return;
     if(!togArr(v, +t.dataset.i)) return;
@@ -780,7 +781,7 @@ function legSet(chartKey){
   c.update('none');
 }
 
-defLegend('monthlyBar','mBarLeg',[{label:'AKI / eBudget (Rp M)',color:C.pln},{label:'Realisasi Bayar (Rp M)',color:C.greenL}]);
+defLegend('monthlyBar','mBarLeg',[{label:'AKI / eBudget (Rp M)',color:C.pln},{label:'Realisasi Bayar (Rp M)',color:C.greenL},{label:'AKI / eBudget Kumulatif (Rp M)',color:C.pln,dot:true},{label:'Realisasi Bayar Kumulatif (Rp M)',color:C.greenL,dot:true}]);
 defLegend('trend','trendLeg',[{label:'AKI / eBudget (Rp M)',color:C.pln},{label:'Realisasi Bayar (Rp M)',color:C.greenL}]);
 defLegend('programStack','pStackLeg',[{label:'Nilai AI',color:C.pln},{label:'AKI',color:C.blue},{label:'Total Komitmen',color:C.gold},{label:'Realisasi Bayar',color:C.greenL}]);
 defLegend('disburse','disLegend',[{label:'Nilai AKI (Rp M)',color:C.pln},{label:'Realisasi Bayar (Rp M)',color:'#0B2E4F73'},{label:'% Realisasi Bayar thd AKI',color:'#0B2E4F99'}]);
@@ -988,23 +989,7 @@ document.getElementById('monthlyTableFoot').innerHTML = `<tr class="total"><td>T
   <td>Berjalan</td></tr>`;
 
 /* ---------- MONTHLY CHARTS ---------- */
-charts.monthlyBar = new Chart(document.getElementById('monthlyBarChart'), {
 
-  type:'bar',
-  data:{
-    labels: monthly.map(m=>m.b),
-    datasets:[
-      {label:'AKI / eBudget', data:monthly.map(m=>m.aki!==null?M(m.aki):0), backgroundColor:C.pln, borderRadius:3, maxBarThickness:22},
-      {label:'Realisasi Bayar', data:monthly.map(m=>m.real!==null?M(m.real):0), backgroundColor:C.greenL, borderRadius:3, maxBarThickness:22}
-    ]
-  },
-  options:{
-    responsive:true, maintainAspectRatio:false,
-    plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtM(c.raw)}}},
-    scales:{x:{grid:{display:false}}, y:gridY}
-  }
-});
-legSet('monthlyBar');
 
 /* ---------- GARIS PANDU & EFEK HOVER GRAFIK TREN BULANAN ----------
    Titik data diperbesar saat kursor di atasnya (efek zoom-in) + garis putus-putus
@@ -1012,9 +997,10 @@ legSet('monthlyBar');
 const trendGuidePlugin = {
   id:'trendGuide',
   afterDatasetsDraw(chart){
-    if(chart.canvas.id !== 'trendChart') return;
+    if(chart.canvas.id !== 'trendChart' && chart.canvas.id !== 'monthlyBarChart') return;
     const act = (chart.tooltip && chart.tooltip.getActiveElements ? chart.tooltip.getActiveElements() : [])
-      .filter(e => chart.isDatasetVisible(e.datasetIndex) && e.element && e.element.y !== undefined);
+      .filter(e => chart.isDatasetVisible(e.datasetIndex) && e.element && e.element.y !== undefined
+        && (chart.data.datasets[e.datasetIndex].type || chart.config.type) === 'line');
     if(!act.length) return;
     const {ctx, chartArea:a} = chart;
     const titik = e => e.element.options.radius || 5;
@@ -1067,6 +1053,79 @@ charts.trend = new Chart(document.getElementById('trendChart'), {
   plugins:[trendGuidePlugin]
 });
 legSet('trend');
+
+/* ---------- AKI vs REALISASI PER BULAN: batang bulanan + garis kumulatif (sumbu tegak sama) ---------- */
+const cumAki = [], cumReal = [], monthPct = [], cumPct = [];
+(function(){
+  let ca = 0, cr = 0;
+  monthly.forEach((m,i)=>{
+    if(m.aki===null){ cumAki.push(null); cumReal.push(null); monthPct.push(null); cumPct.push(null); return; }
+    ca += m.aki; cr += (m.real||0);
+    cumAki.push(M(ca)); cumReal.push(M(cr));
+    monthPct.push(m.real!==null && m.aki>0 ? pct(m.real,m.aki) : null);
+    cumPct.push(pct(cr,ca));
+  });
+})();
+const lineStyle = col => ({type:'line', order:0, borderColor:col, backgroundColor:col+'22', pointBackgroundColor:'#FFFFFF', borderWidth:2,
+  fill:true, tension:.35, pointRadius:5, pointHoverRadius:11, pointHitRadius:18, pointBorderColor:col, pointBorderWidth:2, pointHoverBorderWidth:3, spanGaps:false});
+/* ---------- EFEK HOVER BATANG (AKI vs REALISASI PER BULAN) ----------
+   Kedua batang bulan yang aktif membesar (melebar ke arah luar dan memanjang ke atas), warna tetap, tanpa shadow. */
+const barGrowPlugin = {
+  id:'barGrow',
+  beforeDatasetsDraw(chart){
+    if(chart.canvas.id !== 'monthlyBarChart') return;
+    const act = (chart.tooltip && chart.tooltip.getActiveElements ? chart.tooltip.getActiveElements() : [])
+      .filter(e => chart.isDatasetVisible(e.datasetIndex) && (chart.data.datasets[e.datasetIndex].type || chart.config.type) === 'bar');
+    if(!act.length) return;
+    const ctx = chart.ctx, GROW_X = 5, GROW_Y = 7, R = 4;
+    ctx.save();
+    act.forEach(e=>{
+      const p = e.element.getProps(['x','y','base','width'], true);
+      if(!(p.base - p.y > 0)) return;
+      // batang pertama melebar ke kiri, batang kedua ke kanan agar tidak saling menimpa
+      const w = p.width, left = p.x - w/2 - (e.datasetIndex===0 ? GROW_X : 0), right = p.x + w/2 + (e.datasetIndex===1 ? GROW_X : 0);
+      const top = p.y - GROW_Y, bottom = p.base;
+      ctx.fillStyle = chart.data.datasets[e.datasetIndex].backgroundColor;
+      ctx.beginPath();
+      ctx.moveTo(left, bottom); ctx.lineTo(left, top + R); ctx.quadraticCurveTo(left, top, left + R, top);
+      ctx.lineTo(right - R, top); ctx.quadraticCurveTo(right, top, right, top + R);
+      ctx.lineTo(right, bottom); ctx.closePath(); ctx.fill();
+    });
+    ctx.restore();
+  }
+};
+
+charts.monthlyBar = new Chart(document.getElementById('monthlyBarChart'), {
+  type:'bar',
+  data:{
+    labels: monthly.map(m=>m.b),
+    datasets:[
+      {label:'AKI / eBudget', order:1, data:monthly.map(m=>m.aki!==null?M(m.aki):0), backgroundColor:C.pln, hoverBackgroundColor:C.pln, borderRadius:3, maxBarThickness:22},
+      {label:'Realisasi Bayar', order:1, data:monthly.map(m=>m.real!==null?M(m.real):0), backgroundColor:C.greenL, hoverBackgroundColor:C.greenL, borderRadius:3, maxBarThickness:22},
+      Object.assign({label:'AKI / eBudget Kumulatif', data:cumAki}, lineStyle(C.pln)),
+      Object.assign({label:'Realisasi Bayar Kumulatif', data:cumReal}, lineStyle(C.greenL))
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    interaction:{mode:'index', intersect:false},   // hover di mana pun dalam kolom bulan (titik, batang, atau area di antaranya) -> satu pop up
+    transitions:{active:{animation:{duration:180, easing:'easeOutBack'}}},
+    plugins:{legend:{display:false}, tooltip:{usePointStyle:true, position:'nearest',
+      itemSort:(a,b)=>((b.dataset.type==='line')-(a.dataset.type==='line')) || (a.datasetIndex-b.datasetIndex),   // kumulatif di atas, bulanan di bawah
+      filter:c=>monthly[c.dataIndex].aki!==null,   // Nov-Des (belum ada data) tidak memunculkan pop up
+      callbacks:{
+        labelPointStyle:c=>({pointStyle:c.dataset.type==='line'?'circle':'rectRounded', rotation:0}),
+        label:c=>{
+          let t = c.dataset.label+': '+fmtM(c.raw);
+          if(c.datasetIndex===1 && monthPct[c.dataIndex]!==null) t += ' ('+fmtPct(monthPct[c.dataIndex])+')';
+          if(c.datasetIndex===3 && cumPct[c.dataIndex]!==null) t += ' ('+fmtPct(cumPct[c.dataIndex])+')';
+          return t;
+        }}}},
+    scales:{x:{grid:{display:false}}, y:gridY}
+  },
+  plugins:[trendGuidePlugin, barGrowPlugin]
+});
+legSet('monthlyBar');
 
 /* ---------- PROGRAM TABLE ---------- */
 const pTbody = document.querySelector('#programTable tbody');
