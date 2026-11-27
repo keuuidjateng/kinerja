@@ -362,7 +362,7 @@ tr.total td{font-weight:700;background:#EEF2F6;border-top:1.5px solid var(--navy
     <div class="box">
       <h3>Detail Realisasi Bulanan (Rp)</h3>
       <div class="table-wrap"><table id="monthlyTable">
-        <thead><tr><th>Bulan</th><th>AKI / eBudget</th><th>Realisasi</th><th>Saldo (AKI − Realisasi)</th><th>% Realisasi</th><th>Status</th></tr></thead>
+        <thead><tr><th>Bulan</th><th>AKI / eBudget</th><th>Kumulatif AKI</th><th>Realisasi</th><th>Kumulatif Realisasi</th><th>Saldo (AKI − Realisasi)</th><th>% Realisasi</th><th>Status</th></tr></thead>
         <tbody id="monthlyTableBody"></tbody>
         <tfoot id="monthlyTableFoot"></tfoot>
       </table></div>
@@ -792,6 +792,7 @@ defLegend('unitPct','unPctLeg',[{label:'% Terkontrak',color:C.pln},{label:'% Rea
 
 const gridY = {grid:{color:C.grid},ticks:{callback:v=>v.toLocaleString('id-ID')}};
 const MONTH_ORDER = ['jan','feb','mar','apr','mei','jun','jul','agu','sep','okt','nov','des'];
+const MONTH_FULL = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
 
 /* ---------- TAB SWITCH ----------
    1. Tab yang terbuka saat file dibuka = tab paling kiri (Overview).
@@ -955,14 +956,16 @@ const TOT = {
 
 /* ---------- MONTHLY TABLE ---------- */
 const mTbody = document.getElementById('monthlyTableBody');
-monthly.forEach(m=>{
+let runAki = 0, runReal = 0;                                       // akumulasi kumulatif Jan→bulan berjalan
+monthly.forEach((m,i)=>{
   const tr = document.createElement('tr');
   if(m.aki===null){
-    tr.innerHTML = `<td>${m.b}</td><td>—</td><td>—</td><td>—</td><td>—</td><td>Belum ada data</td>`;
+    tr.innerHTML = `<td>${MONTH_FULL[i]}</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>Belum ada data</td>`;
     mTbody.appendChild(tr);
     return;
   }
   const hasReal = m.real!==null;
+  runAki += m.aki; runReal += (hasReal?m.real:0);
   const saldo = m.aki - (hasReal?m.real:0);
   const p = hasReal ? m.real/m.aki*100 : null;
   let status, cls;
@@ -971,9 +974,11 @@ monthly.forEach(m=>{
   else if(p>=99.5){ status='Sesuai rencana'; cls='pos'; }
   else { status='Belum tuntas'; cls='neg'; }
   const saldoTxt = saldo>=0 ? fmtIDR(saldo) : '('+fmtIDR(Math.abs(saldo))+')';
-  tr.innerHTML = `<td>${m.b}</td>
+  tr.innerHTML = `<td>${MONTH_FULL[i]}</td>
     <td>${fmtIDR(m.aki)}</td>
+    <td>${fmtIDR(runAki)}</td>
     <td>${hasReal?fmtIDR(m.real):'—'}</td>
+    <td>${fmtIDR(runReal)}</td>
     <td>${saldoTxt}</td>
     <td>${p!==null?fmtPct(p):'—'}</td>
     <td class="${cls}">${status}</td>`;
@@ -983,6 +988,8 @@ const mAkiTot = sum(monthly,m=>m.aki||0);
 const mRealTot = sum(monthly,m=>m.real||0);
 document.getElementById('monthlyTableFoot').innerHTML = `<tr class="total"><td>TOTAL</td>
   <td>${fmtIDR(mAkiTot)}</td>
+  <td>${fmtIDR(mAkiTot)}</td>
+  <td>${fmtIDR(mRealTot)}</td>
   <td>${fmtIDR(mRealTot)}</td>
   <td>${fmtIDR(mAkiTot-mRealTot)}</td>
   <td>${fmtPct(pct(mRealTot,mAkiTot))}</td>
@@ -1098,7 +1105,7 @@ const barGrowPlugin = {
 charts.monthlyBar = new Chart(document.getElementById('monthlyBarChart'), {
   type:'bar',
   data:{
-    labels: monthly.map(m=>m.b),
+    labels: MONTH_FULL,
     datasets:[
       {label:'AKI / eBudget', order:1, data:monthly.map(m=>m.aki!==null?M(m.aki):0), backgroundColor:C.pln, hoverBackgroundColor:C.pln, borderRadius:3, maxBarThickness:22},
       {label:'Realisasi Bayar', order:1, data:monthly.map(m=>m.real!==null?M(m.real):0), backgroundColor:C.greenL, hoverBackgroundColor:C.greenL, borderRadius:3, maxBarThickness:22},
