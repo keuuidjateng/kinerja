@@ -278,9 +278,9 @@ button,select,input{font-family:inherit}
 <header class="hero">
   <div class="hero-inner">
     <div class="eyebrow">Laporan Internal · Kontrak Manajemen (Anaudited) · Strictly Private &amp; Confidential</div>
-    <h1>Indikator 10 — Pengendalian Anggaran &amp; Biaya<br>PLN UID Jawa Tengah</h1>
+    <h1>Indikator 10 — Pengendalian Anggaran &amp; Biaya</h1>
     <p class="sub">
-      Monitoring capaian 3 indikator kinerja: pengendalian anggaran investasi (AKI),
+      Dashboard interaktif monitoring capaian 3 indikator kinerja: pengendalian anggaran investasi (AKI),
       usulan penghapusan ATTB, dan pengendalian Non Allowable Cost (NAC).
       Posisi realisasi s.d. Oktober 2026 dibandingkan target s.d. Oktober 2026 dan target penuh tahun 2026.
     </p>
@@ -1537,7 +1537,8 @@ button,select,input{font-family:inherit}
     var color = chart.data.datasets[0].backgroundColor[point.dataIndex] || C.pln;
     var skin = popupSkin(color);
     var title = document.createElement('strong');
-    title.textContent = point.label + ' — ' + DONUT[point.dataIndex].name;
+    /* judul pop-up mengikuti nama pada legend */
+    title.textContent = DONUT[point.dataIndex].name;
     var row = document.createElement('div'); row.className = 'popup-value';
     var swatch = document.createElement('i'); swatch.className = 'popup-swatch';
     var value = document.createElement('span');
